@@ -25,27 +25,30 @@ class CommentsController extends Controller
 
     public function __construct(Request $request)
     {
-        $page = Route::current()->parameter('page');
-        $this->page = $page;
-
-        if ($page == 'webinars') {
-            $this->item = 'webinar';
-            $this->item_column = 'webinar_id';
-        } else if ($page == 'bundles') {
-            $this->item = 'bundle';
-            $this->item_column = 'bundle_id';
-        } else if ($page == 'products') {
-            $this->item = 'product';
-            $this->item_column = 'product_id';
-        } else if ($page == 'reviews') {
-            $this->item = 'review';
-            $this->item_column = 'review_id';
-        } else if ($page == 'product_reviews') {
-            $this->item = 'product_review';
-            $this->item_column = 'product_review_id';
-        } else {
-            $this->item = 'blog';
-            $this->item_column = 'blog_id';
+        // Only attempt to access the route parameters if not running in console and Route::current() is available
+        if (!app()->runningInConsole() && Route::current()) {
+            $page = Route::current()->parameter('page');
+            $this->page = $page;
+    
+            if ($page == 'webinars') {
+                $this->item = 'webinar';
+                $this->item_column = 'webinar_id';
+            } else if ($page == 'bundles') {
+                $this->item = 'bundle';
+                $this->item_column = 'bundle_id';
+            } else if ($page == 'products') {
+                $this->item = 'product';
+                $this->item_column = 'product_id';
+            } else if ($page == 'reviews') {
+                $this->item = 'review';
+                $this->item_column = 'review_id';
+            } else if ($page == 'product_reviews') {
+                $this->item = 'product_review';
+                $this->item_column = 'product_review_id';
+            } else {
+                $this->item = 'blog';
+                $this->item_column = 'blog_id';
+            }
         }
     }
 

@@ -22,7 +22,7 @@ class UpcomingCoursesController extends Controller
 
     public function __construct()
     {
-        if (empty(getFeaturesSettings('upcoming_courses_status'))) {
+        if (!app()->runningInConsole() && empty(getFeaturesSettings('upcoming_courses_status'))) {
             abort(404);
         }
     }

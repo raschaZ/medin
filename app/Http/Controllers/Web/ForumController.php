@@ -23,12 +23,17 @@ class ForumController extends Controller
 {
     public function __construct()
     {
+        if (app()->runningInConsole()) {
+            return;
+        }
+    
         $forumsStatus = getFeaturesSettings('forums_status');
-
-        if (empty($forumsStatus) or $forumsStatus == '0') {
+    
+        if (empty($forumsStatus) || $forumsStatus == '0') {
             abort(403);
         }
     }
+    
 
     public function index()
     {
