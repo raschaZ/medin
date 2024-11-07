@@ -216,7 +216,7 @@
                                 }
                             @endphp
 
-                            <div class="mt-20 d-flex flex-column">
+                            <!-- <div class="mt-20 d-flex flex-column">
                                 @if(!$canSale and $course->canJoinToWaitlist())
                                     <button type="button" data-slug="{{ $course->slug }}" class="btn btn-primary {{ (!$authUserJoinedWaitlist) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" {{ $authUserJoinedWaitlist ? 'disabled' : '' }}>
                                         @if($authUserJoinedWaitlist)
@@ -275,6 +275,28 @@
                                     <a href="/subscribes/apply/{{ $course->slug }}" class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale) disabled @endif">{{ trans('public.subscribe') }}</a>
                                 @endif
 
+                            </div> -->
+                            <!-- send all new attendees to waitlist -->
+                            <div class="mt-20 d-flex flex-column">
+
+                                @if($hasBought or !empty($course->getInstallmentOrder()))
+                                    <!-- Go to Course -->
+                                    <a href="{{ $course->getLearningPageUrl() }}" class="btn btn-primary">{{ trans('update.go_to_learning_page') }}</a>
+                                @else
+                             <!-- Join Waitlist or Already Joined -->
+                             <button type="button" data-slug="{{ $course->slug }}" class="btn btn-primary {{ (!$authUserJoinedWaitlist) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" {{ $authUserJoinedWaitlist ? 'disabled' : '' }}>
+                                        @if($authUserJoinedWaitlist)
+                                            {{ trans('update.already_joined') }}
+                                        @else
+                                            {{ trans('update.join_waitlist') }}
+                                        @endif
+                                    </button>
+                                @endif
+
+                                <!-- Optionally show the subscribe button if course allows subscription -->
+                                @if($canSale and $course->subscribe)
+                                    <a href="/subscribes/apply/{{ $course->slug }}" class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale) disabled @endif">{{ trans('public.subscribe') }}</a>
+                                @endif
                             </div>
 
                         </form>

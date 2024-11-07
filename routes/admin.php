@@ -1010,6 +1010,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         Route::group(['prefix' => 'enrollments'], function () {
             Route::get('/history', 'EnrollmentController@history');
             Route::get('/add-student-to-class', 'EnrollmentController@addStudentToClass');
+            Route::get('/add-student-form', 'EnrollmentController@addStudentForm');
+            Route::post('/{waitlist_id}/add-waitlist', 'EnrollmentController@addFromWaitlist');
             Route::post('/store', 'EnrollmentController@store');
             Route::get('/{sale_id}/block-access', 'EnrollmentController@blockAccess');
             Route::get('/{sale_id}/enable-access', 'EnrollmentController@enableAccess');

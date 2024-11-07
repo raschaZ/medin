@@ -360,4 +360,4 @@
     </script>
 
     <script src="/assets/default/js/admin/webinar_students.min.js"></script>
-@endpush
+@endpush 

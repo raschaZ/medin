@@ -112,7 +112,13 @@
                                             'btnText' => '<i class="fa fa-times"></i>'
                                         ])
 
-                                        @if(!empty($waitlist->user))
+                                        @can('admin_enrollment_add_student_to_items')
+                                            <li class="{{ (request()->is(getAdminPanelUrl('/enrollments/add-student-to-class', false))) ? 'active' : '' }}">
+                                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}"><i class="fa fa-user-plus"></i></a>
+                                            </li>
+                                        @endcan
+
+                                    <!-- @if(!empty($waitlist->user))
                                             @can('admin_users_impersonate')
                                                 <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/impersonate" target="_blank" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.login') }}">
                                                     <i class="fa fa-user-shield"></i>
@@ -124,7 +130,7 @@
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             @endcan
-                                        @endif
+                                        @endif -->
                                     </div>
                                 </td>
                             </tr>
