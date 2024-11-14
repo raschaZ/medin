@@ -400,11 +400,11 @@
                         </div>
                     </div>
                 @endif
-
-                <div class="rounded-lg shadow-sm mt-35 px-25 py-20">
+<!-- start -->
+                <div class="rounded-lg shadow-sm mt-35 px-25 py-20" style="min-width: max-content;">           
                     <h3 class="sidebar-title font-16 text-secondary font-weight-bold">{{ trans('webinars.'.$course->type) .' '. trans('webinars.specifications') }}</h3>
 
-                    <div class="mt-30">
+                    <div class="mt-30"  style="min-width: max-content;">
                         @if($course->isWebinar())
                             <div class="mt-20 d-flex align-items-center justify-content-between text-gray">
                                 <div class="d-flex align-items-center">
@@ -490,9 +490,25 @@
                                 <span class="font-14">{{ $course->access_days }} {{ trans('public.days') }}</span>
                             </div>
                         @endif
+                        @if( $course->qr_code &&(auth()->user()->isTeacher()||auth()->user()->isAdmin()))
+                            <div class="mt-20 d-flex align-items-start justify-content-between text-gray" style="min-width: max-content;">
+                                <div class="d-flex align-items-center mr-2">
+                                    <i data-feather="grid" width="20" height="20"></i>
+                                    <span class="ml-2 font-14 font-weight-500">{{ trans('public.qr_code') }}:</span>
+                                </div>
+                                <img style="max-width:150px;width:100%" src="{{ asset($course->qr_code) }}" alt="QR Code">
+                            </div>
+                            <!-- Download Button -->
+                            <div class="mt-20 d-flex flex-column">
+                                <a href="{{ asset($course->qr_code) }}" download="QR_Code_{{ $course->id }}" class="btn btn-primary">
+                                    <i data-feather="download" width="16" height="16" class="mr-1"></i> {{ trans('public.download_qr_code') }}
+                                </a>
+                            </div>
+                        @endif
+                       
                     </div>
                 </div>
-
+<!-- end -->
                 {{-- organization --}}
                 @if($course->creator_id != $course->teacher_id)
                     @include('web.default.course.sidebar_instructor_profile', ['courseTeacher' => $course->creator])

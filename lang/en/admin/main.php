@@ -1014,7 +1014,10 @@ return [
 'session_api' => 'Session API',
 'is_not_the_teacher_of_this_organization' => 'The selected instructor does not exist or is not related to this organization.',
 'webinars_reports' => 'Course Reports',
-
+'webinars_attended' => 'Attended',
+'webinars_absent' => 'Absent',
+'webinars_unknown' => 'Unknown',
+'attendance'=>'Attendance',
 // Noticeboard Page
 
 'edit_noticeboard' => 'Edit Notice',

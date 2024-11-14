@@ -346,4 +346,6 @@ return [
     'topic_post' => 'مشاركة الموضوع',
     'forbidden_request_toast_lang' => 'طلب"ممنوع" ',
     'forbidden_request_toast_msg_lang' => 'غير مسموح لك بالولوج لهذا المحتوى',
+    'qr_code'=>"رمز QR",
+    'download_qr_code'=>'تنزيل QR'
 ];

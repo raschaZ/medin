@@ -978,6 +978,10 @@ return [
     'session_api' => 'الجلسة API',
     'is_not_the_teacher_of_this_organization' => 'المدرس المحدد غير موجود او لا ينتمي لهذة المؤسسة.',
     'webinars_reports' => 'تقارير الفصل',
+    'webinars_attended' => 'حضر',
+    'webinars_absent' => 'غائب',
+    'webinars_unknown' => 'غير معروف',
+    'attendance'=>'الحضور',
 
   // Noticeboard Page
     'edit_noticeboard' => 'تعديل الاشعار',

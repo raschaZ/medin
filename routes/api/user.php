@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Panel\AttendeeController;
 use App\Http\Controllers\Api\Panel\BlogCommentController;
 use App\Http\Controllers\Api\Panel\BlogController;
 use App\Http\Controllers\Api\Panel\UsersController;
@@ -243,6 +244,8 @@ Route::group([], function () {
         Route::post('/{webinar}/forums', ['uses' => 'CourseForumController@store']);
         Route::put('/forums/{forum}', ['uses' => 'CourseForumController@update']);
         Route::post('/forums/{forum}/pin', ['uses' => 'CourseForumController@pin']);
+
+        Route::post('/{webinarId}/attend', [AttendeeController::class,"store"]);
 
         Route::group(['prefix' => 'forums'], function () {
             Route::get('/{forum}/answers', ['uses' => 'CourseForumAnswerController@index']);

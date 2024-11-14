@@ -138,10 +138,13 @@ return [
 
     'your_zoom_settings_are_not_complete' => 'Please complete your Zoom settings to create live sessions.',
     'zoom_jwt_token_invalid' => 'Your Zoom JWT token is invalid.',
-	'youtube' => 'Youtube',
+	  'youtube' => 'Youtube',
     'vimeo' => 'Vimeo',
     'show_only_bundles' => 'Show only bundles',
-    'your_reviews_successfully_submitted' => 'Your reviews was successfully submitted'
-
+    'your_reviews_successfully_submitted' => 'Your reviews was successfully submitted',
+    'code_error'=>'OOPs! Wrong Code !!',
+    'attendee_exist'=>'OOPs! Attendee allredy exist !!',
+    'attendee_stored'=>'Attendee registred',
+    'no_access'=>'You don\'t have access'
     
 ];

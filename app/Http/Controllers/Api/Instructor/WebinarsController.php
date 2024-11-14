@@ -21,7 +21,9 @@ use App\Models\Webinar;
 use App\Models\WebinarPartnerTeacher;
 use App\Models\WebinarFilterOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Validator;
 
 class WebinarsController extends Controller
@@ -549,7 +551,21 @@ class WebinarsController extends Controller
         if (!$getNextStep and !$isDraft and !$webinarRulesRequired) {
             sendNotification('course_created', ['[c.title]' => $webinar->title], $user->id);
         }
-
+        
+        if($webinar and empty($webinar->qr_code)){
+            // Generate QR code
+            $hashedId = hash('sha256', $webinar->id);
+            $fileName = "qrcodes/{$webinar->id}.png";
+        
+            // Generate the QR code as PNG and save it to the public directory
+            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+            Storage::disk('public')->put($fileName, $qrCode);
+            
+        
+            // Update the webinar with the file path
+            $webinar->qr_code = 'store/'.$fileName;
+            $webinar->save();
+           }
         return redirect($url);
     }
 

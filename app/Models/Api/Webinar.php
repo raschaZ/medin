@@ -943,4 +943,26 @@ class Webinar extends Model
     {
         return $this->hasMany('App\Models\Api\Quiz', 'webinar_id', 'id');
     }
+
+    public function canAccessApi($user = null)
+    {
+        $result = false;
+
+        if (!$user) {
+            $user = apiAuth();
+        }
+
+        if (!empty($user)) {
+            if ($this->creator_id == $user->id or $this->teacher_id == $user->id) {
+                $result = true;
+            }
+
+            // Allow Access To Partner Teachers
+            if (!$result and $this->isPartnerTeacher($user->id)) {
+                $result = true;
+            }
+        }
+
+        return $result;
+    }
 }

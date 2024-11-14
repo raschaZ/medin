@@ -36,8 +36,10 @@ use App\User;
 use App\Models\Webinar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class WebinarController extends Controller
 {
@@ -419,6 +421,19 @@ class WebinarController extends Controller
         ]);
 
         if ($webinar) {
+            // Generate QR code
+            $hashedId = hash('sha256', $webinar->id);
+            $fileName = "qrcodes/{$webinar->id}.png";
+        
+            // Generate the QR code as PNG and save it to the public directory
+            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+            Storage::disk('public')->put($fileName, $qrCode);
+            
+        
+            // Update the webinar with the file path
+            $webinar->qr_code = 'store/'.$fileName;
+            $webinar->save();
+
             WebinarTranslation::updateOrCreate([
                 'webinar_id' => $webinar->id,
                 'locale' => mb_strtolower($data['locale']),
@@ -711,7 +726,6 @@ class WebinarController extends Controller
 
         $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
-
         $webinar->update([
             'slug' => $data['slug'],
             'creator_id' => $newCreatorId,
@@ -745,6 +759,19 @@ class WebinarController extends Controller
         ]);
 
         if ($webinar) {
+            if(empty($webinar->qr_code)){
+             // Generate QR code
+             $hashedId = hash('sha256', $webinar->id);
+             $fileName = "qrcodes/{$webinar->id}.png";
+         
+             // Generate the QR code as PNG and save it to the public directory
+             $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+             Storage::disk('public')->put($fileName, $qrCode);
+
+             // Update the webinar with the file path
+             $webinar->qr_code = 'store/'.$fileName;
+             $webinar->save();
+            }
             WebinarTranslation::updateOrCreate([
                 'webinar_id' => $webinar->id,
                 'locale' => mb_strtolower($data['locale']),
@@ -798,7 +825,8 @@ class WebinarController extends Controller
         $webinar = Webinar::query()->findOrFail($id);
 
         $webinar->update([
-            'status' => Webinar::$active
+            'status' => Webinar::$active,
+            'enable_waitlist' => true
         ]);
 
         $toastData = [
@@ -887,8 +915,10 @@ class WebinarController extends Controller
 
     public function studentsLists(Request $request, $id)
     {
+        // Authorize the user to access this feature, only allowing admins
         $this->authorize('admin_webinar_students_lists');
-
+    
+        // Fetch the specified webinar along with its related teacher, active chapters, sessions, assignments, quizzes, and files
         $webinar = Webinar::where('id', $id)
             ->with([
                 'teacher' => function ($qu) {
@@ -911,9 +941,11 @@ class WebinarController extends Controller
                 },
             ])
             ->first();
-
-
+    
+        // Continue only if the webinar exists
         if (!empty($webinar)) {
+            
+            // Retrieve active gift IDs related to the webinar
             $giftsIds = Gift::query()->where('webinar_id', $webinar->id)
                 ->where('status', 'active')
                 ->where(function ($query) {
@@ -923,25 +955,32 @@ class WebinarController extends Controller
                 ->whereHas('sale')
                 ->pluck('id')
                 ->toArray();
-
+    
+            // Fetch installment sale IDs for open installment orders related to the webinar
             $installmentSalesIds = [];
             $installmentOrders = InstallmentOrder::query()
                 ->where('webinar_id', $webinar->id)
                 ->where('status', 'open')
                 ->get();
-
+    
+            // Gather sales IDs from each installment order
             foreach ($installmentOrders as $installmentOrder) {
-
                 $salesId = $installmentOrder->payments->pluck('sale_id')->toArray();
                 $installmentSalesIds = array_merge($installmentSalesIds, $salesId);
             }
-
+    
+            // Build a query to fetch students who purchased or received this webinar as a gift or via installment
             $query = User::join('sales', 'sales.buyer_id', 'users.id')
                 ->leftJoin('webinar_reviews', function ($query) use ($webinar) {
                     $query->on('webinar_reviews.creator_id', 'users.id')
-                        ->where('webinar_reviews.webinar_id', $webinar->id);
+                          ->where('webinar_reviews.webinar_id', $webinar->id);
                 })
-                ->select('users.*', 'webinar_reviews.rates', 'sales.access_to_purchased_item', 'sales.id as sale_id', 'sales.gift_id', DB::raw('min(sales.created_at) as purchase_date'))
+                // Join the attendees table to check if the user attended the webinar
+                ->leftJoin('attendees', function ($query) use ($webinar) {
+                    $query->on('attendees.user_id', '=', 'users.id')
+                          ->where('attendees.webinar_id', '=', $webinar->id);
+                })
+                ->select('users.*', 'webinar_reviews.rates', 'sales.access_to_purchased_item', 'sales.id as sale_id', 'sales.gift_id', DB::raw('min(sales.created_at) as purchase_date'),DB::raw("IF(attendees.id IS NOT NULL, 'attended', 'absent') as attended_status"))
                 ->where(function ($query) use ($webinar, $giftsIds, $installmentSalesIds) {
                     $query->where('sales.webinar_id', $webinar->id);
                     $query->orWhereIn('sales.gift_id', $giftsIds);
@@ -949,15 +988,18 @@ class WebinarController extends Controller
                 })
                 ->groupBy('sales.buyer_id')
                 ->whereNull('sales.refund_at');
-
+    
+            // Apply any filtering based on the request, sort by purchase date, and paginate
             $students = $this->studentsListsFilters($webinar, $query, $request)
                 ->orderBy('sales.created_at', 'desc')
                 ->paginate(10);
-
+    
+            // Fetch active user groups for display
             $userGroups = Group::where('status', 'active')
                 ->orderBy('created_at', 'desc')
                 ->get();
-
+    
+            // Count expired students if the webinar has an access limitation period
             $totalExpireStudents = 0;
             if (!empty($webinar->access_days)) {
                 $accessTimestamp = $webinar->access_days * 24 * 60 * 60;
@@ -972,9 +1014,11 @@ class WebinarController extends Controller
                     ->whereNull('sales.refund_at')
                     ->count();
             }
-
+    
+            // Initialize the webinar statistic controller to calculate learning progress
             $webinarStatisticController = new WebinarStatisticController();
-
+    
+            // Retrieve all student IDs and calculate learning percentages for each
             $allStudentsIds = User::join('sales', 'sales.buyer_id', 'users.id')
                 ->select('users.*', DB::raw('sales.created_at as purchase_date'))
                 ->where(function ($query) use ($webinar, $giftsIds) {
@@ -989,11 +1033,13 @@ class WebinarController extends Controller
             foreach ($allStudentsIds as $studentsId) {
                 $learningPercents[$studentsId] = $webinarStatisticController->getCourseProgressForStudent($webinar, $studentsId);
             }
-
+    
+            // Process each student to attach relevant information such as learning progress and gift details
             foreach ($students as $key => $student) {
                 if (!empty($student->gift_id)) {
+                    // Handle gifted students by checking for receipts and assigning learning progress
                     $gift = Gift::query()->where('id', $student->gift_id)->first();
-
+    
                     if (!empty($gift)) {
                         $receipt = $gift->receipt;
 
@@ -1024,9 +1070,11 @@ class WebinarController extends Controller
                     $student->learning = !empty($learningPercents[$student->id]) ? $learningPercents[$student->id] : 0;
                 }
             }
-
+    
+            // Fetch all user roles
             $roles = Role::all();
-
+    
+            // Prepare data for the view
             $data = [
                 'pageTitle' => trans('admin/main.students'),
                 'webinar' => $webinar,
@@ -1038,12 +1086,14 @@ class WebinarController extends Controller
                 'totalExpireStudents' => $totalExpireStudents,
                 'averageLearning' => count($learningPercents) ? round(array_sum($learningPercents) / count($learningPercents), 2) : 0,
             ];
-
+    
+            // Render the students view with the provided data
             return view('admin.webinars.students', $data);
         }
-
+    
+        // If the webinar does not exist, show a 404 error
         abort(404);
-    }
+    }  
 
     private function studentsListsFilters($webinar, $query, $request)
     {

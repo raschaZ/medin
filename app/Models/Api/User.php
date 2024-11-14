@@ -357,5 +357,16 @@ class User extends Model implements JWTSubject
     {
         return $this->hasMany(Sale::class, 'buyer_id');
     }
-
+    
+    public function hasPurchasedWebinar($webinarId)
+    {
+        $sale = Sale::query()
+            ->where('buyer_id', $this->id)
+            ->where('webinar_id', $webinarId)
+            ->whereNull('refund_at')
+            ->first();
+    
+        return !empty($sale) && !empty($sale->webinar) && $sale->webinar->checkUserHasBought($this);
+    }
+    
 }

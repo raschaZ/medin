@@ -426,8 +426,9 @@
                                             <div class="form-group mt-30 d-flex align-items-center justify-content-between">
                                                 <label class="" for="enable_waitlistSwitch">{{ trans('update.enable_waitlist') }}</label>
                                                 <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) and $webinar->enable_waitlist) ? 'checked' : ''  }}>
-                                                    <label class="custom-control-label" for="enable_waitlistSwitch"></label>
+                                                <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" checked  >
+                                                <!-- <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) and $webinar->enable_waitlist) ? 'checked' : ''  }}> -->
+                                                <label class="custom-control-label" for="enable_waitlistSwitch"></label>
                                                 </div>
                                             </div>
 
