@@ -347,5 +347,7 @@ return [
     'forbidden_request_toast_lang' => 'طلب"ممنوع" ',
     'forbidden_request_toast_msg_lang' => 'غير مسموح لك بالولوج لهذا المحتوى',
     'qr_code'=>"رمز QR",
-    'download_qr_code'=>'تنزيل QR'
+    'download_qr_code'=>'تنزيل QR',
+    'user_not_found'=>'لم يتم العثور على المستخدم!!',
+    'course_not_found'=>'لم يتم العثور على الدورة!!',
 ];

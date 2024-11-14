@@ -386,5 +386,8 @@ return [
     'forbidden_request_toast_lang' => '"FORBIDDEN" Request',
     'forbidden_request_toast_msg_lang' => 'You not access to this content.',
     'qr_code'=>"QR Code",
-    'download_qr_code'=>'Download QR'
+    'download_qr_code'=>'Download QR',
+    'user_not_found'=>'User Not Found !!',
+    'course_not_found'=>'Course Not Found !!',
+
 ];

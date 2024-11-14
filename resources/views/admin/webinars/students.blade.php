@@ -273,6 +273,10 @@
                                     @can('admin_users_edit')
                                         <a href="{{ getAdminPanelUrl() }}/users/{{ $student->id }}/edit" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
                                             <i class="fa fa-edit"></i>
+                                        </a>                                       
+                                       
+                                        <a href="{{ getAdminPanelUrl() }}/webinars/{{ $webinar->id }}/users/{{ $student->id }}/presence" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.mark_present') }}">
+                                        <i class="fa fa-plus-circle"></i>
                                         </a>
                                     @endcan
 

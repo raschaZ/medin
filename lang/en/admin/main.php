@@ -1512,5 +1512,5 @@ By enabling this feature, newly registered users will require approval using thi
 'teacher' => 'Instructor',
 'discount_amount' => 'Discount Amount',
 'discount_title' => 'Discount Title',
-
+'mark_present'=>'Registering attendance',
 ];

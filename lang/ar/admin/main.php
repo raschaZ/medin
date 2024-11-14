@@ -1448,4 +1448,5 @@ return [
     'notification_forms' => 'استمارة',
     'notification_submit_form_by_users' => 'استمارة التسجيل( للإدارة)',
     'form_title' => 'عنوان الإستمارة',
+    'mark_present'=>'تسجيل الحضور',
 ];

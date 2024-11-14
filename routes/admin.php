@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AttendeeController;
 use Illuminate\Support\Facades\Route;
 
 $prefix = getAdminPanelUrlPrefix();
@@ -325,6 +326,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::post('/{id}/update', 'CoursePersonalNotesController@update');
                 Route::get('/{id}/delete', 'CoursePersonalNotesController@delete');
             });
+                
+            Route::get('/{webinarId}/users/{userId}/presence', [AttendeeController::class,'presence']);
         });
 
         Route::group(['prefix' => 'quizzes'], function () {

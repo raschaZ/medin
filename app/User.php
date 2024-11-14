@@ -5,6 +5,7 @@ namespace App;
 use App\Bitwise\UserLevelOfTraining;
 use App\Mixins\RegistrationPackage\UserPackage;
 use App\Models\Accounting;
+use App\Models\Api\Sale as ApiSale;
 use App\Models\Badge;
 use App\Models\BundleWebinar;
 use App\Models\ForumTopic;
@@ -1013,5 +1014,16 @@ class User extends Authenticatable
         }
 
         return $access;
+    }
+    
+    public function hasPurchasedWebinar($webinarId)
+    {
+        $sale = ApiSale::query()
+            ->where('buyer_id', $this->id)
+            ->where('webinar_id', $webinarId)
+            ->whereNull('refund_at')
+            ->first();
+    
+        return !empty($sale) && !empty($sale->webinar) && $sale->webinar->checkUserHasBought($this);
     }
 }
