@@ -349,18 +349,19 @@ class WebinarController extends Controller
         ]);
 
         if ($webinar) {
-            $hashedId = hash('sha256', $webinar->id);
-            $fileName = "qrcodes/{$webinar->id}.png";
-        
-            // Generate the QR code as PNG and save it to the public directory
-            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
-            Storage::disk('public')->put($fileName, $qrCode);
+            if(empty($webinar->qr_code)){           
+                $hashedId = hash('sha256', $webinar->id);
+                $fileName = "qrcodes/{$webinar->id}.png";
             
-        
-            // Update the webinar with the file path
-            $webinar->qr_code = 'store/'.$fileName;
-            $webinar->save();
- 
+                // Generate the QR code as PNG and save it to the public directory
+                $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+                Storage::disk('public')->put($fileName, $qrCode);
+                
+            
+                // Update the webinar with the file path
+                $webinar->qr_code = 'store/'.$fileName;
+                $webinar->save();
+            }
             WebinarTranslation::updateOrCreate([
                 'webinar_id' => $webinar->id,
                 'locale' => mb_strtolower($data['locale']),
