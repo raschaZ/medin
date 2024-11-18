@@ -56,6 +56,19 @@ Route::get('/emergencyDatabaseUpdate', function () {
     ]);
 });
 
+Route::get('/runmigrations', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', [
+        '--force' => true,
+    ]);
+    $output = \Illuminate\Support\Facades\Artisan::output();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Migrations executed successfully.',
+        'output' => $output,
+    ]);
+});
+
 Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app','share', 'check_maintenance', 'check_restriction']], function () {
     Route::get('/login', 'LoginController@showLoginForm');
     Route::post('/login', 'LoginController@login');
