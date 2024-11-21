@@ -133,7 +133,7 @@ class WebinarCertificateController extends Controller
 
             return $makeCertificate->makeCourseCertificate($certificate);
         }
-
+        
         abort(404);
     }
 

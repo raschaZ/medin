@@ -212,7 +212,6 @@
     }
 
     function handleDownloadCertificateHtml(result) {
-
         const title = downloadCertificateLang;
         const hint = enjoySharingYourCertificateWithOthersLang;
         const img = 'quiz.svg';
@@ -235,7 +234,7 @@
     }
 
     function handleCourseCertificateHtml(id) {
-
+// die("helo");
         const title = downloadCertificateLang;
         const hint = enjoySharingYourCertificateWithOthersLang;
         const img = 'quiz.svg';

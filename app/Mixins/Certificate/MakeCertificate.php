@@ -153,13 +153,12 @@ class MakeCertificate
 
     public function makeCourseCertificate($certificate)
     {
-
         $template = CertificateTemplate::where('status', 'publish')
             ->where('type', 'course')
             ->first();
 
         $course = $certificate->webinar;
-
+           
         if (!empty($template) and !empty($course)) {
             $user = $certificate->student;
 
@@ -181,9 +180,9 @@ class MakeCertificate
             $data = [
                 'body' => $body
             ];
-
+           
             $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
-            return $this->sendToApi($userCertificate, $html);
+            return $this->generateAndSavePdf($userCertificate, $html);
         }
 
         $toastData = [
@@ -191,7 +190,6 @@ class MakeCertificate
             'msg' => trans('update.no_certificate_template_is_defined_for_courses'),
             'status' => 'error'
         ];
-
         return redirect()->back()->with(['toast' => $toastData]);
     }
 
@@ -272,7 +270,7 @@ class MakeCertificate
         }
         curl_close($ch);
         $res = json_decode($result, true);
-
+       
         if (!empty($res['url'])) {
             $url = $res['url'] . ".png";
             $image = file_get_contents($url);
@@ -295,7 +293,6 @@ class MakeCertificate
         } else {
             $error = trans("update.bad_request");
         }
-
         $toastData = [
             'title' => trans('public.request_failed'),
             'msg' => $error,
@@ -358,4 +355,30 @@ class MakeCertificate
         return $certificate;
     }
 
+    private function generateAndSavePdf($certificate, $html)
+    {
+        // Generate PDF from the HTML string
+        $pdf = PDF::loadHTML($html);
+    
+        // Define the path and filename
+        $userId = auth()->id(); // Get the currently authenticated user's ID
+        $path = "certificates/{$userId}";
+        $fileName = "certificate_{$certificate->id}.pdf";
+    
+        // Ensure the storage path exists
+        $storage = Storage::disk('public');
+        if (!$storage->exists($path)) {
+            $storage->makeDirectory($path);
+        }
+    
+        // Save the generated PDF to storage
+        $fullPath = $path . '/' . $fileName;
+        $storage->put($fullPath, $pdf->output());
+    
+        // Return the file path
+        return $storage->url($fullPath);
+    }
+    
+
+    
 }
