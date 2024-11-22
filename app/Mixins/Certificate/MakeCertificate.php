@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Spatie\Browsershot\Browsershot;
 
 class MakeCertificate
 {
@@ -180,9 +183,8 @@ class MakeCertificate
             $data = [
                 'body' => $body
             ];
-           
             $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
-            return $this->generateAndSavePdf($userCertificate, $html);
+            return $this->generateAndSavePdf($userCertificate, $html, $user);
         }
 
         $toastData = [
@@ -354,14 +356,11 @@ class MakeCertificate
 
         return $certificate;
     }
-
-    private function generateAndSavePdf($certificate, $html)
+  
+    private function generateAndSavePdf($certificate, $html, $user)
     {
-        // Generate PDF from the HTML string
-        $pdf = PDF::loadHTML($html);
-    
-        // Define the path and filename
-        $userId = auth()->id(); // Get the currently authenticated user's ID
+        // Define the storage path and filename
+        $userId = auth()->id();
         $path = "certificates/{$userId}";
         $fileName = "certificate_{$certificate->id}.pdf";
     
@@ -371,14 +370,98 @@ class MakeCertificate
             $storage->makeDirectory($path);
         }
     
-        // Save the generated PDF to storage
         $fullPath = $path . '/' . $fileName;
+    
+        // Convert background image to base64
+        $backgroundPath = public_path('/store/certificates/certif.png');
+        $backgroundImage = '';
+        if (file_exists($backgroundPath)) {
+            $imageData = file_get_contents($backgroundPath);
+            $base64 = base64_encode($imageData);
+            $backgroundImage = 'data:image/png;base64,' . $base64;
+        }
+    
+        // Generate the QR code as a base64 image
+        $url = url("/certificate_validation");
+        $qrCodeImage = base64_encode(QrCode::format('png')->size(100)->generate($url));
+    
+        // Build the HTML content
+        $htmlContent = '
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Certificate</title>
+                <style>
+                    body {
+                        background-image: url("' . $backgroundImage . '");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        background-position: center;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        text-align: center;
+                        margin-top: 210px;
+                        padding: 30px;
+                    }
+                    h1 {
+                        font-size: 36pt;
+                        margin-bottom: 10px;
+                        color :#2f5496;
+                    }
+                    p {
+                        font-size: 18pt;
+                        font-family: Calibri, sans-serif;
+                        color :#1f3864;
+                    }
+                   
+                     .qr-code {
+                        margin-top: 90px;
+                        text-align: center;
+                    }
+                    .qr-code span {
+                        font-size: 14pt;
+                        margin-top:10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>' . htmlspecialchars($certificate->webinar->teacher->full_name) . '</h1>
+                    <p>a participé à la <span style="font-weight: bold;">Master Class</span> « ' . htmlspecialchars($certificate->webinar->getTitleAttribute()) . ' » tenue le « ' . dateTimeFormat($certificate->created_at, 'j M Y') . ' » à la Faculté de Médecine de Monastir</p>
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code"></br>
+                        <span > certificate id : '.$certificate->id.'</span>
+                    </div>
+                </div>
+            </body>
+            </html>';
+
+            // Generate the PDF using Dompdf via Laravel
+        $pdf = PDF::loadHTML($htmlContent)
+            ->setPaper('a4', 'landscape') // Adjust paper size
+            ->setWarnings(false);
+    
+        // Save the PDF to the specified path in public storage
         $storage->put($fullPath, $pdf->output());
     
-        // Return the file path
-        return $storage->url($fullPath);
+        // Generate URL for download
+        $downloadPath = $storage->path($fullPath);
+    
+        // Return a downloadable response
+        return response()->download($downloadPath, $fileName, ['Content-Type' => 'application/pdf']);
     }
     
+    
+    
+    
+        
 
     
 }
