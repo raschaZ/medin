@@ -2529,6 +2529,6 @@ return [
 'direct_publication_of_bundles' => 'Bundles auto approval',
 'direct_publication_of_bundles_hint' => 'Bundles will be published without admin approval',
 'file_type_mkv' => 'MKV',
-
+'instructor_completion'=> 'Course monitoring',
 
 ];

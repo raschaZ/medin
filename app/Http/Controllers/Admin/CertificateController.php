@@ -292,7 +292,7 @@ class CertificateController extends Controller
         $this->validate($request, [
             'title' => 'required',
             'image' => 'required',
-            'type' => 'required|in:quiz,course,bundle',
+            'type' => 'required|in:quiz,course,bundle,instructor',
         ]);
 
         $data = $request->all();
@@ -423,7 +423,7 @@ class CertificateController extends Controller
             return $makeCertificate->makeQuizCertificate($quizResult);
         } else if ($certificate->type == 'course') {
 
-            return $makeCertificate->makeCourseCertificate($certificate);
+            return $makeCertificate->makeCourseCertificateStudent($certificate);
         } else if ($certificate->type == 'bundle') {
 
             return $makeCertificate->makeBundleCertificate($certificate);
