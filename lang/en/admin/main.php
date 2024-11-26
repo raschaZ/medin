@@ -1478,6 +1478,8 @@ By enabling this feature, newly registered users will require approval using thi
 'course_conversations_lists_lead' => 'List of user and instructors conversations',
 'support_lists_lead' => 'List of user support conversations',
 'notification_user_get_cashback' => 'Cashback Amount Received (for User)',
+'notification_submit_verification_doc_payment' => 'Submit Verification Document for Payment',
+'notification_confirm_send_verification_request' => 'Send payment verification request?',
 'notification_user_get_cashback_notification_for_admin' => 'Cashback Amount Received (for Admin)',
 'real_name_2' => 'User full name 2',
 'send_post_in_topic' => 'Forum replies',

@@ -60,7 +60,7 @@ class NotificationTemplate extends Model
         'admin' => ['new_comment_admin', 'support_message_admin', 'support_message_replied_admin', 'promotion_plan_admin', 'payout_request_admin',
             'new_registration', 'new_become_instructor_request', 'new_course_enrollment', 'new_forum_topic', 'new_report_item_for_admin', 'new_item_created',
             'new_store_order', 'subscription_plan_activated', 'content_review_request', 'new_user_blog_post', 'new_user_item_rating', 'new_organization_user',
-            'user_wallet_charge', 'new_user_payout_request', 'new_offline_payment_request'
+            'user_wallet_charge', 'new_user_payout_request', 'new_offline_payment_request','submit_verification_doc_payment'
         ],
         'user' => ['new_badge', 'change_user_group', 'user_access_to_content', 'new_referral_user', 'user_role_change', 'add_to_user_group', 'become_instructor_request_approved', 'become_instructor_request_rejected'],
         'course' => ['course_created', 'course_approve', 'course_reject', 'new_comment', 'support_message', 'support_message_replied', 'new_rating', 'new_question_in_forum', 'new_answer_in_forum'],

@@ -117,6 +117,11 @@
                                                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}"><i class="fa fa-user-plus"></i></a>
                                             </li>
                                         @endcan
+                                        @include('admin.includes.notification_button',[
+                                            'url' =>getAdminPanelUrl ("/notifications/users/{$waitlist->user->id}/webinars/{$waitlist->webinar->id}"),
+                                            'btnClass' => 'text-warning',
+                                            'btnText' => '<i class="fa fa-bell"></i>'
+                                        ])
 
                                     <!-- @if(!empty($waitlist->user))
                                             @can('admin_users_impersonate')

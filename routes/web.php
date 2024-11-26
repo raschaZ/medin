@@ -411,6 +411,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     /* Forms */
     Route::get('/forms/{url}', 'FormsController@index');
     Route::post('/forms/{url}/store', 'FormsController@store');
-
+    Route::get('/routes', function () {
+        return response()->json(Route::getRoutes()->get());
+    });
 });
 

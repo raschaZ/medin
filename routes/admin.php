@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AttendeeController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 $prefix = getAdminPanelUrlPrefix();
@@ -200,6 +201,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('{id}/delete', 'NotificationsController@delete');
             Route::get('/mark_all_read', 'NotificationsController@markAllRead');
             Route::get('/{id}/mark_as_read', 'NotificationsController@markAsRead');
+            Route::get('/users/{user_id}/webinars/{webinar_id}', [TestController::class, 'index']);
 
             Route::group(['prefix' => 'templates'], function () {
                 Route::get('/', 'NotificationTemplatesController@index');
