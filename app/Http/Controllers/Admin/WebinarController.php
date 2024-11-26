@@ -401,6 +401,7 @@ class WebinarController extends Controller
             'start_date' => (!empty($data['start_date'])) ? $data['start_date'] : null,
             'timezone' => $data['timezone'] ?? null,
             'duration' => $data['duration'] ?? null,
+            'in_days' => !empty($data['in_days']) ? true : false,
             'support' => !empty($data['support']) ? true : false,
             'certificate' => !empty($data['certificate']) ? true : false,
             'downloadable' => !empty($data['downloadable']) ? true : false,

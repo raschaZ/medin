@@ -1207,7 +1207,7 @@ class WebinarController extends Controller
                 $giftPurchasedCount += 1;
 
                 if (!empty($sale->webinar)) {
-                    $giftDurations += $sale->webinar->duration;
+                    $giftDurations += $sale->webinar->in_days ? $sale->webinar->duration*8 : $sale->webinar->duration;
 
                     if ($sale->webinar->start_date > $time) {
                         $giftUpcoming += 1;
