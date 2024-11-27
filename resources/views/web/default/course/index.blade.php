@@ -432,7 +432,7 @@
                                 <i data-feather="clock" width="20" height="20"></i>
                                 <span class="ml-5 font-14 font-weight-500">{{ trans('public.duration') }}:</span>
                             </div>
-                            <span class="font-14">{{ convertMinutesToHourAndMinute(!empty($course->duration) ? $course->duration : 0) }} {{ trans('home.hours') }}</span>
+                            <span class="font-14">{{ $course->in_days? $course->duration : convertMinutesToHourAndMinute(!empty($course->duration) ? $course->duration : 0) }} {{  $course->in_days?  trans('public.days') : trans('home.hours') }}</span>
                         </div>
 
                         <div class="mt-20 d-flex align-items-center justify-content-between text-gray">

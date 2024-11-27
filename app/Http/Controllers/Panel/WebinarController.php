@@ -662,6 +662,7 @@ class WebinarController extends Controller
                 $data['start_date'] = $startDate->getTimestamp();
             }
 
+            $data['in_days'] = !empty($data['in_days']) ? true : false;
             $data['forum'] = !empty($data['forum']) ? true : false;
             $data['support'] = !empty($data['support']) ? true : false;
             $data['certificate'] = !empty($data['certificate']) ? true : false;
@@ -1207,7 +1208,7 @@ class WebinarController extends Controller
                 $giftPurchasedCount += 1;
 
                 if (!empty($sale->webinar)) {
-                    $giftDurations += $sale->webinar->duration;
+                    $giftDurations += $sale->webinar->in_days ? $sale->webinar->duration*8 : $sale->webinar->duration;
 
                     if ($sale->webinar->start_date > $time) {
                         $giftUpcoming += 1;
