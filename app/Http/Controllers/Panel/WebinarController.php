@@ -662,6 +662,7 @@ class WebinarController extends Controller
                 $data['start_date'] = $startDate->getTimestamp();
             }
 
+            $data['in_days'] = !empty($data['in_days']) ? true : false;
             $data['forum'] = !empty($data['forum']) ? true : false;
             $data['support'] = !empty($data['support']) ? true : false;
             $data['certificate'] = !empty($data['certificate']) ? true : false;

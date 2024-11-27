@@ -733,6 +733,7 @@ class WebinarController extends Controller
             'creator_id' => $newCreatorId,
             'teacher_id' => $data['teacher_id'],
             'type' => $data['type'],
+            'in_days' => !empty($data['in_days']) ? true : false,
             'thumbnail' => $data['thumbnail'],
             'image_cover' => $data['image_cover'],
             'video_demo' => $data['video_demo'],
