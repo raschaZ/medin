@@ -929,6 +929,9 @@ function currencySign($currency = null)
         case 'BIF':
             return 'BIF';
             break;
+        case 'TND':
+            return 'TND';
+            break;
         default:
             return '$';
     }
@@ -1938,7 +1941,6 @@ function getThemeFontsSettings()
                       src: url({$settings[$type]['medium']}) format('woff2');
                     }";
             }
-
         }
     }
 
@@ -1999,7 +2001,7 @@ function getDefaultLocale()
 
 function deepClone($object)
 {
-    $cloned = clone($object);
+    $cloned = clone ($object);
     foreach ($cloned as $key => $val) {
         if (is_object($val) || (is_array($val))) {
             $cloned->{$key} = unserialize(serialize($val));
@@ -2271,7 +2273,8 @@ function getTranslateAttributeValue($model, $key, $loca = null)
 
     $isEditModel = ($isAdminUrl and !empty($contentLocale) and is_array($contentLocale) and $contentLocale['table'] == $model->getTable() and $contentLocale['item_id'] == $model->id);
 
-    if ($isAdminUrl and
+    if (
+        $isAdminUrl and
         !empty($contentLocale) and
         is_array($contentLocale) and
         (
@@ -2340,9 +2343,34 @@ function removeContentLocale()
 function getAgoraResolutions(): array
 {
     return [
-        '160_120', '120_120', '320_180', '180_180', '240_180', '320_240', '240_240', '424_240', '640_360', '360_360',
-        '640_360', '360_360', '480_360', '480_360', '640_480', '480_480', '640_480', '480_480', '848_480', '848_480',
-        '640_480', '1280_720', '1280_720', '960_720', '960_720', '1920_1080', '1920_1080', '1920_1080'
+        '160_120',
+        '120_120',
+        '320_180',
+        '180_180',
+        '240_180',
+        '320_240',
+        '240_240',
+        '424_240',
+        '640_360',
+        '360_360',
+        '640_360',
+        '360_360',
+        '480_360',
+        '480_360',
+        '640_480',
+        '480_480',
+        '640_480',
+        '480_480',
+        '848_480',
+        '848_480',
+        '640_480',
+        '1280_720',
+        '1280_720',
+        '960_720',
+        '960_720',
+        '1920_1080',
+        '1920_1080',
+        '1920_1080'
     ];
 }
 
@@ -2665,7 +2693,8 @@ function getRazorpayApiKey(): array
 }
 
 
-function customSortArrayNumAndTextIndex($array) {
+function customSortArrayNumAndTextIndex($array)
+{
     $numericKeys = [];
     $textualKeys = [];
 
