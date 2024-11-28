@@ -389,5 +389,6 @@ return [
     'download_qr_code'=>'Download QR',
     'user_not_found'=>'User Not Found !!',
     'course_not_found'=>'Course Not Found !!',
-
+    'accepted'=> 'Accepted',
+    'not_accepted'=> 'Not Accepted',
 ];

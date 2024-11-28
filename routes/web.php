@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -88,6 +89,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app','share'
     Route::get('/facebook/redirect', 'SocialiteController@redirectToFacebook');
     Route::get('/facebook/callback', 'SocialiteController@handleFacebookCallback');
     Route::get('/reff/{code}', 'ReferralController@referral');
+    Route::get( '/verification/upload/{token}', [VerificationController::class, 'upload'])->name('verification.upload');
 });
 
 Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impersonate', 'share', 'check_maintenance', 'check_restriction']], function () {

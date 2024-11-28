@@ -2011,7 +2011,7 @@ function deepClone($object)
     return $cloned;
 }
 
-function sendNotification($template, $options, $user_id = null, $group_id = null, $sender = 'system', $type = 'single', $templateId = null)
+function sendNotification($template, $options, $user_id = null, $group_id = null, $sender = 'system', $type = 'single', $templateId = null,$emailOptionMessage=null)
 {
     if ($user_id == 1) {
         $mainAdminId = \App\User::getMainAdminId();
@@ -2029,7 +2029,6 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
-
         $check = \App\Models\Notification::where('user_id', $user_id)
             ->where('group_id', $group_id)
             ->where('title', $title)
@@ -2039,7 +2038,6 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
             ->first();
 
         $ignoreDuplicateTemplates = ['new_badge', 'registration_package_expired'];
-
         if (empty($check) or !in_array($template, $ignoreDuplicateTemplates)) {
             \App\Models\Notification::create([
                 'user_id' => $user_id,
@@ -2050,13 +2048,12 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 'type' => $type,
                 'created_at' => time()
             ]);
-
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
 
                 if (!empty($user) and !empty($user->email)) {
                     try {
-                        \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
+                        \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $emailOptionMessage ?? $message]));
                     } catch (Exception $exception) {
                         // dd($exception)
                     }

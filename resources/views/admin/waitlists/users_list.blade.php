@@ -81,6 +81,7 @@
                             <th class="">{{ trans('public.phone') }}</th>
                             <th class="">{{ trans('update.registration_status') }}</th>
                             <th class="">{{ trans('update.submission_date') }}</th>
+                            <th class="">{{ trans('public.accepted') }}</th>
                             <th class="text-left">{{ trans('admin/main.actions') }}</th>
                         </tr>
                         </thead>
@@ -104,8 +105,11 @@
 
                                 <td>{{ dateTimeFormat($waitlist->created_at, 'j M Y H:i') }}</td>
 
+                                <td>
+                                    <div class="mt-0 mb-1 font-weight-bold {{ ($waitlist->is_accepted) ? 'text-success' : 'text-warning' }}" >{{ trans($waitlist->is_accepted?'public.accepted':'public.not_accepted') }}</div>
+                                </td>
                                 <td class="">
-                                    <div class="d-flex align-items-center justify-content-end">
+                                    <div class="d-flex align-items-center justify-content-start">
                                         @include('admin.includes.delete_button',[
                                             'url' => getAdminPanelUrl("/waitlists/items/{$waitlist->id}/delete"),
                                             'btnClass' => 'text-danger',
@@ -118,24 +122,24 @@
                                             </li>
                                         @endcan
                                         @include('admin.includes.notification_button',[
-                                            'url' =>getAdminPanelUrl ("/notifications/users/{$waitlist->user->id}/webinars/{$waitlist->webinar->id}"),
+                                            'url' =>getAdminPanelUrl ("/notifications/users/{$waitlist->user->id}/waitlist/{$waitlist->id}"),
                                             'btnClass' => 'text-warning',
                                             'btnText' => '<i class="fa fa-bell"></i>'
                                         ])
 
-                                    <!-- @if(!empty($waitlist->user))
-                                            @can('admin_users_impersonate')
+                                   @if(!empty($waitlist->user))
+                                          <!--    @can('admin_users_impersonate')
                                                 <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/impersonate" target="_blank" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.login') }}">
                                                     <i class="fa fa-user-shield"></i>
                                                 </a>
-                                            @endcan
+                                            @endcan-->
 
                                             @can('admin_users_edit')
                                                 <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/edit" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             @endcan
-                                        @endif -->
+                                        @endif 
                                     </div>
                                 </td>
                             </tr>

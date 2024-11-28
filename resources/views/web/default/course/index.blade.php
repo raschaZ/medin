@@ -215,7 +215,11 @@
                                     $authUserJoinedWaitlist = !empty($authUserWaitlist);
                                 }
                             @endphp
-
+@if($canSale and !empty(getFeaturesSettings('direct_classes_payment_button_status')))
+<button type="button" class="btn btn-outline-danger mt-20 js-course-direct-payment">
+    {{ trans('update.buy_now') }}
+</button>
+@endif
                             <!-- <div class="mt-20 d-flex flex-column">
                                 @if(!$canSale and $course->canJoinToWaitlist())
                                     <button type="button" data-slug="{{ $course->slug }}" class="btn btn-primary {{ (!$authUserJoinedWaitlist) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" {{ $authUserJoinedWaitlist ? 'disabled' : '' }}>
