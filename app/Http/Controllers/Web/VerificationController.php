@@ -15,8 +15,8 @@ class VerificationController extends Controller
         if (!$waitlist) {
             abort(404, 'Invalid or expired link.');
         }
-        
-        return redirect($waitlist->webinar->getUrl());
+
+        return redirect()->route('webinair.directpayment', ['itemId' => $waitlist->webinar->id,'ticketId'=> "webinar_id"]);
     }
     
 }

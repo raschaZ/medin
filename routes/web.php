@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\VerificationController;
+use App\Http\Controllers\Web\WebinarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -153,6 +154,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             });
 
             Route::post('/direct-payment', 'WebinarController@directPayment');
+            Route::get('/direct-payment-params/{itemId}/{ticketId?}', [WebinarController::class, 'directPaymentWithParams'])->name('webinair.directpayment');
+
 
             Route::group(['prefix' => 'personal-notes'], function () {
                 Route::get('/{id}/download-attachment', 'CoursePersonalNotesController@downloadAttachment');

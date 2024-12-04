@@ -30,9 +30,8 @@ class PaymentNotificationController extends Controller
 
     Congratulations on being accepted into the ' . $waitlist->webinar->getTitleAttribute() . '! 
 
-    To complete the final steps of your enrollment, we kindly request you to provide the necessary document to verify your course payment. This is a routine process to confirm your spot in the program.
-
-    Please upload it via the following link: ' . $uploadLink . '
+    To complete the final steps of your enrollment, we kindly request you to proceed to  payment via the following link: 
+    ' . $uploadLink . '
 
     Should you have any questions or need assistance, feel free to contact us. We look forward to having you as part of the course!';
     
