@@ -271,11 +271,18 @@
                                             </td>
 
                                             <td class="text-left">{{ $webinar->teacher->full_name }}</td>
-
+                                           
+                                            @php
+                                            $ticket;
+                                            foreach ($webinar->tickets as $ticket) {
+                                                $ticket=$ticket;
+                                            }
+                                            @endphp
                                             <td>
                                                 @if(!empty($webinar->price) and $webinar->price > 0)
                                                     <span class="mt-0 mb-1">
-                                                        {{ handlePrice($webinar->price, true, true) }}
+                                                        {{-- {{ handlePrice($webinar->price, true, true) }} --}}
+                                                        {{ handleCoursePagePrice($ticket->getPriceWithDiscount($webinar->price, !empty($webinar->activeSpecialOffer()) ? $webinar->activeSpecialOffer() : null))['price'] }}
                                                     </span>
 
                                                     @if($webinar->getDiscountPercent() > 0)

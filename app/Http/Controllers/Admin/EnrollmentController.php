@@ -412,7 +412,8 @@ class EnrollmentController extends Controller
             'pageTitle' => trans('update.add_student_to_a_class'),
             'webinars' => Webinar::all(),
             'users' =>  User::all(),
-            'waitlist_id' => $request->query('waitlist_id')
+            'waitlist_id' => $request->query('waitlist_id'),
+            'amount' => $request->query('amount')
         ];
 
         return view('admin.enrollment.add_student', $data);
@@ -441,6 +442,7 @@ class EnrollmentController extends Controller
 
         $rules = [
             'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|gt:0',
         ];
 
         if (!empty($data['webinar_id'])) {
@@ -573,8 +575,8 @@ class EnrollmentController extends Controller
                     'type' => $itemType,
                     'manual_added' => true,
                     'payment_method' => Sale::$credit,
-                    'amount' => 0,
-                    'total_amount' => 0,
+                    'amount' => $data['amount'],
+                    'total_amount' => $data['amount'],
                     'created_at' => time(),
                 ]);
 

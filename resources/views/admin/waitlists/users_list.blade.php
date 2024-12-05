@@ -81,6 +81,7 @@
                             <th class="">{{ trans('public.phone') }}</th>
                             <th class="">{{ trans('update.registration_status') }}</th>
                             <th class="">{{ trans('update.submission_date') }}</th>
+                            <th class="">{{ trans('admin/main.amount') }}</th>
                             <th class="">{{ trans('public.accepted') }}</th>
                             <th class="text-left">{{ trans('admin/main.actions') }}</th>
                         </tr>
@@ -88,6 +89,12 @@
 
                         <tbody>
                         @foreach($waitlists as $waitlist)
+                        @php 
+                        $ticket=null;
+                        foreach ($waitlist->webinar->tickets as $ticket) {
+                            $ticket=$ticket;
+                        }
+                        @endphp
                             <tr>
                                 <td class="text-left">{{ !empty($waitlist->user) ? $waitlist->user->full_name : $waitlist->full_name }}</td>
 
@@ -104,7 +111,15 @@
                                 </td>
 
                                 <td>{{ dateTimeFormat($waitlist->created_at, 'j M Y H:i') }}</td>
-
+                               
+                                <td>
+                                    @if(!empty($ticket))
+                                    <div class="mt-0 mb-1 font-weight-bold " >{{ handleCoursePagePrice($waitlist->ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : null))['price'] }}</div>                                        
+                                    @else
+                                    <div class="mt-0 mb-1 font-weight-bold " >  {{ handleCoursePagePrice($waitlist->webinar->price)['price'] }}</div>       
+                                    @endif
+                                </td>                                
+                                
                                 <td>
                                     <div class="mt-0 mb-1 font-weight-bold {{ ($waitlist->is_accepted) ? 'text-success' : 'text-warning' }}" >{{ trans($waitlist->is_accepted?'public.accepted':'public.not_accepted') }}</div>
                                 </td>
@@ -118,7 +133,7 @@
 
                                         @can('admin_enrollment_add_student_to_items')
                                             <li class="{{ (request()->is(getAdminPanelUrl('/enrollments/add-student-to-class', false))) ? 'active' : '' }}">
-                                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}"><i class="fa fa-user-plus"></i></a>
+                                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}&amount={{$ticket?$waitlist->ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : $waitlist->webinar->price): $waitlist->webinar->price}}"><i class="fa fa-user-plus"></i></a>
                                             </li>
                                         @endcan
                                         @include('admin.includes.notification_button',[

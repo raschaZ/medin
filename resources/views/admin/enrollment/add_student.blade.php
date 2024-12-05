@@ -21,6 +21,7 @@
                                         $waitlistId = request('waitlist_id');
                                         $selectedWebinar = request('webinar_id');
                                         $selectedUser = request('user_id');
+                                        $amount = request('amount');
                                      @endphp
                                     <form action="{{ getAdminPanelUrl() }}/enrollments/{{$waitlistId}}/add-waitlist" method="post">
                                         {{ csrf_field() }}
@@ -57,7 +58,28 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                         </div>
-
+                                        
+                                        <div class="form-group">
+                                            <label>{{ trans('admin/main.amount') }}</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        {{ $currency }}
+                                                    </div>
+                                                </div>
+        
+                                                <input type="number" name="amount"
+                                                       class="form-control text-center @error('amount') is-invalid @enderror"
+                                                       value="{{ (!empty($amount) and !empty($amount)) ? convertPriceToUserCurrency($amount) : old('amount') }}"
+                                                       {{-- placeholder="{{ trans('update.discount_amount_placeholder') }}"--}}
+                                                       /> 
+                                                @error('amount')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                         <!-- Submit Button -->
                                         <div class="mt-4">
                                             <button type="submit" class="btn btn-primary">{{ trans('admin/main.add') }}</button>
@@ -72,3 +94,4 @@
         </div>
     </section>
 @endsection
+
