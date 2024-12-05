@@ -114,7 +114,7 @@
                                
                                 <td>
                                     @if(!empty($ticket))
-                                    <div class="mt-0 mb-1 font-weight-bold " >{{ handleCoursePagePrice($waitlist->ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : null))['price'] }}</div>                                        
+                                    <div class="mt-0 mb-1 font-weight-bold " >{{ handleCoursePagePrice($ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : null))['price'] }}</div>                                        
                                     @else
                                     <div class="mt-0 mb-1 font-weight-bold " >  {{ handleCoursePagePrice($waitlist->webinar->price)['price'] }}</div>       
                                     @endif
@@ -133,7 +133,7 @@
 
                                         @can('admin_enrollment_add_student_to_items')
                                             <li class="{{ (request()->is(getAdminPanelUrl('/enrollments/add-student-to-class', false))) ? 'active' : '' }}">
-                                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}&amount={{$ticket?$waitlist->ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : $waitlist->webinar->price): $waitlist->webinar->price}}"><i class="fa fa-user-plus"></i></a>
+                                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}&amount={{$ticket?$ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() :null):  $waitlist->webinar->price}}"><i class="fa fa-user-plus"></i></a>
                                             </li>
                                         @endcan
                                         @include('admin.includes.notification_button',[
