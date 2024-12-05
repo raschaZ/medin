@@ -469,7 +469,7 @@ class MakeCertificate
                 <div class="container">
                     <h1>
                         ' . (($type && $type == "instructor") 
-                            ? htmlspecialchars($certificate->webinar->teacher->full_name) 
+                            ?'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
                             : htmlspecialchars($certificate->student->full_name)) . '
                     </h1>
 
