@@ -269,36 +269,50 @@
                                                     <div class="text-small text-warning">{{trans('admin/main.no_category')}}</div>
                                                 @endif
                                             </td>
-
                                             <td class="text-left">{{ $webinar->teacher->full_name }}</td>
-                                           
+
                                             @php
-                                            $ticket;
-                                            foreach ($webinar->tickets as $ticket) {
-                                                $ticket=$ticket;
-                                            }
+                                                $ticket = null;
+                                                // Retrieve the first ticket (if available)
+                                                foreach ($webinar->tickets as $webinarTicket) {
+                                                    $ticket = $webinarTicket;
+                                                    break;
+                                                }
                                             @endphp
+
                                             <td>
-                                                @if(!empty($webinar->price) and $webinar->price > 0)
+                                                @if(!empty($webinar->price) && $webinar->price > 0)
                                                     <span class="mt-0 mb-1">
                                                         {{-- {{ handlePrice($webinar->price, true, true) }} --}}
-                                                        {{ handleCoursePagePrice($ticket->getPriceWithDiscount($webinar->price, !empty($webinar->activeSpecialOffer()) ? $webinar->activeSpecialOffer() : null))['price'] }}
+                                                        @if($ticket)
+                                                            {{ handleCoursePagePrice(
+                                                                $ticket->getPriceWithDiscount(
+                                                                    $webinar->price,
+                                                                    !empty($webinar->activeSpecialOffer()) ? $webinar->activeSpecialOffer() : null
+                                                                )
+                                                            )['price'] }}
+                                                        @endif
                                                     </span>
 
                                                     @if($webinar->getDiscountPercent() > 0)
-                                                        <div class="text-danger text-small font-600-bold">{{ $webinar->getDiscountPercent() }}% {{trans('admin/main.off')}}</div>
+                                                        <div class="text-danger text-small font-600-bold">
+                                                            {{ $webinar->getDiscountPercent() }}% {{ trans('admin/main.off') }}
+                                                        </div>
                                                     @endif
                                                 @else
                                                     {{ trans('public.free') }}
                                                 @endif
                                             </td>
+
                                             <td>
                                                 <span class="text-primary mt-0 mb-1 font-weight-bold">
                                                     {{ $webinar->sales->count() }}
                                                 </span>
 
                                                 @if(!empty($webinar->capacity))
-                                                    <div class="text-small font-600-bold">{{trans('admin/main.capacity')}} : {{ $webinar->getWebinarCapacity() }}</div>
+                                                    <div class="text-small font-600-bold">
+                                                        {{ trans('admin/main.capacity') }}: {{ $webinar->getWebinarCapacity() }}
+                                                    </div>
                                                 @endif
                                             </td>
 
