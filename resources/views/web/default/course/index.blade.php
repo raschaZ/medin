@@ -148,7 +148,7 @@
                             <input type="hidden" name="item_id" value="{{ $course->id }}">
                             <input type="hidden" name="item_name" value="webinar_id">
 
-                            @if(!empty($course->tickets))
+                            @if(!empty($course->tickets)&& $course->price)
                                 @foreach($course->tickets as $ticket)
 
                                     <div class="form-check mt-20">
