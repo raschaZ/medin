@@ -287,7 +287,7 @@
                                         @if($authUserJoinedWaitlist)
                                             {{ trans('update.already_joined') }}
                                         @else
-                                            {{ trans('update.join_waitlist') }}
+                                            {{ trans('update.preregistration') }} 
                                         @endif
                                     </button>
                                 @endif
@@ -489,7 +489,7 @@
                                 <span class="font-14">{{ $course->access_days }} {{ trans('public.days') }}</span>
                             </div>
                         @endif
-                        @if( $course->qr_code &&(auth()->user()->isTeacher()||auth()->user()->isAdmin()))
+                        @if(auth()->user()&& $course->qr_code &&(auth()->user()->isTeacher()||auth()->user()->isAdmin()))
                             <div class="mt-20 d-flex align-items-start justify-content-between text-gray" style="min-width: max-content;">
                                 <div class="d-flex align-items-center mr-2">
                                     <i data-feather="grid" width="20" height="20"></i>
@@ -639,8 +639,8 @@
         var courseNotCapacityStatusToastMsgLang = '{{ trans('cart.course_not_capacity') }}';
         var courseHasStartedStatusToastTitleLang = '{{ trans('cart.fail_purchase') }}';
         var courseHasStartedStatusToastMsgLang = '{{ trans('update.class_has_started') }}';
-        var joinCourseWaitlistLang = '{{ trans('update.join_course_waitlist') }}';
-        var joinCourseWaitlistModalHintLang = "{{ trans('update.join_course_waitlist_modal_hint') }}";
+        var joinCourseWaitlistLang = '{{ trans('update.join_course_preregistration') }}';
+        var joinCourseWaitlistModalHintLang = "{{ trans('update.join_course_preregistration_modal_hint') }}";
         var joinLang = '{{ trans('footer.join') }}';
         var nameLang = '{{ trans('auth.name') }}';
         var emailLang = '{{ trans('auth.email') }}';

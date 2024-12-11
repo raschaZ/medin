@@ -68,7 +68,7 @@ class WaitlistController extends Controller
 
             return response()->json([
                 'code' => 200,
-                'msg' => trans('update.course_added_to_waitlists_successful')
+                'msg' => trans('update.course_added_to_preregistrations_successful')
             ]);
         }
 
