@@ -442,7 +442,7 @@ class EnrollmentController extends Controller
 
         $rules = [
             'user_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|gt:0',
+            'amount' => 'required|numeric|gte:0',
         ];
 
         if (!empty($data['webinar_id'])) {

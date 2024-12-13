@@ -112,11 +112,14 @@
 
                                 <td>{{ dateTimeFormat($waitlist->created_at, 'j M Y H:i') }}</td>
                                
-                                <td>
-                                    @if(!empty($ticket))
-                                    <div class="mt-0 mb-1 font-weight-bold " >{{ handleCoursePagePrice($ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : null))['price'] }}</div>                                        
-                                    @else
-                                    <div class="mt-0 mb-1 font-weight-bold " >  {{ handleCoursePagePrice($waitlist->webinar->price)['price'] }}</div>       
+                                <td> 
+                                    @if($waitlist->webinar->price)
+                                        @if(!empty($ticket))
+                                          <div class="mt-0 mb-1 font-weight-bold " >{{ handleCoursePagePrice($ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() : null))['price'] }}</div>                                        
+                                            @else
+                                            <div class="mt-0 mb-1 font-weight-bold " >  {{ handleCoursePagePrice($waitlist->webinar->price)['price'] }}</div>       
+                                            @endif @else
+                                        <div class="mt-0 mb-1 font-weight-bold " >  {{  trans('public.free')   }}</div>
                                     @endif
                                 </td>                                
                                 
