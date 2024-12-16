@@ -66,7 +66,7 @@
 
             <label class="cursor-pointer input-label" for="in_daysSwitch">{{ trans('public.days') }}</label>
             <div class="custom-control custom-switch">
-                <input type="checkbox" name="in_days" class="custom-control-input" id="in_daysSwitch" {{ (!empty($webinar) && !$webinar->in_days) ? '' : 'checked' }}>
+                <input type="checkbox" name="in_days" class="custom-control-input" id="in_daysSwitch" {{ (!empty($webinar) && $webinar->in_days) ? 'checked' : '' }}>
                 <label class="custom-control-label" for="in_daysSwitch"></label>
                 </div>
                 </div>
