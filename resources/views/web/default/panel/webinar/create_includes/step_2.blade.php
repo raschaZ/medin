@@ -84,7 +84,7 @@
                 }
             @endphp
 
-            <div class="form-group">
+            <div class="form-group"  style="display: none;">
                 <label class="input-label">{{ trans('update.timezone') }}</label>
                 <select name="timezone" class="form-control select2" data-allow-clear="false">
                     @foreach(getListOfTimezones() as $timezone)
@@ -113,7 +113,7 @@
             </div>
         @endif
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
             <label class="cursor-pointer input-label" for="supportSwitch">{{ trans('webinars.support') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="support" class="custom-control-input" id="supportSwitch" {{ ((!empty($webinar) && $webinar->support) or old('support') == 'on') ? 'checked' :  '' }}>
@@ -122,7 +122,7 @@
         </div>
 
         @if(!empty(getCertificateMainSettings("status")))
-            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+            <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
                 <label class="cursor-pointer input-label" for="certificateSwitch">{{ trans('update.include_certificate') }}</label>
                 <div class="custom-control custom-switch">
                     <input type="checkbox" name="certificate" class="custom-control-input" id="certificateSwitch" {{ ((!empty($webinar) && $webinar->certificate) or old('certificate') == 'on') ? 'checked' :  '' }}>
@@ -130,12 +130,12 @@
                 </div>
             </div>
 
-            <div>
+            <div  style="display: none !important;">
                 <p class="font-12 text-gray">- {{ trans('update.certificate_completion_hint') }}</p>
             </div>
         @endif
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
             <label class="cursor-pointer input-label" for="downloadableSwitch">{{ trans('home.downloadable') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="downloadable" class="custom-control-input" id="downloadableSwitch" {{ ((!empty($webinar) && $webinar->downloadable) or old('downloadable') == 'on') ? 'checked' : '' }}>
@@ -143,7 +143,7 @@
             </div>
         </div>
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
             <label class="cursor-pointer input-label" for="partnerInstructorSwitch">{{ trans('public.partner_instructor') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="partner_instructor" class="custom-control-input" id="partnerInstructorSwitch" {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? 'checked' : ''  }}>
@@ -152,7 +152,7 @@
         </div>
 
 
-        <div id="partnerInstructorInput" class="form-group mt-15 {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? '' : 'd-none' }}">
+        <div id="partnerInstructorInput" class="form-group mt-15 {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? '' : 'd-none' }}"  >
             <label class="input-label d-block">{{ trans('public.select_a_partner_teacher') }}</label>
 
             <select name="partners[]" class="form-control panel-search-user-select2 @error('partners')  is-invalid @enderror" multiple="" data-search-option="just_teachers" data-placeholder="{{ trans('public.search_instructor') }}">
@@ -170,7 +170,7 @@
             @enderror
         </div>
 
-        <div class="form-group mt-15">
+        <div class="form-group mt-15"   style="display: none !important;">
             <label class="input-label d-block">{{ trans('public.tags') }}</label>
             <input type="text" name="tags" data-max-tag="5" value="{{ !empty($webinar) ? implode(',',$webinarTags) : '' }}" class="form-control inputtags" placeholder="{{ trans('public.type_tag_name_and_press_enter') }} ({{ trans('forms.max') }} : 5)"/>
         </div>

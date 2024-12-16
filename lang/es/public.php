@@ -78,6 +78,7 @@ return [
     'date_created' => 'Fecha de creación',
     'partner_instructor' => 'Formador asociado',
     'subscribe' => 'Suscribirse',
+    'expired' => 'Expirado',
     'add_to_cart' => 'Agregar al carrito',
     'add_to_calendar' => 'Agregar al calendario',
     'add_to' => 'Agregar a',

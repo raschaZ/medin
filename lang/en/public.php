@@ -78,6 +78,7 @@ return [
     'date_created' => 'Date Created',
     'partner_instructor' => 'Partner Instructor',
     'subscribe' => 'Subscribe',
+    'expired' => 'Expired',
     'add_to_cart' => 'Add to Cart',
     'add_to_calendar' => 'Add to Calendar',
     'add_to' => 'Add to',

@@ -329,6 +329,11 @@ class WebinarController extends Controller
             'description' => 'required',
         ];
 
+        // Automatically set thumbnail to the value of image_cover if it's not already set
+        $request->merge([
+            'thumbnail' =>  $request->input('image_cover'),
+        ]);
+
         $this->validate($request, $rules);
 
         $data = $request->all();
@@ -423,8 +428,7 @@ class WebinarController extends Controller
 
                 });
             });
-
-        if ($step == '1') {
+        if ($step == 1) {
             $data['teachers'] = $user->getOrganizationTeachers()->get();
         } elseif ($step == 2) {
             $query->with([

@@ -74,6 +74,7 @@ return [
     'date_created' => 'تاريخ الإنشاء',
     'partner_instructor' => 'أستاذ شريك',
     'subscribe' => 'الإشتراك',
+    'expired' => 'منتهي',
     'add_to_cart' => 'أضف إلى السلة',
     'add_to_calendar' => 'إضافة إلى التقويم',
     'add_to' => 'ضف إليه',

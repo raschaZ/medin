@@ -277,14 +277,33 @@
                             </div> -->
                             <!-- send all new attendees to waitlist -->
                             <div class="mt-20 d-flex flex-column">
+                                @php
+                                    // Calculate access expiration date
+                                    if (!empty($course->access_days)) {
+                                        $accessExpirationDate = \Carbon\Carbon::createFromTimestamp($course->start_date)->addDays($course->access_days);
+                                    } else {
+                                        $durationInDays = $course->in_days ? $course->duration : ceil($course->duration / 1440); // Convert minutes to days if needed
+                                        $accessExpirationDate = \Carbon\Carbon::createFromTimestamp($course->start_date)->addDays($durationInDays);
+                                    }
 
-                                @if($hasBought or !empty($course->getInstallmentOrder()))
+                                    $isExpired = now()->greaterThan($accessExpirationDate);
+                                @endphp
+
+                                @if($hasBought || !empty($course->getInstallmentOrder()))
                                     <!-- Go to Course -->
-                                    <a href="{{ $course->getLearningPageUrl() }}" class="btn btn-primary">{{ trans('update.go_to_learning_page') }}</a>
+                                    <a href="{{ $course->getLearningPageUrl() }}" class="btn btn-primary">
+                                        {{ trans('update.go_to_learning_page') }}
+                                    </a>
                                 @else
-                             <!-- Join Waitlist or Already Joined -->
-                             <button type="button" data-slug="{{ $course->slug }}" class="btn btn-primary {{ (!$authUserJoinedWaitlist) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" {{ $authUserJoinedWaitlist ? 'disabled' : '' }}>
-                                        @if($authUserJoinedWaitlist)
+                                    <!-- Join Waitlist or Already Joined -->
+                                    <button type="button" 
+                                            data-slug="{{ $course->slug }}" 
+                                            class="btn btn-primary 
+                                            {{ (!$authUserJoinedWaitlist && !$isExpired) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" 
+                                            {{ $authUserJoinedWaitlist || $isExpired ? 'disabled' : '' }}>
+                                        @if($isExpired)
+                                            {{ trans('public.expired') }}
+                                        @elseif($authUserJoinedWaitlist)
                                             {{ trans('update.already_joined') }}
                                         @else
                                             {{ trans('update.preregistration') }} 
@@ -293,10 +312,18 @@
                                 @endif
 
                                 <!-- Optionally show the subscribe button if course allows subscription -->
-                                @if($canSale and $course->subscribe)
-                                    <a href="/subscribes/apply/{{ $course->slug }}" class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale) disabled @endif">{{ trans('public.subscribe') }}</a>
+                                @if($canSale && $course->subscribe)
+                                    <a href="/subscribes/apply/{{ $course->slug }}" 
+                                    class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale || $isExpired) disabled @endif">
+                                        @if($isExpired)
+                                            {{ trans('public.expired') }}
+                                        @else
+                                            {{ trans('public.subscribe') }}
+                                        @endif
+                                    </a>
                                 @endif
-                            </div>
+
+                                </div>
 
                         </form>
 
