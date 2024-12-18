@@ -297,6 +297,7 @@ class Webinar extends Model
             'can_buy_with_points' => ($this->canSale() and !$this->checkUserHasBought($user) and !empty($this->points) and $this->price > 0),
             'forum' => getFeaturesSettings("course_forum_status") == "1" ? $this->forum : 0,
             'auth_has_bought' => $hasBought,
+            'in_days' => $this->in_days,
             //////********************
         ];
 
