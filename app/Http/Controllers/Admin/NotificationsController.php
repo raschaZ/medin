@@ -14,6 +14,7 @@ use App\Models\Webinar;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\Api\UserFirebaseSessions;
+use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Messaging;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\MulticastSendReport;
@@ -139,7 +140,8 @@ class NotificationsController extends Controller
         }
 
         if ($data["type"] === "all_users") {
-            /**/
+            $usersIds = User::query()->pluck("id")->toArray();
+           $fcmTokensQuery->whereIn('user_id', $usersIds);
         }
 
         if ($data["type"] === "students") {
@@ -197,14 +199,14 @@ class NotificationsController extends Controller
                 $deviceTokens[] = $fcmToken->fcm_token;
             }
         }
-
+      
         if (count($deviceTokens) > 0) {
+            // Initialize Firebase Messaging
             $messageFCM = app('firebase.messaging');
-
-            foreach ($deviceTokens as $fcmToken) {
-                $fcmMessage = CloudMessage::new();
-                $fcmMessage = $fcmMessage->withChangedTarget("token", $fcmToken);
-                $fcmMessage = $fcmMessage->withData([
+         
+            // Create the base message
+            $baseMessage = CloudMessage::new()
+                ->withData([
                     'user_id' => $user_id,
                     'group_id' => $group_id,
                     'webinar_id' => $webinar_id,
@@ -213,12 +215,16 @@ class NotificationsController extends Controller
                     'message' => preg_replace('/<[^>]*>/', '', $data['message']),
                     'sender' => Notification::$AdminSender,
                     'type' => $data['type'],
-                    'created_at' => time()
-                ]);
-
-                $fcmMessage = $fcmMessage->withNotification(\Kreait\Firebase\Messaging\Notification::create($data["title"], preg_replace('/<[^>]*>/', '', $data["message"])));
-
-                $fcmMessage = $fcmMessage->withAndroidConfig(\Kreait\Firebase\Messaging\AndroidConfig::fromArray([
+                    'created_at' => time(),
+                    'screen' => '/notification'
+                ])
+                ->withNotification(
+                    \Kreait\Firebase\Messaging\Notification::create(
+                        $data['title'],
+                        preg_replace('/<[^>]*>/', '', $data['message'])
+                    )
+                )
+                ->withAndroidConfig(\Kreait\Firebase\Messaging\AndroidConfig::fromArray([
                     'ttl' => '3600s',
                     'priority' => 'high',
                     'notification' => [
@@ -226,12 +232,21 @@ class NotificationsController extends Controller
                         'sound' => 'default',
                     ],
                 ]));
-
-                try {
-                    $messageFCM->send($fcmMessage);
-                } catch (\Exception $exception) {
-                    //dd($exception);
+               
+            // Send to multiple tokens
+            try {
+                $report = $messageFCM->sendMulticast($baseMessage, $deviceTokens);
+                // Handle failures
+                foreach ($report->failures() as $failure) {
+                    $invalidToken = $failure->target()->value();
+                    Log::error('Firebase Error: ' . $failure->error()->getMessage() . " for token: {$invalidToken}");
+                    // Optionally, remove the invalid token from your database
+                    UserFirebaseSessions::where('user_firebase_sessions', $invalidToken)->delete();
                 }
+                Log::info("Successfully sent {$report->successes()->count()} messages.");
+            } catch (\Exception $exception) {
+                Log::error('Firebase Messaging Error: ' . $exception->getMessage());
+                // dd($exception->getMessage());
             }
         }
     }

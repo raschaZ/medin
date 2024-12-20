@@ -144,16 +144,17 @@ class LoginController extends Controller
 
     public function logout()
     {
-        $user = auth('api')->user();
-        auth('api')->logout();
-        if (!apiAuth()) {
+        $user = apiAuth();
+     auth('api')->logout();
+       
+        if ( $user ) {
             $user->update([
                 'logged_count' => $user->logged_count - 1
             ]);
-            $session = UserFirebaseSessions::where('token', $user->token)->first();
+            $session = UserFirebaseSessions::where('token',request()->bearerToken())->first();
             if ($session) {
                 $session->delete();
-            }
+            } 
             $userLoginHistoryMixin = new UserLoginHistoryMixin();
             $userLoginHistoryMixin->storeUserLogoutHistory($user);
             return apiResponse2(1, 'logout', trans('auth.logout'));
