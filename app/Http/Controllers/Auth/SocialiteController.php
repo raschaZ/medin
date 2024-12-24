@@ -16,16 +16,17 @@ class SocialiteController extends Controller
     public function __construct()
     {
         $settings = getFeaturesSettings();
-
-        \Config::set('services.google.client_id', !empty($settings['google_client_id']) ? $settings['google_client_id'] : '');
-        \Config::set('services.google.client_secret', !empty($settings['google_client_secret']) ? $settings['google_client_secret'] : '');
-        \Config::set('services.google.redirect', url("/google/callback"));
-
-        \Config::set('services.facebook.client_id', !empty($settings['facebook_client_id']) ? $settings['facebook_client_id'] : '');
-        \Config::set('services.facebook.client_secret', !empty($settings['facebook_client_secret']) ? $settings['facebook_client_secret'] : '');
-        \Config::set('services.facebook.redirect', url("/facebook/callback"));
-
+    
+        // Fallback to .env if settings are empty
+        \Config::set('services.google.client_id', !empty($settings['google_client_id']) ? $settings['google_client_id'] : env('GOOGLE_CLIENT_ID'));
+        \Config::set('services.google.client_secret', !empty($settings['google_client_secret']) ? $settings['google_client_secret'] : env('GOOGLE_CLIENT_SECRET'));
+        \Config::set('services.google.redirect', !empty($settings['google_redirect']) ? $settings['google_redirect'] : env('GOOGLE_REDIRECT', url("/google/callback")));
+    
+        \Config::set('services.facebook.client_id', !empty($settings['facebook_client_id']) ? $settings['facebook_client_id'] : env('FACEBOOK_CLIENT_ID'));
+        \Config::set('services.facebook.client_secret', !empty($settings['facebook_client_secret']) ? $settings['facebook_client_secret'] : env('FACEBOOK_CLIENT_SECRET'));
+        \Config::set('services.facebook.redirect', !empty($settings['facebook_redirect']) ? $settings['facebook_redirect'] : env('FACEBOOK_REDIRECT', url("/facebook/callback")));
     }
+    
 
     /**
      * Create a new controller instance.
@@ -89,7 +90,7 @@ class SocialiteController extends Controller
                 'msg' => trans('auth.fail_login_by_google'),
                 'status' => 'error'
             ];
-            return back()->with(['toast' => $toastData]);
+            return redirect('/login')->with(['toast' => $toastData]);
         }
     }
 
@@ -111,10 +112,11 @@ class SocialiteController extends Controller
     public function handleFacebookCallback(Request $request)
     {
         try {
-            $account = Socialite::driver('facebook')->user();
-
-            $user = User::where('facebook_id', $account->id)->first();
-
+            $account = Socialite::driver('facebook')->stateless()->user();
+            $user = User::where('facebook_id', $account->id)
+             ->orWhere('email', $account->email)
+            ->first();
+                          
             if (empty($user)) {
                 $user = User::create([
                     'full_name' => $account->name,
@@ -139,7 +141,6 @@ class SocialiteController extends Controller
                     return $this->sendMaximumActiveSessionResponse();
                 }
             }
-
             Auth::login($user);
             return redirect('/');
         } catch (Exception $e) {
@@ -148,7 +149,7 @@ class SocialiteController extends Controller
                 'msg' => trans('auth.fail_login_by_facebook'),
                 'status' => 'error'
             ];
-            return back()->with(['toast' => $toastData]);
+            return redirect('/login')->with(['toast' => $toastData]);
         }
     }
 
