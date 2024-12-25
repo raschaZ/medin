@@ -110,7 +110,7 @@ class SocialiteController extends Controller
             'role_name' => Role::$user,
             'status' => User::$active,
             'verified' => true,
-            'created_at' => now(),
+            'created_at' => time(),
             'password' => null
         ]);
     }
