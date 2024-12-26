@@ -2055,7 +2055,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                     try {
                         \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $emailOptionMessage ?? $message]));
                     } catch (Exception $exception) {
-                        // dd($exception)
+                       // dd($exception);
                     }
                 }
 
@@ -2066,7 +2066,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
         return true;
     }
-
+    dd($notificationTemplate);
     return false;
 }
 

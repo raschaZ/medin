@@ -46,7 +46,7 @@ class SocialiteController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         try {
-            $account = Socialite::driver('google')->user();
+            $account = Socialite::driver('google')->stateless()->user();
 
             $user = User::where('google_id', $account->id)
                 ->orWhere('email', $account->email)

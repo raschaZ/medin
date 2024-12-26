@@ -838,6 +838,14 @@ class WebinarController extends Controller
             'status' => 'success'
         ];
 
+        $notifyOptions = [
+            '[u.name]' => $webinar->teacher->full_name,
+            '[item_title]' => $webinar->title,
+            '[content_type]' => trans('admin/main.course'),
+        ];
+
+        sendNotification("course_approve", $notifyOptions, $webinar->teacher->id);
+
         return redirect(getAdminPanelUrl() . '/webinars')->with(['toast' => $toastData]);
     }
 
