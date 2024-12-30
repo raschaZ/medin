@@ -597,6 +597,9 @@ class WebinarController extends Controller
                 'image_cover' => 'required',
                 'description' => 'required',
             ];
+            $request->merge([
+                'thumbnail' =>  $request->input('image_cover'),
+            ]);
         }
 
         if ($currentStep == 2) {
