@@ -196,17 +196,21 @@ class MakeCertificate
     }
     public function makeCourseCertificateStudent($certificate, $user = null)
     {
-        $type= ($user?$user->id == $certificate->webinar->teacher->id:false)?'instructor':'course';
-        $template = CertificateTemplate::where('status', 'publish')
+      
+        $certificate->quiz_id?
+            $type= ($user?$user->id == $certificate->quiz->teacher->id:false)?'instructor':'course': 
+                 $type= ($user?$user->id == $certificate->webinar->teacher->id:false)?'instructor':'course';
+        //  dd($type); 
+         $template = CertificateTemplate::where('status', 'publish')
         ->where('type', $type)
         ->first();
-        $course = $certificate->webinar;
-        //    die($template);
+        $course = $certificate->webinar??  $certificate->quiz->webinar;
+           
         if ( !empty($course)) {
             $user = $certificate->student;
 
             $userCertificate = $this->saveCourseCertificate($user, $course);
-
+// dd($template);
             $body = $this->makeBody(
                 $template,
                 $userCertificate,
@@ -443,7 +447,7 @@ class MakeCertificate
                     .container {
                         text-align: center;
                         margin-top: 210px;
-                        padding: 30px;
+                        padding: 40px;
                     }
                     h1 {
                         font-size: 36pt;

@@ -420,7 +420,7 @@ class CertificateController extends Controller
                 ])
                 ->first();
 
-            return $makeCertificate->makeQuizCertificate($quizResult);
+            return $makeCertificate->makeCourseCertificateStudent($certificate,$certificate->student);
         } else if ($certificate->type == 'course') {
 
             return $makeCertificate->makeCourseCertificateStudent($certificate);
