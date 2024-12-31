@@ -597,6 +597,11 @@ class EnrollmentController extends Controller
                         'msg' => trans('webinars.success_store'),
                         'status' => 'success'
                     ];
+                    $notifyOptions = [
+                        '[c.title]' => $course->slug,
+                    ];
+            
+                    sendNotification("you_have_been_accepted", $notifyOptions,$user->id);
                     return redirect(getAdminPanelUrl().'/enrollments/history')->with(['toast' => $toastData]);
                 }
             }
