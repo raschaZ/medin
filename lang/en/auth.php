@@ -88,6 +88,7 @@ return [
 
     'login_failed_your_account_is_not_verified' => 'Login failed! Your email/phone not verified.',
     'logout' => 'Logout',
-    'phone' => 'Phone'
+    'phone' => 'Phone',
+    'unauthorized' => 'You are not authorized to access. Please log in first.'
 
 ];

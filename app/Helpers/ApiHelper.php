@@ -56,37 +56,31 @@ function nicePriceWithTax($price)
 
 function handleSendFirebaseMessages($user_id, $group_id, $sender, $type, $title, $message)
 {
+    // Fetch FCM tokens for the user
     $fcmTokens = UserFirebaseSessions::where('user_id', $user_id)
-        ->select('fcm_token')->get()->all();
+        ->pluck('fcm_token')
+        ->filter(fn($token) => !empty($token))
+        ->toArray();
 
-    $deviceTokens = [];
-
-    foreach ($fcmTokens as $fcmToken) {
-        $deviceTokens[] = $fcmToken->fcm_token;
-    }
-
-    if (count($deviceTokens) > 0) {
+    if (count($fcmTokens) > 0) {
         $messageFCM = app('firebase.messaging');
 
-        foreach ($deviceTokens as $fcmToken) {
-            $fcmMessage = CloudMessage::withTarget('token', $fcmToken);
-
-            $fcmMessage = $fcmMessage->withNotification([
+        // Create a base message
+        $baseMessage = CloudMessage::new()
+            ->withNotification([
                 'title' => $title,
                 'body' => preg_replace('/<[^>]*>/', '', $message)
-            ]);
-
-            $fcmMessage = $fcmMessage->withData([
+            ])
+            ->withData([
                 'user_id' => $user_id,
                 'group_id' => $group_id,
                 'title' => $title,
                 'message' => preg_replace('/<[^>]*>/', '', $message),
                 'sender' => $sender,
                 'type' => $type,
-                'created_at' => time()
-            ]);
-
-            $fcmMessage = $fcmMessage->withAndroidConfig(\Kreait\Firebase\Messaging\AndroidConfig::fromArray([
+                'created_at' => time(),
+            ])
+            ->withAndroidConfig(\Kreait\Firebase\Messaging\AndroidConfig::fromArray([
                 'ttl' => '3600s',
                 'priority' => 'high',
                 'notification' => [
@@ -95,14 +89,23 @@ function handleSendFirebaseMessages($user_id, $group_id, $sender, $type, $title,
                 ],
             ]));
 
-            try {
-                $messageFCM->send($fcmMessage);
-            } catch (\Exception $exception) {
+        try {
+            // Send messages to all tokens
+            $report = $messageFCM->sendMulticast($baseMessage, $fcmTokens);
 
+            // Handle failures
+            foreach ($report->failures() as $failure) {
+                $invalidToken = $failure->target()->value();
+                Log::error('Firebase Error: ' . $failure->error()->getMessage() . " for token: {$invalidToken}");
+
+                // Optionally, remove the invalid token from your database
+                UserFirebaseSessions::where('fcm_token', $invalidToken)->delete();
             }
 
+            Log::info("Successfully sent {$report->successes()->count()} messages.");
+        } catch (\Exception $exception) {
+            Log::error('Firebase Messaging Error: ' . $exception->getMessage());
         }
-
     }
 }
 

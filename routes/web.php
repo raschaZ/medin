@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Web\VerificationController;
+use App\Http\Controllers\Web\WebinarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,6 +58,19 @@ Route::get('/emergencyDatabaseUpdate', function () {
     ]);
 });
 
+Route::get('/runmigrations', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', [
+        '--force' => true,
+    ]);
+    $output = \Illuminate\Support\Facades\Artisan::output();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Migrations executed successfully.',
+        'output' => $output,
+    ]);
+});
+
 Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app','share', 'check_maintenance', 'check_restriction']], function () {
     Route::get('/login', 'LoginController@showLoginForm');
     Route::post('/login', 'LoginController@login');
@@ -75,6 +90,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app','share'
     Route::get('/facebook/redirect', 'SocialiteController@redirectToFacebook');
     Route::get('/facebook/callback', 'SocialiteController@handleFacebookCallback');
     Route::get('/reff/{code}', 'ReferralController@referral');
+    Route::get( '/verification/upload/{token}', [VerificationController::class, 'upload'])->name('verification.upload');
 });
 
 Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impersonate', 'share', 'check_maintenance', 'check_restriction']], function () {
@@ -138,6 +154,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             });
 
             Route::post('/direct-payment', 'WebinarController@directPayment');
+            Route::get('/direct-payment-params/{itemId}/{ticketId?}', [WebinarController::class, 'directPaymentWithParams'])->name('webinair.directpayment');
+
 
             Route::group(['prefix' => 'personal-notes'], function () {
                 Route::get('/{id}/download-attachment', 'CoursePersonalNotesController@downloadAttachment');
@@ -398,6 +416,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     /* Forms */
     Route::get('/forms/{url}', 'FormsController@index');
     Route::post('/forms/{url}/store', 'FormsController@store');
-
+    Route::get('/routes', function () {
+        return response()->json(Route::getRoutes()->get());
+    });
 });
 

@@ -185,7 +185,6 @@ class CertificateController extends Controller
     public function makeCertificate($quizResultId)
     {
         $user = auth()->user();
-
         $makeCertificate = new MakeCertificate();
 
         $quizResult = QuizzesResult::where('id', $quizResultId)
@@ -197,7 +196,15 @@ class CertificateController extends Controller
             ->first();
 
         if (!empty($quizResult)) {
-            return $makeCertificate->makeQuizCertificate($quizResult);
+            $quiz = $quizResult->quiz;
+      
+            // Ensure the quiz has certificates
+            $quizCertificate = $quiz->certificates->first();    
+            if ($quizCertificate) {
+                return $makeCertificate->makeCourseCertificateStudent($quizCertificate, $user);
+            }
+    
+            abort(404);
         }
 
         abort(404);

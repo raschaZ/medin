@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AttendeeController;
+use App\Http\Controllers\Admin\PaymentNotificationController;
 use Illuminate\Support\Facades\Route;
 
 $prefix = getAdminPanelUrlPrefix();
@@ -199,6 +201,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('{id}/delete', 'NotificationsController@delete');
             Route::get('/mark_all_read', 'NotificationsController@markAllRead');
             Route::get('/{id}/mark_as_read', 'NotificationsController@markAsRead');
+            Route::get('/users/{user_id}/waitlist/{waitlist_id}', [PaymentNotificationController::class, 'sendNotification']);
 
             Route::group(['prefix' => 'templates'], function () {
                 Route::get('/', 'NotificationTemplatesController@index');
@@ -325,6 +328,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::post('/{id}/update', 'CoursePersonalNotesController@update');
                 Route::get('/{id}/delete', 'CoursePersonalNotesController@delete');
             });
+                
+            Route::get('/{webinarId}/users/{userId}/presence', [AttendeeController::class,'presence']);
         });
 
         Route::group(['prefix' => 'quizzes'], function () {
@@ -1010,6 +1015,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         Route::group(['prefix' => 'enrollments'], function () {
             Route::get('/history', 'EnrollmentController@history');
             Route::get('/add-student-to-class', 'EnrollmentController@addStudentToClass');
+            Route::get('/add-student-form', 'EnrollmentController@addStudentForm');
+            Route::post('/{waitlist_id}/add-waitlist', 'EnrollmentController@addFromWaitlist');
             Route::post('/store', 'EnrollmentController@store');
             Route::get('/{sale_id}/block-access', 'EnrollmentController@blockAccess');
             Route::get('/{sale_id}/enable-access', 'EnrollmentController@enableAccess');

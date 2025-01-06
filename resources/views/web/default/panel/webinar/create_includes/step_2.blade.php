@@ -18,34 +18,31 @@
             @enderror
             <p class="text-gray mt-5 font-12">{{  trans('forms.empty_means_unlimited')  }}</p>
         </div>
-
-        <div class="row mt-15">
-
+        <div class="form-group mt-15">
             @if($webinar->isWebinar())
-                <div class="col-12 col-md-6">
-                    <div class="form-group">
-                        <label class="input-label">{{ trans('public.start_date') }}</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                            <span class="input-group-text" id="dateInputGroupPrepend">
-                                <i data-feather="calendar" width="18" height="18" class="text-white"></i>
-                            </span>
+                        <div class="form-group">
+                            <label class="input-label">{{ trans('public.start_date') }}</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text" id="dateInputGroupPrepend">
+                                    <i data-feather="calendar" width="18" height="18" class="text-white"></i>
+                                </span>
+                                </div>
+                                <input type="text" name="start_date" value="{{ (!empty($webinar) and $webinar->start_date) ? dateTimeFormat($webinar->start_date, 'Y-m-d H:i', false, false, $webinar->timezone) : old('start_date') }}"
+                                    class="form-control @error('start_date')  is-invalid @enderror datetimepicker" aria-describedby="dateInputGroupPrepend"/>
+                                @error('start_date')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
                             </div>
-                            <input type="text" name="start_date" value="{{ (!empty($webinar) and $webinar->start_date) ? dateTimeFormat($webinar->start_date, 'Y-m-d H:i', false, false, $webinar->timezone) : old('start_date') }}"
-                                   class="form-control @error('start_date')  is-invalid @enderror datetimepicker" aria-describedby="dateInputGroupPrepend"/>
-                            @error('start_date')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
                         </div>
-                    </div>
-                </div>
-            @endif
-
+                @endif
+        </div>
+        <div class="row mt-15">
             <div class="col-12 @if($webinar->isWebinar()) col-md-6 @endif">
                 <div class="form-group">
-                    <label class="input-label">{{ trans('public.duration') }} ({{ trans('public.minutes') }})</label>
+                    <label class="input-label">{{ trans('public.duration') }} </label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="timeInputGroupPrepend">
@@ -63,6 +60,17 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="col-12  col-md-6 ">
+            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+
+            <label class="cursor-pointer input-label" for="in_daysSwitch">{{ trans('public.days') }}</label>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" name="in_days" class="custom-control-input" id="in_daysSwitch" {{ (!empty($webinar) && $webinar->in_days) ? 'checked' : '' }}>
+                <label class="custom-control-label" for="in_daysSwitch"></label>
+                </div>
+                </div>
+                </div>
         </div>
 
         @if($webinar->isWebinar() and getFeaturesSettings('timezone_in_create_webinar'))
@@ -76,7 +84,7 @@
                 }
             @endphp
 
-            <div class="form-group">
+            <div class="form-group"  style="display: none;">
                 <label class="input-label">{{ trans('update.timezone') }}</label>
                 <select name="timezone" class="form-control select2" data-allow-clear="false">
                     @foreach(getListOfTimezones() as $timezone)
@@ -105,7 +113,7 @@
             </div>
         @endif
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
             <label class="cursor-pointer input-label" for="supportSwitch">{{ trans('webinars.support') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="support" class="custom-control-input" id="supportSwitch" {{ ((!empty($webinar) && $webinar->support) or old('support') == 'on') ? 'checked' :  '' }}>
@@ -114,7 +122,7 @@
         </div>
 
         @if(!empty(getCertificateMainSettings("status")))
-            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+            <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
                 <label class="cursor-pointer input-label" for="certificateSwitch">{{ trans('update.include_certificate') }}</label>
                 <div class="custom-control custom-switch">
                     <input type="checkbox" name="certificate" class="custom-control-input" id="certificateSwitch" {{ ((!empty($webinar) && $webinar->certificate) or old('certificate') == 'on') ? 'checked' :  '' }}>
@@ -122,12 +130,12 @@
                 </div>
             </div>
 
-            <div>
+            <div  style="display: none !important;">
                 <p class="font-12 text-gray">- {{ trans('update.certificate_completion_hint') }}</p>
             </div>
         @endif
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between"  style="display: none !important;">
             <label class="cursor-pointer input-label" for="downloadableSwitch">{{ trans('home.downloadable') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="downloadable" class="custom-control-input" id="downloadableSwitch" {{ ((!empty($webinar) && $webinar->downloadable) or old('downloadable') == 'on') ? 'checked' : '' }}>
@@ -135,7 +143,7 @@
             </div>
         </div>
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
             <label class="cursor-pointer input-label" for="partnerInstructorSwitch">{{ trans('public.partner_instructor') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="partner_instructor" class="custom-control-input" id="partnerInstructorSwitch" {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? 'checked' : ''  }}>
@@ -144,7 +152,7 @@
         </div>
 
 
-        <div id="partnerInstructorInput" class="form-group mt-15 {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? '' : 'd-none' }}">
+        <div id="partnerInstructorInput" class="form-group mt-15 {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? '' : 'd-none' }}"  >
             <label class="input-label d-block">{{ trans('public.select_a_partner_teacher') }}</label>
 
             <select name="partners[]" class="form-control panel-search-user-select2 @error('partners')  is-invalid @enderror" multiple="" data-search-option="just_teachers" data-placeholder="{{ trans('public.search_instructor') }}">
@@ -162,7 +170,7 @@
             @enderror
         </div>
 
-        <div class="form-group mt-15">
+        <div class="form-group mt-15"   style="display: none !important;">
             <label class="input-label d-block">{{ trans('public.tags') }}</label>
             <input type="text" name="tags" data-max-tag="5" value="{{ !empty($webinar) ? implode(',',$webinarTags) : '' }}" class="form-control inputtags" placeholder="{{ trans('public.type_tag_name_and_press_enter') }} ({{ trans('forms.max') }} : 5)"/>
         </div>

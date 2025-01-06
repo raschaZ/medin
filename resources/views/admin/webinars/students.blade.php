@@ -194,6 +194,7 @@
                         <th>{{ trans('admin/main.user_group') }}</th>
                         <th>{{ trans('panel.purchase_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
+                        <th>{{ trans('admin/main.attendance') }}</th>
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
@@ -235,7 +236,6 @@
                                     -
                                 @endif
                             </td>
-
                             <td>{{ dateTimeFormat($student->purchase_date, 'j M Y | H:i') }}</td>
 
                             <td>
@@ -248,6 +248,16 @@
                                     <div class="mt-0 mb-1 font-weight-bold text-danger">{{ trans('update.access_blocked') }}</div>
                                 @else
                                     <div class="mt-0 mb-1 font-weight-bold text-success">{{ trans('admin/main.active') }}</div>
+                                @endif
+                            </td>
+                            <td>
+                                  {{-- Check the attendance status and apply styles accordingly --}}
+                                @if($student->attended_status === 'attended')
+                                    <span class="font-weight-bold text-success">{{ trans('admin/main.webinars_attended') }}</span>
+                                @elseif($student->attended_status === 'absent')
+                                    <span class="font-weight-bold text-danger">{{ trans('admin/main.webinars_absent') }}</span>
+                                @else
+                                    <span class="font-weight-bold text-muted">{{ trans('admin/main.webinars_unknown') }}</span>
                                 @endif
                             </td>
 
@@ -263,6 +273,10 @@
                                     @can('admin_users_edit')
                                         <a href="{{ getAdminPanelUrl() }}/users/{{ $student->id }}/edit" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
                                             <i class="fa fa-edit"></i>
+                                        </a>                                       
+                                       
+                                        <a href="{{ getAdminPanelUrl() }}/webinars/{{ $webinar->id }}/users/{{ $student->id }}/presence" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.mark_present') }}">
+                                        <i class="fa fa-plus-circle"></i>
                                         </a>
                                     @endcan
 
@@ -360,4 +374,4 @@
     </script>
 
     <script src="/assets/default/js/admin/webinar_students.min.js"></script>
-@endpush
+@endpush 

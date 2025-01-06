@@ -78,6 +78,7 @@ return [
     'date_created' => 'Date Created',
     'partner_instructor' => 'Partner Instructor',
     'subscribe' => 'Subscribe',
+    'expired' => 'Expired',
     'add_to_cart' => 'Add to Cart',
     'add_to_calendar' => 'Add to Calendar',
     'add_to' => 'Add to',
@@ -385,5 +386,10 @@ return [
 
     'forbidden_request_toast_lang' => '"FORBIDDEN" Request',
     'forbidden_request_toast_msg_lang' => 'You not access to this content.',
-
+    'qr_code'=>"QR Code",
+    'download_qr_code'=>'Download QR',
+    'user_not_found'=>'User Not Found !!',
+    'course_not_found'=>'Course Not Found !!',
+    'accepted'=> 'Accepted',
+    'not_accepted'=> 'Not Accepted',
 ];

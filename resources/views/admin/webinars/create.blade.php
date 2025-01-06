@@ -298,32 +298,34 @@
                                                 </div>
                                                 @enderror
                                             </div>
-
-                                            <div class="row mt-15">
+                                            <div class="form-group mt-15">
                                                 @if(empty($webinar) or (!empty($webinar) and $webinar->isWebinar()))
-                                                    <div class="col-12 col-md-6 js-start_date {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? 'd-none' : '' }}">
-                                                        <div class="form-group">
-                                                            <label class="input-label">{{ trans('public.start_date') }}</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text" id="dateInputGroupPrepend">
-                                                                        <i class="fa fa-calendar-alt "></i>
-                                                                    </span>
+                                                        <div class=" js-start_date {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? 'd-none' : '' }}">
+                                                            <div class="form-group">
+                                                                <label class="input-label">{{ trans('public.start_date') }}</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="dateInputGroupPrepend">
+                                                                            <i class="fa fa-calendar-alt "></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <input type="text" name="start_date" value="{{ (!empty($webinar) and $webinar->start_date) ? dateTimeFormat($webinar->start_date, 'Y-m-d H:i', false, false, $webinar->timezone) : old('start_date') }}" class="form-control @error('start_date')  is-invalid @enderror datetimepicker" aria-describedby="dateInputGroupPrepend"/>
+                                                                    @error('start_date')
+                                                                    <div class="invalid-feedback">
+                                                                        {{ $message }}
+                                                                    </div>
+                                                                    @enderror
                                                                 </div>
-                                                                <input type="text" name="start_date" value="{{ (!empty($webinar) and $webinar->start_date) ? dateTimeFormat($webinar->start_date, 'Y-m-d H:i', false, false, $webinar->timezone) : old('start_date') }}" class="form-control @error('start_date')  is-invalid @enderror datetimepicker" aria-describedby="dateInputGroupPrepend"/>
-                                                                @error('start_date')
-                                                                <div class="invalid-feedback">
-                                                                    {{ $message }}
-                                                                </div>
-                                                                @enderror
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                            </div>
+
+                                            <div class="row mt-15">
 
                                                 <div class="col-12 col-md-6">
                                                     <div class="form-group">
-                                                        <label class="input-label">{{ trans('public.duration') }} ({{ trans('public.minutes') }})</label>
+                                                        <label class="input-label">{{ trans('public.duration') }} </label>
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" id="timeInputGroupPrepend">
@@ -340,6 +342,16 @@
                                                             @enderror
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                <div class="col-12 col-md-6">
+                                                <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+                                                <label class="" for="in_daysSwitch">{{ trans('public.days') }}</label>
+                                                <div class="custom-control custom-switch">
+                                                <input type="checkbox" name="in_days" class="custom-control-input" id="in_daysSwitch"  {{ (!empty($webinar) && !$webinar->in_days) ? '' : 'checked' }} >
+                                                <label class="custom-control-label" for="in_daysSwitch"></label>
+                                                </div>
+                                            </div>
                                                 </div>
                                             </div>
 
@@ -426,8 +438,9 @@
                                             <div class="form-group mt-30 d-flex align-items-center justify-content-between">
                                                 <label class="" for="enable_waitlistSwitch">{{ trans('update.enable_waitlist') }}</label>
                                                 <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) and $webinar->enable_waitlist) ? 'checked' : ''  }}>
-                                                    <label class="custom-control-label" for="enable_waitlistSwitch"></label>
+                                                <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) && !$webinar->enable_waitlist) ? '' : 'checked' }}  >
+                                                <!-- <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) and $webinar->enable_waitlist) ? 'checked' : ''  }}> -->
+                                                <label class="custom-control-label" for="enable_waitlistSwitch"></label>
                                                 </div>
                                             </div>
 

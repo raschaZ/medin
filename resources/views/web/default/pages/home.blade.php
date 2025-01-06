@@ -118,7 +118,14 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div class="d-flex align-items-center">
                                                                 <i data-feather="clock" width="20" height="20" class="webinar-icon"></i>
-                                                                <span class="duration ml-5 text-dark-blue font-14">{{ convertMinutesToHourAndMinute($feature->webinar->duration) }} {{ trans('home.hours') }}</span>
+                                                                <!-- <span class="duration ml-5 text-dark-blue font-14">{{ convertMinutesToHourAndMinute($feature->webinar->duration) }} {{ trans('home.hours') }}</span> -->
+                                                                <span class="duration ml-5 text-dark-blue font-14">
+                                                                        @if($webinar->in_days)
+                                                                            {{ $webinar->duration }} {{ trans('public.days') }}
+                                                                        @else
+                                                                            {{ convertMinutesToHourAndMinute($webinar->duration) }} {{ trans('home.hours') }}
+                                                                        @endif
+                                                                    </span>
                                                             </div>
 
                                                             <div class="vertical-line mx-10"></div>

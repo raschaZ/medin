@@ -15,13 +15,13 @@
             </div>
         </div>
 
-        @if(empty(getCertificateMainSettings("certificate_api_user_id")) or empty(getCertificateMainSettings("certificate_api_key")))
+        <!-- @if(empty(getCertificateMainSettings("certificate_api_user_id")) or empty(getCertificateMainSettings("certificate_api_key")))
             <div class="my-2 alert alert-danger d-flex align-items-center justify-content-between">
                 <p class="">{{ trans('update.certificate_credentials_not_set_hint') }}</p>
 
                 <a href="{{ getAdminPanelUrl("/certificates/settings") }}" target="_blank" class="text-white btn-link">{{ trans('admin/main.settings') }}</a>
             </div>
-        @endif
+        @endif -->
 
         <div class="section-body">
             <section class="card">

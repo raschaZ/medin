@@ -1014,7 +1014,10 @@ return [
 'session_api' => 'Session API',
 'is_not_the_teacher_of_this_organization' => 'The selected instructor does not exist or is not related to this organization.',
 'webinars_reports' => 'Course Reports',
-
+'webinars_attended' => 'Attended',
+'webinars_absent' => 'Absent',
+'webinars_unknown' => 'Unknown',
+'attendance'=>'Attendance',
 // Noticeboard Page
 
 'edit_noticeboard' => 'Edit Notice',
@@ -1475,6 +1478,9 @@ By enabling this feature, newly registered users will require approval using thi
 'course_conversations_lists_lead' => 'List of user and instructors conversations',
 'support_lists_lead' => 'List of user support conversations',
 'notification_user_get_cashback' => 'Cashback Amount Received (for User)',
+'notification_submit_verification_doc_payment' => 'Submit Verification Document for Payment',
+'notification_you_have_been_accepted'=>'Student accepted',
+'notification_confirm_send_verification_request' => 'Send payment verification request?',
 'notification_user_get_cashback_notification_for_admin' => 'Cashback Amount Received (for Admin)',
 'real_name_2' => 'User full name 2',
 'send_post_in_topic' => 'Forum replies',
@@ -1509,5 +1515,6 @@ By enabling this feature, newly registered users will require approval using thi
 'teacher' => 'Instructor',
 'discount_amount' => 'Discount Amount',
 'discount_title' => 'Discount Title',
-
+'mark_present'=>'Registering attendance',
+'confirm_send_verification_request'=> 'Confirm sending payment verification request',
 ];

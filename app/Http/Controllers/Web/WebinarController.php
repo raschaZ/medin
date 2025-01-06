@@ -17,6 +17,7 @@ use App\Models\RewardAccounting;
 use App\Models\Sale;
 use App\Models\TextLesson;
 use App\Models\CourseLearning;
+use App\Models\Waitlist;
 use App\Models\WebinarChapter;
 use App\Models\WebinarReport;
 use App\Models\Webinar;
@@ -932,4 +933,57 @@ class WebinarController extends Controller
 
         abort(404);
     }
+    public function directPaymentWithParams($itemId, $ticketId = null)
+{
+
+    $user = auth()->user();
+    if (!empty($user) && !empty(getFeaturesSettings('direct_classes_payment_button_status'))) {
+        // Validate the provided parameters
+        if (empty($itemId)) {
+            abort(400, 'The item ID is required.');
+        }
+
+        $webinar = Webinar::where('id', $itemId)
+            ->where('private', false)
+            ->where('status', 'active')
+            ->first();
+           
+
+        if (!empty($webinar)) {
+            $checkCourseForSale = checkCourseForSale($webinar, $user);
+
+            if ($checkCourseForSale != 'ok') {
+                return  $checkCourseForSale;
+            }
+
+            $fakeCarts = collect();
+
+            $fakeCart = new Cart();
+            $fakeCart->creator_id = $user->id;
+            $fakeCart->webinar_id = $itemId;
+            $fakeCart->ticket_id = $ticketId;
+            $fakeCart->special_offer_id = null;
+            $fakeCart->created_at = time();
+
+            $fakeCarts->add($fakeCart);
+
+            $waitlist = Waitlist::where([
+                ['webinar_id', '=', $itemId],
+                ['user_id', '=', $user->id],
+                ['is_accepted', '=', true]
+            ])->firstOrFail();
+
+            if (!empty($waitlist)) {
+               $waitlist->deleteOrFail();
+            }
+
+            $cartController = new CartController();
+
+            return $cartController->checkout(new Request(), $fakeCarts);
+        }
+    }
+
+    abort(404);
+}
+
 }

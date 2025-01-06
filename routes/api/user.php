@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\Panel\AttendeeController;
 use App\Http\Controllers\Api\Panel\BlogCommentController;
 use App\Http\Controllers\Api\Panel\BlogController;
 use App\Http\Controllers\Api\Panel\UsersController;
+use App\Http\Controllers\Api\Panel\WaitlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {
@@ -224,6 +226,11 @@ Route::group([], function () {
     });
 
     //  Route::apiResource('webinars/{id}/forums', WebinarForumController::class);
+    Route::prefix('waitlist')->controller(WaitlistController::class)->group(function () {
+        Route::get('{webinarId}/join', 'store');
+        Route::get('{webinarId}/check','checkWaitlist');
+    });
+    
 
     Route::group(['prefix' => 'webinars'], function () {
 
@@ -237,6 +244,8 @@ Route::group([], function () {
         Route::post('/{webinar}/forums', ['uses' => 'CourseForumController@store']);
         Route::put('/forums/{forum}', ['uses' => 'CourseForumController@update']);
         Route::post('/forums/{forum}/pin', ['uses' => 'CourseForumController@pin']);
+
+        Route::post('/{webinarId}/attend', [AttendeeController::class,"store"]);
 
         Route::group(['prefix' => 'forums'], function () {
             Route::get('/{forum}/answers', ['uses' => 'CourseForumAnswerController@index']);

@@ -74,6 +74,7 @@ return [
     'date_created' => 'تاريخ الإنشاء',
     'partner_instructor' => 'أستاذ شريك',
     'subscribe' => 'الإشتراك',
+    'expired' => 'منتهي',
     'add_to_cart' => 'أضف إلى السلة',
     'add_to_calendar' => 'إضافة إلى التقويم',
     'add_to' => 'ضف إليه',
@@ -346,4 +347,8 @@ return [
     'topic_post' => 'مشاركة الموضوع',
     'forbidden_request_toast_lang' => 'طلب"ممنوع" ',
     'forbidden_request_toast_msg_lang' => 'غير مسموح لك بالولوج لهذا المحتوى',
+    'qr_code'=>"رمز QR",
+    'download_qr_code'=>'تنزيل QR',
+    'user_not_found'=>'لم يتم العثور على المستخدم!!',
+    'course_not_found'=>'لم يتم العثور على الدورة!!',
 ];

@@ -929,6 +929,9 @@ function currencySign($currency = null)
         case 'BIF':
             return 'BIF';
             break;
+        case 'TND':
+            return 'TND';
+            break;
         default:
             return '$';
     }
@@ -1938,7 +1941,6 @@ function getThemeFontsSettings()
                       src: url({$settings[$type]['medium']}) format('woff2');
                     }";
             }
-
         }
     }
 
@@ -1999,7 +2001,7 @@ function getDefaultLocale()
 
 function deepClone($object)
 {
-    $cloned = clone($object);
+    $cloned = clone ($object);
     foreach ($cloned as $key => $val) {
         if (is_object($val) || (is_array($val))) {
             $cloned->{$key} = unserialize(serialize($val));
@@ -2009,7 +2011,7 @@ function deepClone($object)
     return $cloned;
 }
 
-function sendNotification($template, $options, $user_id = null, $group_id = null, $sender = 'system', $type = 'single', $templateId = null)
+function sendNotification($template, $options, $user_id = null, $group_id = null, $sender = 'system', $type = 'single', $templateId = null,$emailOptionMessage=null)
 {
     if ($user_id == 1) {
         $mainAdminId = \App\User::getMainAdminId();
@@ -2027,7 +2029,6 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
-
         $check = \App\Models\Notification::where('user_id', $user_id)
             ->where('group_id', $group_id)
             ->where('title', $title)
@@ -2037,7 +2038,6 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
             ->first();
 
         $ignoreDuplicateTemplates = ['new_badge', 'registration_package_expired'];
-
         if (empty($check) or !in_array($template, $ignoreDuplicateTemplates)) {
             \App\Models\Notification::create([
                 'user_id' => $user_id,
@@ -2048,15 +2048,14 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 'type' => $type,
                 'created_at' => time()
             ]);
-
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
 
                 if (!empty($user) and !empty($user->email)) {
                     try {
-                        \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
+                        \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $emailOptionMessage ?? $message]));
                     } catch (Exception $exception) {
-                        // dd($exception)
+                       // dd($exception);
                     }
                 }
 
@@ -2067,7 +2066,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
         return true;
     }
-
+    dd($notificationTemplate);
     return false;
 }
 
@@ -2271,7 +2270,8 @@ function getTranslateAttributeValue($model, $key, $loca = null)
 
     $isEditModel = ($isAdminUrl and !empty($contentLocale) and is_array($contentLocale) and $contentLocale['table'] == $model->getTable() and $contentLocale['item_id'] == $model->id);
 
-    if ($isAdminUrl and
+    if (
+        $isAdminUrl and
         !empty($contentLocale) and
         is_array($contentLocale) and
         (
@@ -2340,9 +2340,34 @@ function removeContentLocale()
 function getAgoraResolutions(): array
 {
     return [
-        '160_120', '120_120', '320_180', '180_180', '240_180', '320_240', '240_240', '424_240', '640_360', '360_360',
-        '640_360', '360_360', '480_360', '480_360', '640_480', '480_480', '640_480', '480_480', '848_480', '848_480',
-        '640_480', '1280_720', '1280_720', '960_720', '960_720', '1920_1080', '1920_1080', '1920_1080'
+        '160_120',
+        '120_120',
+        '320_180',
+        '180_180',
+        '240_180',
+        '320_240',
+        '240_240',
+        '424_240',
+        '640_360',
+        '360_360',
+        '640_360',
+        '360_360',
+        '480_360',
+        '480_360',
+        '640_480',
+        '480_480',
+        '640_480',
+        '480_480',
+        '848_480',
+        '848_480',
+        '640_480',
+        '1280_720',
+        '1280_720',
+        '960_720',
+        '960_720',
+        '1920_1080',
+        '1920_1080',
+        '1920_1080'
     ];
 }
 
@@ -2665,7 +2690,8 @@ function getRazorpayApiKey(): array
 }
 
 
-function customSortArrayNumAndTextIndex($array) {
+function customSortArrayNumAndTextIndex($array)
+{
     $numericKeys = [];
     $textualKeys = [];
 

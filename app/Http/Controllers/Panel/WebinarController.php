@@ -29,7 +29,9 @@ use App\Models\WebinarPartnerTeacher;
 use App\Models\WebinarFilterOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Validator;
 
 class WebinarController extends Controller
@@ -327,6 +329,11 @@ class WebinarController extends Controller
             'description' => 'required',
         ];
 
+        // Automatically set thumbnail to the value of image_cover if it's not already set
+        $request->merge([
+            'thumbnail' =>  $request->input('image_cover'),
+        ]);
+
         $this->validate($request, $rules);
 
         $data = $request->all();
@@ -347,6 +354,19 @@ class WebinarController extends Controller
         ]);
 
         if ($webinar) {
+            if(empty($webinar->qr_code)){           
+                $hashedId = hash('sha256', $webinar->id);
+                $fileName = "qrcodes/{$webinar->id}.png";
+            
+                // Generate the QR code as PNG and save it to the public directory
+                $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+                Storage::disk('public')->put($fileName, $qrCode);
+                
+            
+                // Update the webinar with the file path
+                $webinar->qr_code = 'store/'.$fileName;
+                $webinar->save();
+            }
             WebinarTranslation::updateOrCreate([
                 'webinar_id' => $webinar->id,
                 'locale' => mb_strtolower($data['locale']),
@@ -408,8 +428,7 @@ class WebinarController extends Controller
 
                 });
             });
-
-        if ($step == '1') {
+        if ($step == 1) {
             $data['teachers'] = $user->getOrganizationTeachers()->get();
         } elseif ($step == 2) {
             $query->with([
@@ -578,6 +597,9 @@ class WebinarController extends Controller
                 'image_cover' => 'required',
                 'description' => 'required',
             ];
+            $request->merge([
+                'thumbnail' =>  $request->input('image_cover'),
+            ]);
         }
 
         if ($currentStep == 2) {
@@ -647,6 +669,7 @@ class WebinarController extends Controller
                 $data['start_date'] = $startDate->getTimestamp();
             }
 
+            $data['in_days'] = !empty($data['in_days']) ? true : false;
             $data['forum'] = !empty($data['forum']) ? true : false;
             $data['support'] = !empty($data['support']) ? true : false;
             $data['certificate'] = !empty($data['certificate']) ? true : false;
@@ -758,6 +781,21 @@ class WebinarController extends Controller
             ];
             sendNotification("content_review_request", $notifyOptions, 1);
         }
+        
+        if($webinar and empty($webinar->qr_code)){
+            // Generate QR code
+            $hashedId = hash('sha256', $webinar->id);
+            $fileName = "qrcodes/{$webinar->id}.png";
+        
+            // Generate the QR code as PNG and save it to the public directory
+            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+            Storage::disk('public')->put($fileName, $qrCode);
+            
+        
+            // Update the webinar with the file path
+            $webinar->qr_code = 'store/'.$fileName;
+            $webinar->save();
+           }
 
         return redirect($url);
     }
@@ -1177,7 +1215,7 @@ class WebinarController extends Controller
                 $giftPurchasedCount += 1;
 
                 if (!empty($sale->webinar)) {
-                    $giftDurations += $sale->webinar->duration;
+                    $giftDurations += $sale->webinar->in_days ? $sale->webinar->duration*8 : $sale->webinar->duration;
 
                     if ($sale->webinar->start_date > $time) {
                         $giftUpcoming += 1;

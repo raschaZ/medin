@@ -339,14 +339,28 @@ class UsersController extends Controller
 
         //  return Storage::disk('public')->url($folderPath . $file);
     }
-    public function fcm()
+    public function fcm() 
     {
-        $session = UserFirebaseSessions::where("token",request()->bearerToken())->get()->first();
-        abort_unless($session,404);
-        $session->fcm_token = \request("token");
+        // Retrieve the current session based on the provided bearer token
+        $session = UserFirebaseSessions::where("token", request()->bearerToken())->first();
+        abort_unless($session, 404, 'Session not found.');
+    
+        $newFcmToken = request('token');
+    
+        // Check for existing entries with the same FCM token or the same IP address but different session ID
+            UserFirebaseSessions::where(function ($query) use ($newFcmToken, $session) {
+                $query->where('fcm_token', $newFcmToken)
+                    ->orWhere('ip', $session->ip); // or condition between fcm_token and ip
+            })
+            ->where('id', '!=', $session->id) // Exclude the current session
+            ->delete();
+    
+        // Update the current session with the new FCM token
+        $session->fcm_token = $newFcmToken;
         $session->save();
-        return apiResponse2(1,'retrieved',"");
-    }
+    
+        return apiResponse2(1, 'retrieved', 'FCM token updated successfully.');
+    }    
     public function loginHistory()
     {
         $user = apiAuth();

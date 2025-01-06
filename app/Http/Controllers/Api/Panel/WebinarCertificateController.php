@@ -77,7 +77,7 @@ class WebinarCertificateController extends Controller
         if (!empty($certificate)) {
             $makeCertificate = new MakeCertificate();
 
-            return $makeCertificate->makeCourseCertificate($certificate);
+            return $makeCertificate->makeCourseCertificateStudent($certificate, $user);
         }
 
         abort(404);

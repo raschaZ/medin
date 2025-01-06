@@ -148,7 +148,7 @@
                             <input type="hidden" name="item_id" value="{{ $course->id }}">
                             <input type="hidden" name="item_name" value="webinar_id">
 
-                            @if(!empty($course->tickets))
+                            @if(!empty($course->tickets)&& $course->price)
                                 @foreach($course->tickets as $ticket)
 
                                     <div class="form-check mt-20">
@@ -215,8 +215,7 @@
                                     $authUserJoinedWaitlist = !empty($authUserWaitlist);
                                 }
                             @endphp
-
-                            <div class="mt-20 d-flex flex-column">
+                            <!-- <div class="mt-20 d-flex flex-column">
                                 @if(!$canSale and $course->canJoinToWaitlist())
                                     <button type="button" data-slug="{{ $course->slug }}" class="btn btn-primary {{ (!$authUserJoinedWaitlist) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" {{ $authUserJoinedWaitlist ? 'disabled' : '' }}>
                                         @if($authUserJoinedWaitlist)
@@ -275,7 +274,56 @@
                                     <a href="/subscribes/apply/{{ $course->slug }}" class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale) disabled @endif">{{ trans('public.subscribe') }}</a>
                                 @endif
 
-                            </div>
+                            </div> -->
+                            <!-- send all new attendees to waitlist -->
+                            <div class="mt-20 d-flex flex-column">
+                                @php
+                                    // Calculate access expiration date
+                                    if (!empty($course->access_days)) {
+                                        $accessExpirationDate = \Carbon\Carbon::createFromTimestamp($course->start_date)->addDays($course->access_days);
+                                    } else {
+                                        $durationInDays = $course->in_days ? $course->duration : ceil($course->duration / 1440); // Convert minutes to days if needed
+                                        $accessExpirationDate = \Carbon\Carbon::createFromTimestamp($course->start_date)->addDays($durationInDays);
+                                    }
+
+                                    $isExpired = now()->greaterThan($accessExpirationDate);
+                                @endphp
+
+                                @if($hasBought || !empty($course->getInstallmentOrder()))
+                                    <!-- Go to Course -->
+                                    <a href="{{ $course->getLearningPageUrl() }}" class="btn btn-primary">
+                                        {{ trans('update.go_to_learning_page') }}
+                                    </a>
+                                @else
+                                    <!-- Join Waitlist or Already Joined -->
+                                    <button type="button" 
+                                            data-slug="{{ $course->slug }}" 
+                                            class="btn btn-primary 
+                                            {{ (!$authUserJoinedWaitlist && !$isExpired) ? ((!empty($authUser)) ? 'js-join-waitlist-user' : 'js-join-waitlist-guest') : 'disabled' }}" 
+                                            {{ $authUserJoinedWaitlist || $isExpired ? 'disabled' : '' }}>
+                                        @if($isExpired)
+                                            {{ trans('public.expired') }}
+                                        @elseif($authUserJoinedWaitlist)
+                                            {{ trans('update.already_joined') }}
+                                        @else
+                                            {{ trans('update.preregistration') }} 
+                                        @endif
+                                    </button>
+                                @endif
+
+                                <!-- Optionally show the subscribe button if course allows subscription -->
+                                @if($canSale && $course->subscribe)
+                                    <a href="/subscribes/apply/{{ $course->slug }}" 
+                                    class="btn btn-outline-primary btn-subscribe mt-20 @if(!$canSale || $isExpired) disabled @endif">
+                                        @if($isExpired)
+                                            {{ trans('public.expired') }}
+                                        @else
+                                            {{ trans('public.subscribe') }}
+                                        @endif
+                                    </a>
+                                @endif
+
+                                </div>
 
                         </form>
 
@@ -378,11 +426,11 @@
                         </div>
                     </div>
                 @endif
-
-                <div class="rounded-lg shadow-sm mt-35 px-25 py-20">
+<!-- start -->
+                <div class="rounded-lg shadow-sm mt-35 px-25 py-20" style="min-width: max-content;">           
                     <h3 class="sidebar-title font-16 text-secondary font-weight-bold">{{ trans('webinars.'.$course->type) .' '. trans('webinars.specifications') }}</h3>
 
-                    <div class="mt-30">
+                    <div class="mt-30"  style="min-width: max-content;">
                         @if($course->isWebinar())
                             <div class="mt-20 d-flex align-items-center justify-content-between text-gray">
                                 <div class="d-flex align-items-center">
@@ -410,7 +458,7 @@
                                 <i data-feather="clock" width="20" height="20"></i>
                                 <span class="ml-5 font-14 font-weight-500">{{ trans('public.duration') }}:</span>
                             </div>
-                            <span class="font-14">{{ convertMinutesToHourAndMinute(!empty($course->duration) ? $course->duration : 0) }} {{ trans('home.hours') }}</span>
+                            <span class="font-14">{{ $course->in_days? $course->duration : convertMinutesToHourAndMinute(!empty($course->duration) ? $course->duration : 0) }} {{  $course->in_days?  trans('public.days') : trans('home.hours') }}</span>
                         </div>
 
                         <div class="mt-20 d-flex align-items-center justify-content-between text-gray">
@@ -468,9 +516,25 @@
                                 <span class="font-14">{{ $course->access_days }} {{ trans('public.days') }}</span>
                             </div>
                         @endif
+                        @if(auth()->user()&& $course->qr_code &&(auth()->user()->isTeacher()||auth()->user()->isAdmin()))
+                            <div class="mt-20 d-flex align-items-start justify-content-between text-gray" style="min-width: max-content;">
+                                <div class="d-flex align-items-center mr-2">
+                                    <i data-feather="grid" width="20" height="20"></i>
+                                    <span class="ml-2 font-14 font-weight-500">{{ trans('public.qr_code') }}:</span>
+                                </div>
+                                <img style="max-width:150px;width:100%" src="{{ asset($course->qr_code) }}" alt="QR Code">
+                            </div>
+                            <!-- Download Button -->
+                            <div class="mt-20 d-flex flex-column">
+                                <a href="{{ asset($course->qr_code) }}" download="QR_Code_{{ $course->id }}" class="btn btn-primary">
+                                    <i data-feather="download" width="16" height="16" class="mr-1"></i> {{ trans('public.download_qr_code') }}
+                                </a>
+                            </div>
+                        @endif
+                       
                     </div>
                 </div>
-
+<!-- end -->
                 {{-- organization --}}
                 @if($course->creator_id != $course->teacher_id)
                     @include('web.default.course.sidebar_instructor_profile', ['courseTeacher' => $course->creator])
@@ -602,8 +666,8 @@
         var courseNotCapacityStatusToastMsgLang = '{{ trans('cart.course_not_capacity') }}';
         var courseHasStartedStatusToastTitleLang = '{{ trans('cart.fail_purchase') }}';
         var courseHasStartedStatusToastMsgLang = '{{ trans('update.class_has_started') }}';
-        var joinCourseWaitlistLang = '{{ trans('update.join_course_waitlist') }}';
-        var joinCourseWaitlistModalHintLang = "{{ trans('update.join_course_waitlist_modal_hint') }}";
+        var joinCourseWaitlistLang = '{{ trans('update.join_course_preregistration') }}';
+        var joinCourseWaitlistModalHintLang = "{{ trans('update.join_course_preregistration_modal_hint') }}";
         var joinLang = '{{ trans('footer.join') }}';
         var nameLang = '{{ trans('auth.name') }}';
         var emailLang = '{{ trans('auth.email') }}';

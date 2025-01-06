@@ -87,7 +87,15 @@ class CertificatesController extends Controller
             ->first();
 
         if (!empty($quizResult)) {
-            return $makeCertificate->makeQuizCertificate($quizResult);
+            $quiz = $quizResult->quiz;
+
+            // Ensure the quiz has certificates
+            $quizCertificate = $quiz->certificates->first();
+            if ($quizCertificate) {
+                return $makeCertificate->makeCourseCertificateStudent($quizCertificate, $user);
+            }
+    
+            abort(404);
         }
 
         abort(404);

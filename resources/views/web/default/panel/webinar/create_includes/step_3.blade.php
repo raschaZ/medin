@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-12 col-md-6">
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between mb-5">
+        <div class="form-group mt-30 d-flex align-items-center justify-content-between mb-5" style="display: none !important;">
             <label class="cursor-pointer input-label" for="subscribeSwitch">{{ trans('update.include_subscribe') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="subscribe" class="custom-control-input" id="subscribeSwitch" {{ !empty($webinar) && $webinar->subscribe ? 'checked' : (old('subscribe') ? 'checked' : '')  }}>
@@ -14,11 +14,11 @@
             </div>
         </div>
 
-        <div>
+        <div style="display: none !important;">
             <p class="font-12 text-gray">- {{ trans('forms.subscribe_hint') }}</p>
         </div>
 
-        <div class="form-group mt-15">
+        <div class="form-group mt-15"  style="display: none !important;">
             <label class="input-label">{{ trans('update.access_days') }} ({{ trans('public.optional') }})</label>
             <input type="number" name="access_days" value="{{ !empty($webinar) ? $webinar->access_days : old('access_days') }}" class="form-control @error('access_days')  is-invalid @enderror"/>
             @error('access_days')
@@ -54,7 +54,7 @@
     </div>
 </div>
 
-<section class="mt-30">
+<section class="mt-30"  style="display: none !important;">
     <div class="">
         <h2 class="section-title after-line">{{ trans('webinars.sale_plans') }} ({{ trans('public.optional') }})</h2>
 

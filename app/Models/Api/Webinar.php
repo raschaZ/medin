@@ -297,6 +297,7 @@ class Webinar extends Model
             'can_buy_with_points' => ($this->canSale() and !$this->checkUserHasBought($user) and !empty($this->points) and $this->price > 0),
             'forum' => getFeaturesSettings("course_forum_status") == "1" ? $this->forum : 0,
             'auth_has_bought' => $hasBought,
+            'in_days' => $this->in_days,
             //////********************
         ];
 
@@ -942,5 +943,27 @@ class Webinar extends Model
     public function quizzes()
     {
         return $this->hasMany('App\Models\Api\Quiz', 'webinar_id', 'id');
+    }
+
+    public function canAccessApi($user = null)
+    {
+        $result = false;
+
+        if (!$user) {
+            $user = apiAuth();
+        }
+
+        if (!empty($user)) {
+            if ($this->creator_id == $user->id or $this->teacher_id == $user->id) {
+                $result = true;
+            }
+
+            // Allow Access To Partner Teachers
+            if (!$result and $this->isPartnerTeacher($user->id)) {
+                $result = true;
+            }
+        }
+
+        return $result;
     }
 }

@@ -74,6 +74,7 @@ return [
     'verification_link_has_been_sent_to_your_email' => 'تم ارسال رابط التحقق للأيميل الحاص بك.',
     'login_failed_your_account_is_not_verified' => 'فشل تسجيل الدخول لم يتم التحقق من رقم الموبايل او الايميل.',
     'logout' => 'خروج',
-    'phone' => 'هاتف'
+    'phone' => 'هاتف',
+    'unauthorized' => 'غير مصرح لك بالدخول. يرجى تسجيل الدخول أولاً.'
 
 ];

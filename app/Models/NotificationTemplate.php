@@ -60,9 +60,9 @@ class NotificationTemplate extends Model
         'admin' => ['new_comment_admin', 'support_message_admin', 'support_message_replied_admin', 'promotion_plan_admin', 'payout_request_admin',
             'new_registration', 'new_become_instructor_request', 'new_course_enrollment', 'new_forum_topic', 'new_report_item_for_admin', 'new_item_created',
             'new_store_order', 'subscription_plan_activated', 'content_review_request', 'new_user_blog_post', 'new_user_item_rating', 'new_organization_user',
-            'user_wallet_charge', 'new_user_payout_request', 'new_offline_payment_request'
+            'user_wallet_charge', 'new_user_payout_request', 'new_offline_payment_request','submit_verification_doc_payment','course_approve'
         ],
-        'user' => ['new_badge', 'change_user_group', 'user_access_to_content', 'new_referral_user', 'user_role_change', 'add_to_user_group', 'become_instructor_request_approved', 'become_instructor_request_rejected'],
+        'user' => ['new_badge', 'change_user_group', 'user_access_to_content', 'new_referral_user', 'user_role_change', 'add_to_user_group', 'become_instructor_request_approved', 'become_instructor_request_rejected','you_have_been_accepted'],
         'course' => ['course_created', 'course_approve', 'course_reject', 'new_comment', 'support_message', 'support_message_replied', 'new_rating', 'new_question_in_forum', 'new_answer_in_forum'],
         'financial' => ['new_financial_document', 'payout_request', 'payout_proceed', 'offline_payment_request', 'offline_payment_approved', 'offline_payment_rejected', 'user_get_cashback', 'user_get_cashback_notification_for_admin'],
         'sale_purchase' => ['new_sales', 'new_purchase'],

@@ -139,5 +139,10 @@ return [
     'zoom_jwt_token_invalid' => 'رمز زوم الخاص بك غير صالح.',
     'youtube' => 'يوتوب',
     'vimeo' => 'فيميو',
-    'your_reviews_successfully_submitted' => 'تم إرسال تعليقاتك بنجاح'
-];
+    'your_reviews_successfully_submitted' => 'تم إرسال تعليقاتك بنجاح',
+    'code_error' => 'عفواً! رمز خاطئ !!',
+    'attendee_exist' => 'عفواً! الحضور موجود بالفعل !!',
+    'attendee_stored' => 'تم تسجيل الحضور',
+    'no_access'=>'ليس لديك إذن'
+
+  ];
