@@ -94,7 +94,7 @@
 
                     @if(!empty($navbarPages) and count($navbarPages))
                         @foreach($navbarPages as $navbarPage)
-                            <li class="nav-item">
+                            <li class="nav-item" @if(strtolower($navbarPage['title']) === 'store' || strtolower($navbarPage['title']) === 'instructors') hidden @endif>
                                 <a class="nav-link" href="{{ $navbarPage['link'] }}">{{ $navbarPage['title'] }}</a>
                             </li>
                         @endforeach
