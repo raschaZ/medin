@@ -2,6 +2,7 @@
 
 namespace App\Mixins\Certificate;
 
+use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
 use App\Models\UserMeta;
@@ -200,31 +201,18 @@ class MakeCertificate
         $certificate->quiz_id?
             $type= ($user?$user->id == $certificate->quiz->teacher->id:false)?'instructor':'course': 
                  $type= ($user?$user->id == $certificate->webinar->teacher->id:false)?'instructor':'course';
-        //  dd($type); 
-         $template = CertificateTemplate::where('status', 'publish')
-        ->where('type', $type)
-        ->first();
+
+        $template = CertificateTemplate::where('status', 'publish')
+         ->where('type', $type)
+         ->where('category_id', $certificate->webinar->category_id)
+         ->first();
         $course = $certificate->webinar??  $certificate->quiz->webinar;
            
         if ( !empty($course)) {
             $user = $certificate->student;
 
             $userCertificate = $this->saveCourseCertificate($user, $course);
-// dd($template);
-            $body = $this->makeBody(
-                $template,
-                $userCertificate,
-                $user,
-                $course->title,
-                null,
-                $course->teacher->id,
-                $course->teacher->full_name,
-                $course->duration);
 
-            $data = [
-                'body' => $body
-            ];
-            // $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
             return $this->generateAndSavePdf($userCertificate, $template,$type);
         }
 
@@ -397,127 +385,110 @@ class MakeCertificate
         return $certificate;
     }
   
-    private function generateAndSavePdf($certificate,$template,$type)
+    private function generateAndSavePdf($certificate, $template)
     {
-      //  dd($template->category_id);
-        // Define the storage path and filename
         $userId = auth()->id();
         $path = "certificates/{$userId}";
         $fileName = "certificate_{$certificate->id}.pdf";
     
-        // Ensure the storage path exists
+        // Ensure storage path exists
         $storage = Storage::disk('public');
         if (!$storage->exists($path)) {
             $storage->makeDirectory($path);
         }
     
-        $fullPath = $path . '/' . $fileName;
+        $fullPath = "{$path}/{$fileName}";
     
-        // Convert background image to base64
-        $backgroundPath = public_path($template->image);
-        $backgroundImage = '';
-        if (file_exists($backgroundPath)) {
-            $imageData = file_get_contents($backgroundPath);
-            $base64 = base64_encode($imageData);
-            $backgroundImage = 'data:image/png;base64,' . $base64;
-        }
-        // Generate the QR code as a base64 image
+        // Generate Base64 Background Image
+        $backgroundImage = $this->getBase64Image(public_path($template->image));
+    
+        // Generate Base64 QR Code
         $url = url("/certificate_validation");
         $qrCodeImage = base64_encode(QrCode::format('png')->size(100)->generate($url));
     
-       // Build the HTML content
-            $htmlContent = '
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Certificate</title>
-                <style>
-                    body {
-                        background-image: url("' . htmlspecialchars($backgroundImage) . '");
-                        background-repeat: no-repeat;
-                        background-size: cover;
-                        background-position: center;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                    }
-                    .container {
-                        text-align: center;
-                        margin-top: 210px;
-                        padding: 40px;
-                    }
-                    h1 {
-                        font-size: 36pt;
-                        margin-bottom: 10px;
-                        color: #2f5496;
-                    }
-                    p {
-                        font-size: 18pt;
-                        font-family: Calibri, sans-serif;
-                        color: #1f3864;
-                    }
-                    .qr-code {
-                        margin-top: 90px;
-                        text-align: center;
-                    }
-                    .qr-code span {
-                        font-size: 14pt;
-                        margin-top: 10px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>
-                        ' . (($type && $type == "instructor") 
-                            ?'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
-                            : htmlspecialchars($certificate->student->full_name)) . '
-                    </h1>
+        // Replace placeholders in template body
+        $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
+        $date = dateTimeFormat($certificate->created_at, "j M Y");
 
-                    <p>
-                        ' . (($type && $type == "instructor") 
-                            ? 'a présenté une conférence intitulée « ' 
-                                . htmlspecialchars($certificate->webinar->getTitleAttribute()) . ' » 
-                                dans le cadre de l’EPU qui a eu lieu le 
-                                « ' . dateTimeFormat($certificate->created_at, "j M Y") . ' » 
-                                à la Faculté de Médecine de Monastir.'
-                            : 'a participé à la <span style="font-weight: bold;">Master Class</span> 
-                                « ' . htmlspecialchars($certificate->webinar->getTitleAttribute()) . ' » 
-                                tenue le « ' . dateTimeFormat($certificate->created_at, "j M Y") . ' » 
-                                à la Faculté de Médecine de Monastir.') . '
-                    </p>
 
-                    <div class="qr-code">
-                        <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
-                        <span>certificate id: ' . htmlspecialchars($certificate->id) . '</span>
-                    </div>
-                </div>
-            </body>
-            </html>';
+        $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
 
-            // Generate the PDF using Dompdf via Laravel
+    
+        // Build HTML content
+        $htmlContent = $this->buildHtmlContent($body, $backgroundImage, $qrCodeImage, $certificate->id);
+    
+        // Generate PDF
         $pdf = PDF::loadHTML($htmlContent)
-            ->setPaper('a4', 'landscape') // Adjust paper size
+            ->setPaper('a4', 'landscape')
             ->setWarnings(false);
     
-        // Save the PDF to the specified path in public storage
+        // Save the PDF
         $storage->put($fullPath, $pdf->output());
     
-        // Generate URL for download
-        $downloadPath = $storage->path($fullPath);
-    
-        // Return a downloadable response
-        return response()->download($downloadPath, $fileName, ['Content-Type' => 'application/pdf']);
+        return response()->download($storage->path($fullPath));
     }
     
+    private function getBase64Image($imagePath)
+    {
+        if (file_exists($imagePath)) {
+            $imageData = file_get_contents($imagePath);
+            return 'data:image/png;base64,' . base64_encode($imageData);
+        }
+        return '';
+    }
     
-    
-    
-        
-
-    
+    private function buildHtmlContent($body, $backgroundImage, $qrCodeImage, $certificateId)
+    {
+        return <<<HTML
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Certificate</title>
+            <style>
+                body {
+                    background-image: url("{$backgroundImage}");
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-position: center;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                .container {
+                    text-align: center;
+                    margin-top: 280px;
+                    padding: 40px;
+                }
+                p {
+                    font-size: 18pt;
+                    font-family: Calibri, sans-serif;
+                    color: #1f3864;
+                }
+                .qr-code {
+                    margin-top: 90px;
+                    text-align: center;
+                }
+                .qr-code span {
+                    font-size: 14pt;
+                    margin-top: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <p>{$body}</p>
+                <div class="qr-code">
+                    <img src="data:image/png;base64,{$qrCodeImage}" alt="QR Code" /><br>
+                    <span>certificate id: {$certificateId}</span>
+                </div>
+            </div>
+        </body>
+        </html>
+        HTML;
+    }
+      
 }
