@@ -224,8 +224,8 @@ class MakeCertificate
             $data = [
                 'body' => $body
             ];
-            $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
-            return $this->generateAndSavePdf($userCertificate, $template->image,$type);
+            // $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
+            return $this->generateAndSavePdf($userCertificate, $template,$type);
         }
 
         $toastData = [
@@ -397,8 +397,9 @@ class MakeCertificate
         return $certificate;
     }
   
-    private function generateAndSavePdf($certificate,$imagePath,$type)
+    private function generateAndSavePdf($certificate,$template,$type)
     {
+      //  dd($template->category_id);
         // Define the storage path and filename
         $userId = auth()->id();
         $path = "certificates/{$userId}";
@@ -413,7 +414,7 @@ class MakeCertificate
         $fullPath = $path . '/' . $fileName;
     
         // Convert background image to base64
-        $backgroundPath = public_path($imagePath);
+        $backgroundPath = public_path($template->image);
         $backgroundImage = '';
         if (file_exists($backgroundPath)) {
             $imageData = file_get_contents($backgroundPath);
