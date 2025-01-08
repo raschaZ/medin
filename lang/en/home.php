@@ -22,7 +22,7 @@ return [
     'skillful_teachers' => 'Skillful Instructors',
     'skillful_teachers_hint' => 'Start learning from experienced instructors.',
 
-    'live_classes' => 'Live Classes',
+    'live_classes' => 'Online Classes',
     'live_classes_hint' => 'Improve your skills using live knowledge flow.',
 
     'happy_students' => 'Happy Students',

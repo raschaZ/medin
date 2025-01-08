@@ -8,10 +8,10 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'course' => 'Course',
+    'course' => 'Hybride Course',
     'courses' => 'Courses',
-    'text_course' => 'Text Course',
-  	'video_course' => 'Video Course',
+    'text_course' => 'On-Site Course',
+  	'video_course' => 'Hybrid Courses',
     'information' => 'Information',
     'content' => 'Content',
     'review' => 'Review',
