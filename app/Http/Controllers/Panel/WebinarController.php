@@ -19,6 +19,7 @@ use App\Models\Session;
 use App\Models\Tag;
 use App\Models\TextLesson;
 use App\Models\Ticket;
+use App\Models\Translation\WebinarChapterTranslation;
 use App\Models\Translation\WebinarTranslation;
 use App\Models\WebinarChapter;
 use App\Models\WebinarChapterItem;
@@ -327,14 +328,16 @@ class WebinarController extends Controller
         $rules = [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
-            'thumbnail' => 'required',
-            'image_cover' => 'required',
+            // 'thumbnail' => 'required',
+            // 'image_cover' => 'required',
             'description' => 'required',
         ];
 
         // Automatically set thumbnail to the value of image_cover if it's not already set
         $request->merge([
-            'thumbnail' =>  $request->input('image_cover'),
+            // 'thumbnail' =>  $request->input('image_cover'),
+            'thumbnail' => "/store/1/default_images/cover.jpg",
+            'image_cover' => "/store/1/default_images/cover.jpg",
         ]);
 
         $this->validate($request, $rules);
@@ -378,6 +381,30 @@ class WebinarController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
+            // Create default chapters
+                $defaultChapters = [
+                    ['type' => 'text_lesson', 'title' => 'Objectives'],
+                    ['type' => 'text_lesson', 'title' => 'Target Audience'],
+                    ['type' => 'file', 'title' => 'Program'],
+                ];
+
+                foreach ($defaultChapters as $defaultChapter) {
+                    $chapter = WebinarChapter::create([
+                        'user_id' => $user->id,
+                        'webinar_id' => $webinar->id,
+                        'type' => $defaultChapter['type'],
+                        'status' => WebinarChapter::$chapterActive,
+                        'check_all_contents_pass' => false,
+                        'created_at' => time(),
+                    ]);
+
+                    WebinarChapterTranslation::updateOrCreate([
+                        'webinar_chapter_id' => $chapter->id,
+                        'locale' => mb_strtolower($data['locale']),
+                    ], [
+                        'title' => $defaultChapter['title'],
+                    ]);
+                }
         }
 
 

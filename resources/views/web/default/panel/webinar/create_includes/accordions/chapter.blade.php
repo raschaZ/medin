@@ -49,12 +49,12 @@
 
 
                                             <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="text_lesson" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
-                                                {{ trans('public.add_text_lesson') }}
+                                                {{ trans('public.add_text') }}
                                             </button>
 
-                                            <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="quiz" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
+                                            <!-- <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="quiz" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
                                                 {{ trans('public.add_quiz') }}
-                                            </button>
+                                            </button> -->
 
                                             @if(getFeaturesSettings('webinar_assignment_status'))
                                                 <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="assignment" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
