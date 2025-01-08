@@ -414,7 +414,11 @@ class HomeController extends Controller
             ->count();
 
         $offlineCourseCount = Webinar::where('status', 'active')
-            ->whereIn('type', ['course', 'text_lesson'])
+            ->where('type','course')
+            ->count();
+
+        $textLessonCount = Webinar::where('status', 'active')
+            ->where('type', 'text_lesson')
             ->count();
 
         return [
@@ -422,6 +426,7 @@ class HomeController extends Controller
             'studentsCount' => $studentsCount,
             'liveClassCount' => $liveClassCount,
             'offlineCourseCount' => $offlineCourseCount,
+            'textLessonCount' => $textLessonCount,
         ];
     }
 }
