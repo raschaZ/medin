@@ -2707,3 +2707,20 @@ function customSortArrayNumAndTextIndex($array)
 
     return array_merge($numericKeys, $textualKeys);
 }
+
+ /**
+  * Calculate the total hours from a collection or array of items.
+  *
+  * @param iterable $items Collection or array of objects with `duration` and `in_days` attributes.
+  * @return float|int Total hours.
+ */
+ function calculateHoursSum(iterable $items)
+{       
+    //  dd($items);
+    return collect($items)->sum(function ($item) {
+        if (!empty($item->in_days) && $item->in_days == true) {
+            return $item->duration * 24 * 60; // Convert days to hours
+        }
+        return $item->duration; // Use duration in hours
+    });
+}

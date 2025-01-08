@@ -57,7 +57,9 @@ class WebinarController extends Controller
 
         $totalWebinars = $query->count();
         $totalPendingWebinars = deepClone($query)->where('webinars.status', 'pending')->count();
-        $totalDurations = deepClone($query)->sum('duration');
+        $clonedQuery = deepClone($query)->get(); // Clone and retrieve data
+        $totalDurations = calculateHoursSum($clonedQuery);
+        // $totalDurations = deepClone($query)->sum('duration');
         $totalSales = deepClone($query)->join('sales', 'webinars.id', '=', 'sales.webinar_id')
             ->select(DB::raw('count(sales.webinar_id) as sales_count'))
             ->whereNotNull('sales.webinar_id')

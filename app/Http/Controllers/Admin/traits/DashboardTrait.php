@@ -643,9 +643,10 @@ trait DashboardTrait
                 ->where(function ($query) use ($user) {
                     $query->where('creator_id', $user->id)
                         ->orWhere('teacher_id', $user->id);
-                })->sum('duration');
+                    // })->sum('duration');
+                     })->get();
 
-            $user->classes_durations = $duration;
+            $user->classes_durations = calculateHoursSum($duration);
         }
 
         return $users;

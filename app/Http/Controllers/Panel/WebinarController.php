@@ -169,7 +169,10 @@ class WebinarController extends Controller
 
     private function makeMyClassAndInvitationsData($query, $user, $request)
     {
-        $webinarHours = deepClone($query)->sum('duration');
+        // $webinarHours = deepClone($query)->sum('duration');
+
+        $clonedQuery = deepClone($query)->get(); // Clone and retrieve data
+        $webinarHours = calculateHoursSum($clonedQuery);
 
         $onlyNotConducted = $request->get('not_conducted');
         if (!empty($onlyNotConducted)) {
@@ -1239,9 +1242,10 @@ class WebinarController extends Controller
             })
             ->count();
 
-        $webinarsHours = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
-            ->select(DB::raw('sum(webinars.duration) as duration'))
-            ->sum('duration');
+        $webinars = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->select('webinars.duration', 'webinars.in_days') 
+            ->get(); // Retrieve the data as a collection
+        $webinarsHours = calculateHoursSum($webinars);
         $bundlesHours = deepClone($query)->join('bundle_webinars', 'bundle_webinars.bundle_id', 'sales.bundle_id')
             ->join('webinars', 'webinars.id', 'bundle_webinars.webinar_id')
             ->select(DB::raw('sum(webinars.duration) as duration'))
