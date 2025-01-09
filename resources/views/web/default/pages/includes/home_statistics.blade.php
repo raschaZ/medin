@@ -53,7 +53,7 @@
                     <div class="col mt-25 mt-lg-0">
                         <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
                             <div class="stat-icon-box student">
-                                <img src="/assets/default/img/stats/course.svg" alt="" class="img-fluid"/>
+                                <img src="/assets/default/img/stats/on_site.svg" alt="" class="img-fluid"/>
                             </div>
                             <strong class="stat-number mt-10">{{ $homeDefaultStatistics['textLessonCount'] }}</strong>
                             <h4 class="stat-title">{{ trans('home.textLessonCount') }}</h4>
