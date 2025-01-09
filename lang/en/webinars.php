@@ -14,6 +14,7 @@ return [
     'new_page_title_step' => 'New course - Step :step',
     'webinar' => 'Hybrid Classe',
     'webinars' => 'Hybrid Classes',
+    'live_classes' => 'Online Classes',
   	'class' => 'course',
   	'classes' => 'Courses',
     'webinar_page' => 'Course page',

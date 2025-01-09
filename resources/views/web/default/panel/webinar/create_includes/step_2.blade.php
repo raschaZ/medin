@@ -19,7 +19,7 @@
             <p class="text-gray mt-5 font-12">{{  trans('forms.empty_means_unlimited')  }}</p>
         </div>
         <div class="form-group mt-15">
-            @if($webinar->isWebinar())
+            {{-- @if($webinar->isWebinar()) --}}
                         <div class="form-group">
                             <label class="input-label">{{ trans('public.start_date') }}</label>
                             <div class="input-group">
@@ -37,7 +37,7 @@
                                 @enderror
                             </div>
                         </div>
-                @endif
+                {{-- @endif --}}
         </div>
         <div class="row mt-15">
             <div class="col-12 @if($webinar->isWebinar()) col-md-6 @endif">

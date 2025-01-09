@@ -2066,7 +2066,6 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
         return true;
     }
-    dd($notificationTemplate);
     return false;
 }
 

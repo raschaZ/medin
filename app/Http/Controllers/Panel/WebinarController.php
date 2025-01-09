@@ -336,8 +336,8 @@ class WebinarController extends Controller
         // Automatically set thumbnail to the value of image_cover if it's not already set
         $request->merge([
             // 'thumbnail' =>  $request->input('image_cover'),
-            'thumbnail' => "/store/1/default_images/cover.jpg",
-            'image_cover' => "/store/1/default_images/cover.jpg",
+            'thumbnail' =>  $request->input('image_cover')??"/store/1/default_images/cover.jpg",
+            'image_cover' =>  $request->input('image_cover')??"/store/1/default_images/cover.jpg",
         ]);
 
         $this->validate($request, $rules);
@@ -640,9 +640,9 @@ class WebinarController extends Controller
                 'capacity' => 'nullable|numeric|min:0'
             ];
 
-            if ($webinar->isWebinar()) {
+            // if ($webinar->isWebinar()) {
                 $rules['start_date'] = 'required|date';
-            }
+            // }
         }
 
         if ($currentStep == 3) {
@@ -689,7 +689,7 @@ class WebinarController extends Controller
             }
             // .\ Check Capacity
 
-            if ($webinar->isWebinar()) {
+           
                 if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                     $data['timezone'] = getTimezone();
                 }
@@ -697,12 +697,12 @@ class WebinarController extends Controller
                 $startDate = convertTimeToUTCzone($data['start_date'], $data['timezone']);
 
                 $data['start_date'] = $startDate->getTimestamp();
-            }
-
+            
             $data['in_days'] = !empty($data['in_days']) ? true : false;
             $data['forum'] = !empty($data['forum']) ? true : false;
             $data['support'] = !empty($data['support']) ? true : false;
-            $data['certificate'] = !empty($data['certificate']) ? true : false;
+            // $data['certificate'] = !empty($data['certificate']) ? true : false;
+            $data['certificate'] =  true ;
             $data['downloadable'] = !empty($data['downloadable']) ? true : false;
             $data['partner_instructor'] = !empty($data['partner_instructor']) ? true : false;
 
@@ -784,6 +784,21 @@ class WebinarController extends Controller
             $data['teacher_id'] = $user->id;
         }
 
+        if($webinar and empty($webinar->qr_code)){
+            // Generate QR code
+            $hashedId = hash('sha256', $webinar->id);
+            $fileName = "qrcodes/{$webinar->id}.png";
+        
+            // Generate the QR code as PNG and save it to the public directory
+            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+            Storage::disk('public')->put($fileName, $qrCode);
+            
+        
+            // Update the webinar with the file path
+            $data['qr_code'] = 'store/'.$fileName;
+           }
+          
+
         $webinar->update($data);
 
         $stepCount = empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? 8 : 7;
@@ -812,20 +827,23 @@ class WebinarController extends Controller
             sendNotification("content_review_request", $notifyOptions, 1);
         }
         
-        if($webinar and empty($webinar->qr_code)){
-            // Generate QR code
-            $hashedId = hash('sha256', $webinar->id);
-            $fileName = "qrcodes/{$webinar->id}.png";
+        // if($webinar and empty($webinar->qr_code)){
+        //     // Generate QR code
+        //     $hashedId = hash('sha256', $webinar->id);
+        //     $fileName = "qrcodes/{$webinar->id}.png";
         
-            // Generate the QR code as PNG and save it to the public directory
-            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
-            Storage::disk('public')->put($fileName, $qrCode);
+        //     // Generate the QR code as PNG and save it to the public directory
+        //     $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+        //     Storage::disk('public')->put($fileName, $qrCode);
             
         
-            // Update the webinar with the file path
-            $webinar->qr_code = 'store/'.$fileName;
-            $webinar->save();
-           }
+        //     // Update the webinar with the file path
+        //     $webinar->qr_code = 'store/'.$fileName;
+        //    }
+        //    if($webinar){
+        //     dd($webinar);
+        //     $webinar->save();
+        //    }
 
         return redirect($url);
     }

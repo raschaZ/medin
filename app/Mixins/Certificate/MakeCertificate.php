@@ -204,10 +204,9 @@ class MakeCertificate
 
         $template = CertificateTemplate::where('status', 'publish')
          ->where('type', $type)
-         ->where('category_id', $certificate->webinar->category_id)
+         ->where('category_id',  $certificate->quiz_id?$certificate->quiz->webinar->category_id: $certificate->webinar->category_id)
          ->first();
         $course = $certificate->webinar??  $certificate->quiz->webinar;
-           
         if ( !empty($course)) {
             $user = $certificate->student;
 
@@ -385,110 +384,114 @@ class MakeCertificate
         return $certificate;
     }
   
-    private function generateAndSavePdf($certificate, $template)
+
+    private function generateAndSavePdf($certificate,$template,$type)
     {
+      //  dd($template->category_id);
+        // Define the storage path and filename
         $userId = auth()->id();
         $path = "certificates/{$userId}";
         $fileName = "certificate_{$certificate->id}.pdf";
     
-        // Ensure storage path exists
+        // Ensure the storage path exists
         $storage = Storage::disk('public');
         if (!$storage->exists($path)) {
             $storage->makeDirectory($path);
         }
     
-        $fullPath = "{$path}/{$fileName}";
-    
-        // Generate Base64 Background Image
-        $backgroundImage = $this->getBase64Image(public_path($template->image));
-    
-        // Generate Base64 QR Code
+        $fullPath = $path . '/' . $fileName;
+// Convert background image to base64
+        $backgroundPath = public_path($template->image);
+        $backgroundImage = '';
+        if (file_exists($backgroundPath)) {
+            $imageData = file_get_contents($backgroundPath);
+            $base64 = base64_encode($imageData);
+            $backgroundImage = 'data:image/png;base64,' . $base64;
+        }
+        // Generate the QR code as a base64 image
         $url = url("/certificate_validation");
         $qrCodeImage = base64_encode(QrCode::format('png')->size(100)->generate($url));
-    
-        // Replace placeholders in template body
-        $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
-        $date = dateTimeFormat($certificate->created_at, "j M Y");
+               // Replace placeholders in template body
+               $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
+               $date = dateTimeFormat($certificate->created_at, "j M Y");
+               $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
+    //   dd($template->body);
+               // Build the HTML content
+            $htmlContent = '
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Certificate</title>
+                <style>
+                    body {
+                        background-image: url("' . htmlspecialchars($backgroundImage) . '");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        background-position: center;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        text-align: center;
+                        margin-top: 210px;
+                        padding: 40px;
+                    }
+                    h1 {
+                        font-size: 36pt;
+                        margin-bottom: 10px;
+                        color: #2f5496;
+                    }
+                    p {
+                        font-size: 18pt;
+                        font-family: Calibri, sans-serif;
+                        color: #1f3864;
+                    }
+                    .qr-code {
+                        margin-top: 90px;
+                        text-align: center;
+                    }
+                    .qr-code span {
+                        font-size: 14pt;
+                        margin-top: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>
+                        ' . (($type && $type == "instructor") 
+                            ?'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
+                            : htmlspecialchars($certificate->student->full_name)) . '
+                    </h1>
 
+                    <p>' . $body. '</p>
 
-        $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
+                        <span>certificate id: ' . htmlspecialchars($certificate->id) . '</span>
+                    </div>
+                </div>
+            </body>
+            </html>';
 
-    
-        // Build HTML content
-        $htmlContent = $this->buildHtmlContent($body, $backgroundImage, $qrCodeImage, $certificate->id);
-    
-        // Generate PDF
+            // Generate the PDF using Dompdf via Laravel
         $pdf = PDF::loadHTML($htmlContent)
-            ->setPaper('a4', 'landscape')
+            ->setPaper('a4', 'landscape') // Adjust paper size
             ->setWarnings(false);
     
-        // Save the PDF
+        // Save the PDF to the specified path in public storage
         $storage->put($fullPath, $pdf->output());
     
-        return response()->download($storage->path($fullPath));
+        // Generate URL for download
+        $downloadPath = $storage->path($fullPath);
+    
+        // Return a downloadable response
+        return response()->download($downloadPath, $fileName, ['Content-Type' => 'application/pdf']);
     }
     
-    private function getBase64Image($imagePath)
-    {
-        if (file_exists($imagePath)) {
-            $imageData = file_get_contents($imagePath);
-            return 'data:image/png;base64,' . base64_encode($imageData);
-        }
-        return '';
-    }
-    
-    private function buildHtmlContent($body, $backgroundImage, $qrCodeImage, $certificateId)
-    {
-        return <<<HTML
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Certificate</title>
-            <style>
-                body {
-                    background-image: url("{$backgroundImage}");
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-position: center;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    margin: 0;
-                }
-                .container {
-                    text-align: center;
-                    margin-top: 280px;
-                    padding: 40px;
-                }
-                p {
-                    font-size: 18pt;
-                    font-family: Calibri, sans-serif;
-                    color: #1f3864;
-                }
-                .qr-code {
-                    margin-top: 90px;
-                    text-align: center;
-                }
-                .qr-code span {
-                    font-size: 14pt;
-                    margin-top: 10px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <p>{$body}</p>
-                <div class="qr-code">
-                    <img src="data:image/png;base64,{$qrCodeImage}" alt="QR Code" /><br>
-                    <span>certificate id: {$certificateId}</span>
-                </div>
-            </div>
-        </body>
-        </html>
-        HTML;
-    }
-      
 }
