@@ -173,7 +173,7 @@
 
     <section class="container forum-question-section bg-info-light rounded-lg mt-25 mt-md-45">
         <div class="row">
-            <div class="col-12 col-md-7">
+            <div class="col">
                 <div class="px-10 px-md-25 py-25 p-md-50">
                     <h1 class="font-36 font-weight-bold text-secondary">
                         <span class="d-block">{{ trans('update.have_a_question?') }}</span>
@@ -195,11 +195,11 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-5 d-none d-md-block position-relative">
+            {{-- <div class="col-12 col-md-5 d-none d-md-block position-relative">
                 <div class="forum-question-section__img">
                     <img src="/assets/default/img/forum/question-section.png" class="img-fluid" alt="">
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>
 @endsection
