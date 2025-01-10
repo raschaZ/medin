@@ -209,6 +209,21 @@ class Webinar extends Model implements TranslatableContract
         return $this->hasMany(Waitlist::class, 'webinar_id', 'id');
     }
 
+    public function attendees()
+    {
+        return $this->hasMany('App\Models\Attendee', 'webinar_id', 'id');
+    }
+    
+    /**
+     * Check if a user attended the webinar.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function hasUserAttended(int $userId): bool
+    {
+        return $this->attendees()->where('user_id', $userId)->exists();
+    }
 
     public function getRate()
     {

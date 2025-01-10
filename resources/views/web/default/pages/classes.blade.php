@@ -66,7 +66,7 @@
                                 <h3 class="category-filter-title font-20 font-weight-bold text-dark-blue">{{ trans('public.type') }}</h3>
 
                                 <div class="pt-10">
-                                    @foreach(['bundle','webinar','course','text_lesson'] as $typeOption)
+                                    @foreach(['webinar','course','text_lesson'] as $typeOption)                               
                                         <div class="d-flex align-items-center justify-content-between mt-20">
                                             <label class="cursor-pointer" for="filterLanguage{{ $typeOption }}">
                                                 @if($typeOption == 'bundle')
@@ -88,7 +88,7 @@
                                 <h3 class="category-filter-title font-20 font-weight-bold text-dark-blue">{{ trans('site.more_options') }}</h3>
 
                                 <div class="pt-10">
-                                    @foreach(['subscribe','certificate_included','with_quiz','featured'] as $moreOption)
+                                    @foreach(['certificate_included','with_quiz'] as $moreOption)
                                         <div class="d-flex align-items-center justify-content-between mt-20">
                                             <label class="cursor-pointer" for="filterLanguage{{ $moreOption }}">{{ trans('webinars.show_only_'.$moreOption) }}</label>
                                             <div class="custom-control custom-checkbox">

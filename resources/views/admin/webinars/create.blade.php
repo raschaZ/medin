@@ -70,7 +70,7 @@
                                                 <label class="input-label d-block">{{ trans('panel.course_type') }}</label>
 
                                                 <select name="type" class="custom-select @error('type')  is-invalid @enderror">
-                                                    <option value="webinar" @if((!empty($webinar) and $webinar->isWebinar()) or old('type') == \App\Models\Webinar::$webinar) selected @endif>{{ trans('webinars.webinar') }}</option>
+                                                    <option value="webinar" @if((!empty($webinar) and $webinar->isWebinar()) or old('type') == \App\Models\Webinar::$webinar) selected @endif>{{ trans('webinars.live_classes') }}</option>
                                                     <option value="course" @if((!empty($webinar) and $webinar->isCourse()) or old('type') == \App\Models\Webinar::$course) selected @endif>{{ trans('product.video_course') }}</option>
                                                     <option value="text_lesson" @if((!empty($webinar) and $webinar->isTextCourse()) or old('type') == \App\Models\Webinar::$textLesson) selected @endif>{{ trans('product.text_course') }}</option>
                                                 </select>
@@ -299,8 +299,7 @@
                                                 @enderror
                                             </div>
                                             <div class="form-group mt-15">
-                                                @if(empty($webinar) or (!empty($webinar) and $webinar->isWebinar()))
-                                                        <div class=" js-start_date {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? 'd-none' : '' }}">
+                                                        <div class=" {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? '' : '' }}">
                                                             <div class="form-group">
                                                                 <label class="input-label">{{ trans('public.start_date') }}</label>
                                                                 <div class="input-group">
@@ -318,7 +317,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    @endif
                                             </div>
 
                                             <div class="row mt-15">

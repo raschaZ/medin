@@ -280,7 +280,7 @@ return [
     'year' => 'Year',
     'recent_comments' => 'Recent Comments',
     'recent_tickets' => 'Recent Support Tickets',
-    'recent_live_classes' => 'Recent Live Classes',
+    'recent_live_classes' => 'Recent Online Classes',
     'recent_courses' => 'Recent Courses',
     'new_registration_statistics' => 'User Registration Statistics',
     'today_income' => 'Today Profit',
@@ -951,11 +951,11 @@ return [
 
 //Classes
 
-    'webinars_list_page_title' => 'Live Classes List',
-    'webinars' => 'Live Classes',
+    'webinars_list_page_title' => 'Hybrid Classes List',
+    'webinars' => 'Hybrid Classes',
     'live_class' => 'Live Class',
-    'live_classes' => 'Live Classes',
-    'text_courses' => 'Text Courses',
+    'live_classes' => 'Online Classes',
+    'text_courses' => 'On-site Courses',
     'webinar_title' => 'Class Title',
     'webinar_status' => 'Class Status',
     'start_date' => 'Start Date',
@@ -1052,7 +1052,7 @@ return [
     'total_organizations' => 'Total Organizations',
     'verified_organizations' => 'Verified Organizations',
     'organizations_students' => 'Organization Students',
-    'inprogress_live_classes' => 'Inprogress Live Classes',
+    'inprogress_live_classes' => 'Inprogress Online Classes',
     'total_durations' => 'Total Duration',
     'inactive_students' => 'Inactive Students',
     'ban_students' => 'Banned Students',

@@ -57,7 +57,9 @@ class WebinarController extends Controller
 
         $totalWebinars = $query->count();
         $totalPendingWebinars = deepClone($query)->where('webinars.status', 'pending')->count();
-        $totalDurations = deepClone($query)->sum('duration');
+        $clonedQuery = deepClone($query)->get(); // Clone and retrieve data
+        $totalDurations = calculateHoursSum($clonedQuery);
+        // $totalDurations = deepClone($query)->sum('duration');
         $totalSales = deepClone($query)->join('sales', 'webinars.id', '=', 'sales.webinar_id')
             ->select(DB::raw('count(sales.webinar_id) as sales_count'))
             ->whereNotNull('sales.webinar_id')
@@ -368,7 +370,8 @@ class WebinarController extends Controller
             $data['start_date'] = null;
         }
 
-        if (!empty($data['start_date']) and $data['type'] == Webinar::$webinar) {
+        // if (!empty($data['start_date']) and $data['type'] == Webinar::$webinar) {
+        if (!empty($data['start_date']) ) {
             if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
             }
@@ -600,11 +603,11 @@ class WebinarController extends Controller
             'price' => 'nullable|numeric|min:0',
         ];
 
-        if ($webinar->isWebinar()) {
+        // if ($webinar->isWebinar()) {
             $rules['start_date'] = 'required|date';
             $rules['duration'] = 'required';
             $rules['capacity'] = 'nullable|numeric|min:0';
-        }
+        // }
 
         $this->validate($request, $rules);
 
@@ -642,7 +645,8 @@ class WebinarController extends Controller
         $data['status'] = $publish ? Webinar::$active : ($reject ? Webinar::$inactive : ($isDraft ? Webinar::$isDraft : Webinar::$pending));
         $data['updated_at'] = time();
 
-        if (!empty($data['start_date']) and $webinar->type == 'webinar') {
+        // if (!empty($data['start_date']) and $webinar->type == 'webinar') {
+        if (!empty($data['start_date'])) {
             if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
             }

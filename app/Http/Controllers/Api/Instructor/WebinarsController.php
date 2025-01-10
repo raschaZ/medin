@@ -153,8 +153,8 @@ class WebinarsController extends Controller
 
     private function makeMyClassAndInvitationsData($query, $user, $request)
     {
-        $webinarHours = deepClone($query)->sum('duration');
-
+        $clonedQuery = deepClone($query)->get(); // Clone and retrieve data
+        $webinarHours = calculateHoursSum($clonedQuery);
         $onlyNotConducted = $request->get('not_conducted');
         if (!empty($onlyNotConducted)) {
             $query->where('status', 'active')
@@ -1041,7 +1041,7 @@ class WebinarsController extends Controller
 
         $allWebinars = deepClone($query)->get();
         $allWebinarsCount = $allWebinars->count();
-        $hours = $allWebinars->sum('duration');
+        $hours = calculateHoursSum($allWebinars);
 
         $upComing = 0;
         $time = time();

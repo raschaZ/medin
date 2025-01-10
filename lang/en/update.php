@@ -1346,9 +1346,9 @@ return [
 'target_types_recharge_wallet' => 'Recharge Wallet',
 'select_target' => 'Select Target',
 'all_courses' => 'All Courses',
-'live_classes' => 'Live Classes',
-'video_courses' => 'Video Courses',
-'text_courses' => 'Text Courses',
+'live_classes' => 'Online Classes',
+'video_courses' => 'Hybrid Classes',
+'text_courses' => 'On-site Classes',
 'specific_courses' => 'Specific Courses',
 'specific_sellers' => 'Specific Sellers',
 'specific_products' => 'Specific Products',
@@ -2534,5 +2534,6 @@ return [
 'direct_publication_of_bundles_hint' => 'Bundles will be published without admin approval',
 'file_type_mkv' => 'MKV',
 'instructor_completion'=> 'Course monitoring',
+'reminder_mark_attendance' => 'Please mark your attendance and review the course content before downloading the certificate.',
 
 ];

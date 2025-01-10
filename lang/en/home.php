@@ -22,15 +22,16 @@ return [
     'skillful_teachers' => 'Skillful Instructors',
     'skillful_teachers_hint' => 'Start learning from experienced instructors.',
 
-    'live_classes' => 'Live Classes',
+    'live_classes' => 'Online Classes',
     'live_classes_hint' => 'Improve your skills using live knowledge flow.',
 
     'happy_students' => 'Happy Students',
     'happy_students_hint' => 'Enrolled in our courses and improved their skills.',
 
-    'offline_courses' => 'Video Courses',
-    'offline_courses_hint' => 'Learn without any geographical & time limitations.',
-
+    'offline_courses' => 'Hybrid Courses',
+    'offline_courses_hint' => 'A blend of online and in-person learning.',
+    'textLessonCount' => 'On-Site Courses',
+    'textLesson_hint' => 'In-person learning with expert instructors.',
     'hours' => 'Hours',
 
     'featured_classes' => 'Featured Courses',

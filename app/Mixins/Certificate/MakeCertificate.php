@@ -2,6 +2,7 @@
 
 namespace App\Mixins\Certificate;
 
+use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
 use App\Models\UserMeta;
@@ -200,32 +201,18 @@ class MakeCertificate
         $certificate->quiz_id?
             $type= ($user?$user->id == $certificate->quiz->teacher->id:false)?'instructor':'course': 
                  $type= ($user?$user->id == $certificate->webinar->teacher->id:false)?'instructor':'course';
-        //  dd($type); 
-         $template = CertificateTemplate::where('status', 'publish')
-        ->where('type', $type)
-        ->first();
+
+        $template = CertificateTemplate::where('status', 'publish')
+         ->where('type', $type)
+         ->where('category_id',  $certificate->quiz_id?$certificate->quiz->webinar->category_id: $certificate->webinar->category_id)
+         ->first();
         $course = $certificate->webinar??  $certificate->quiz->webinar;
-           
         if ( !empty($course)) {
             $user = $certificate->student;
 
             $userCertificate = $this->saveCourseCertificate($user, $course);
-// dd($template);
-            $body = $this->makeBody(
-                $template,
-                $userCertificate,
-                $user,
-                $course->title,
-                null,
-                $course->teacher->id,
-                $course->teacher->full_name,
-                $course->duration);
 
-            $data = [
-                'body' => $body
-            ];
-            $html = (string)view()->make('admin.certificates.create_template.show_certificate', $data);
-            return $this->generateAndSavePdf($userCertificate, $template->image,$type);
+            return $this->generateAndSavePdf($userCertificate, $template,$type);
         }
 
         $toastData = [
@@ -397,8 +384,10 @@ class MakeCertificate
         return $certificate;
     }
   
-    private function generateAndSavePdf($certificate,$imagePath,$type)
+
+    private function generateAndSavePdf($certificate,$template,$type)
     {
+      //  dd($template->category_id);
         // Define the storage path and filename
         $userId = auth()->id();
         $path = "certificates/{$userId}";
@@ -411,9 +400,8 @@ class MakeCertificate
         }
     
         $fullPath = $path . '/' . $fileName;
-    
-        // Convert background image to base64
-        $backgroundPath = public_path($imagePath);
+// Convert background image to base64
+        $backgroundPath = public_path($template->image);
         $backgroundImage = '';
         if (file_exists($backgroundPath)) {
             $imageData = file_get_contents($backgroundPath);
@@ -423,8 +411,12 @@ class MakeCertificate
         // Generate the QR code as a base64 image
         $url = url("/certificate_validation");
         $qrCodeImage = base64_encode(QrCode::format('png')->size(100)->generate($url));
-    
-       // Build the HTML content
+               // Replace placeholders in template body
+               $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
+               $date = dateTimeFormat($certificate->created_at, "j M Y");
+               $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
+    //   dd($template->body);
+               // Build the HTML content
             $htmlContent = '
             <!DOCTYPE html>
             <html lang="en">
@@ -477,18 +469,7 @@ class MakeCertificate
                             : htmlspecialchars($certificate->student->full_name)) . '
                     </h1>
 
-                    <p>
-                        ' . (($type && $type == "instructor") 
-                            ? 'a présenté une conférence intitulée « ' 
-                                . htmlspecialchars($certificate->webinar->getTitleAttribute()) . ' » 
-                                dans le cadre de l’EPU qui a eu lieu le 
-                                « ' . dateTimeFormat($certificate->created_at, "j M Y") . ' » 
-                                à la Faculté de Médecine de Monastir.'
-                            : 'a participé à la <span style="font-weight: bold;">Master Class</span> 
-                                « ' . htmlspecialchars($certificate->webinar->getTitleAttribute()) . ' » 
-                                tenue le « ' . dateTimeFormat($certificate->created_at, "j M Y") . ' » 
-                                à la Faculté de Médecine de Monastir.') . '
-                    </p>
+                    <p>' . $body. '</p>
 
                     <div class="qr-code">
                         <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
@@ -512,11 +493,5 @@ class MakeCertificate
         // Return a downloadable response
         return response()->download($downloadPath, $fileName, ['Content-Type' => 'application/pdf']);
     }
-    
-    
-    
-    
-        
-
     
 }

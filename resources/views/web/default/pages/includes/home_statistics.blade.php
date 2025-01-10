@@ -7,7 +7,7 @@
         <div class="stats-container {{ ($heroSection == "2") ? 'page-has-hero-section-2' : '' }}">
             <div class="container">
                 <div class="row">
-                    <div class="col-sm-6 col-lg-3 mt-25 mt-lg-0">
+                    <div class="col mt-25 mt-lg-0">
                         <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
                             <div class="stat-icon-box teacher">
                                 <img src="/assets/default/img/stats/teacher.svg" alt="" class="img-fluid"/>
@@ -18,7 +18,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-6 col-lg-3 mt-25 mt-lg-0">
+                    <div class="col mt-25 mt-lg-0">
                         <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
                             <div class="stat-icon-box student">
                                 <img src="/assets/default/img/stats/student.svg" alt="" class="img-fluid"/>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-6 col-lg-3 mt-25 mt-lg-0">
+                    <div class="col mt-25 mt-lg-0">
                         <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
                             <div class="stat-icon-box video">
                                 <img src="/assets/default/img/stats/video.svg" alt="" class="img-fluid"/>
@@ -40,7 +40,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-6 col-lg-3 mt-25 mt-lg-0">
+                    <div class="col mt-25 mt-lg-0">
                         <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
                             <div class="stat-icon-box course">
                                 <img src="/assets/default/img/stats/course.svg" alt="" class="img-fluid"/>
@@ -48,6 +48,16 @@
                             <strong class="stat-number mt-10">{{ $homeDefaultStatistics['offlineCourseCount'] }}</strong>
                             <h4 class="stat-title">{{ trans('home.offline_courses') }}</h4>
                             <p class="stat-desc mt-10">{{ trans('home.offline_courses_hint') }}</p>
+                        </div>
+                    </div>
+                    <div class="col mt-25 mt-lg-0">
+                        <div class="stats-item d-flex flex-column align-items-center text-center py-30 px-5 w-100">
+                            <div class="stat-icon-box student">
+                                <img src="/assets/default/img/stats/on_site.svg" alt="" class="img-fluid"/>
+                            </div>
+                            <strong class="stat-number mt-10">{{ $homeDefaultStatistics['textLessonCount'] }}</strong>
+                            <h4 class="stat-title">{{ trans('home.textLessonCount') }}</h4>
+                            <p class="stat-desc mt-10">{{ trans('home.textLesson_hint') }}</p>
                         </div>
                     </div>
                 </div>

@@ -6,6 +6,7 @@ use App\Exports\CertificatesExport;
 use App\Http\Controllers\Admin\traits\CertificateSettingsTrait;
 use App\Http\Controllers\Controller;
 use App\Mixins\Certificate\MakeCertificate;
+use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\QuizzesResult;
 use App\Models\Translation\CertificateTemplateTranslation;
@@ -276,10 +277,13 @@ class CertificateController extends Controller
 
         removeContentLocale();
         $elements = $this->getElements();
-
+        $categories = Category::where('parent_id', null)
+        ->with('subCategories')
+        ->get();
         $data = [
             'pageTitle' => trans('admin/main.certificate_new_template_page_title'),
-            'elements' => $elements
+            'elements' => $elements,       
+            'categories' => $categories,
         ];
 
         return view('admin.certificates.create_template.index', $data);
@@ -293,6 +297,7 @@ class CertificateController extends Controller
             'title' => 'required',
             'image' => 'required',
             'type' => 'required|in:quiz,course,bundle,instructor',
+            'category_id' => 'required',
         ]);
 
         $data = $request->all();
@@ -304,12 +309,14 @@ class CertificateController extends Controller
                 'image' => $data['image'],
                 'status' => $data['status'],
                 'type' => $data['type'],
+                'category_id' => $data['category_id'],
             ]);
         } else {
             $template = CertificateTemplate::create([
                 'image' => $data['image'],
                 'status' => $data['status'],
                 'type' => $data['type'],
+                'category_id' => $data['category_id'],
                 'created_at' => time(),
             ]);
         }
@@ -377,7 +384,9 @@ class CertificateController extends Controller
         $this->authorize('admin_certificate_template_edit');
 
         $template = CertificateTemplate::findOrFail($template_id);
-
+        $categories = Category::where('parent_id', null)
+        ->with('subCategories')
+        ->get();
         $locale = $request->get('locale', app()->getLocale());
         storeContentLocale($locale, $template->getTable(), $template->id);
 
@@ -387,6 +396,7 @@ class CertificateController extends Controller
             'pageTitle' => trans('admin/main.certificate_template_edit_page_title'),
             'template' => $template,
             'elements' => $elements,
+            'categories' => $categories,
         ];
 
         return view('admin.certificates.create_template.index', $data);

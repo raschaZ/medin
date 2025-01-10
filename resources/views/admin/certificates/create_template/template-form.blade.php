@@ -52,6 +52,25 @@
             <div class="invalid-feedback">@error('type') {{ $message }} @enderror</div>
         </div>
 
+        <div class="form-group">
+            <label class="control-label">{!! trans('public.category') !!}</label>
+            <select id="categories" class="form-control  @error('category_id')  is-invalid @enderror" name="category_id" required>
+                <option {{ !empty($template) ? '' : 'selected' }} disabled>{{ trans('public.choose_category') }}</option>
+                @foreach($categories as $category)
+                    @if(!empty($category->subCategories) and count($category->subCategories))
+                        <optgroup label="{{  $category->title }}">
+                            @foreach($category->subCategories as $subCategory)
+                                <option value="{{ $subCategory->id }}" {{ (!empty($template) and $template->category_id == $subCategory->id) ? 'selected' : '' }}>{{ $subCategory->title }}</option>
+                            @endforeach
+                        </optgroup>
+                    @else
+                        <option value="{{ $category->id }}" {{ (!empty($template) and $template->category_id == $category->id) ? 'selected' : '' }}>{{ $category->title }}</option>
+                    @endif
+                @endforeach
+            </select>
+            <div class="invalid-feedback">@error('category_id') {{ $message }} @enderror</div>
+        </div>
+
 
         @foreach($elements as $element => $elementValues)
             @if(!empty($elementValues))

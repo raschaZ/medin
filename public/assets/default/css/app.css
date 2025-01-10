@@ -7830,6 +7830,11 @@ button.bg-gray100:focus {
           user-select: auto !important;
 }
 
+.move-down {
+  position: relative;
+  top: 50px;
+}
+
 .user-select-none {
   -webkit-user-select: none !important;
      -moz-user-select: none !important;

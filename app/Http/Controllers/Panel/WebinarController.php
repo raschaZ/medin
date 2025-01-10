@@ -19,6 +19,7 @@ use App\Models\Session;
 use App\Models\Tag;
 use App\Models\TextLesson;
 use App\Models\Ticket;
+use App\Models\Translation\WebinarChapterTranslation;
 use App\Models\Translation\WebinarTranslation;
 use App\Models\WebinarChapter;
 use App\Models\WebinarChapterItem;
@@ -169,7 +170,10 @@ class WebinarController extends Controller
 
     private function makeMyClassAndInvitationsData($query, $user, $request)
     {
-        $webinarHours = deepClone($query)->sum('duration');
+        // $webinarHours = deepClone($query)->sum('duration');
+
+        $clonedQuery = deepClone($query)->get(); // Clone and retrieve data
+        $webinarHours = calculateHoursSum($clonedQuery);
 
         $onlyNotConducted = $request->get('not_conducted');
         if (!empty($onlyNotConducted)) {
@@ -324,14 +328,16 @@ class WebinarController extends Controller
         $rules = [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
-            'thumbnail' => 'required',
-            'image_cover' => 'required',
+            // 'thumbnail' => 'required',
+            // 'image_cover' => 'required',
             'description' => 'required',
         ];
 
         // Automatically set thumbnail to the value of image_cover if it's not already set
         $request->merge([
-            'thumbnail' =>  $request->input('image_cover'),
+            // 'thumbnail' =>  $request->input('image_cover'),
+            'thumbnail' =>  $request->input('image_cover')??"/store/1/default_images/thumbnail.png",
+            'image_cover' =>  $request->input('image_cover')??"/store/1/default_images/cover_courses.png",
         ]);
 
         $this->validate($request, $rules);
@@ -375,6 +381,30 @@ class WebinarController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
+            // Create default chapters
+                $defaultChapters = [
+                    ['type' => 'text_lesson', 'title' => 'Objectives'],
+                    ['type' => 'text_lesson', 'title' => 'Target Audience'],
+                    ['type' => 'file', 'title' => 'Program'],
+                ];
+
+                foreach ($defaultChapters as $defaultChapter) {
+                    $chapter = WebinarChapter::create([
+                        'user_id' => $user->id,
+                        'webinar_id' => $webinar->id,
+                        'type' => $defaultChapter['type'],
+                        'status' => WebinarChapter::$chapterActive,
+                        'check_all_contents_pass' => false,
+                        'created_at' => time(),
+                    ]);
+
+                    WebinarChapterTranslation::updateOrCreate([
+                        'webinar_chapter_id' => $chapter->id,
+                        'locale' => mb_strtolower($data['locale']),
+                    ], [
+                        'title' => $defaultChapter['title'],
+                    ]);
+                }
         }
 
 
@@ -610,9 +640,9 @@ class WebinarController extends Controller
                 'capacity' => 'nullable|numeric|min:0'
             ];
 
-            if ($webinar->isWebinar()) {
+            // if ($webinar->isWebinar()) {
                 $rules['start_date'] = 'required|date';
-            }
+            // }
         }
 
         if ($currentStep == 3) {
@@ -659,7 +689,7 @@ class WebinarController extends Controller
             }
             // .\ Check Capacity
 
-            if ($webinar->isWebinar()) {
+           
                 if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                     $data['timezone'] = getTimezone();
                 }
@@ -667,12 +697,12 @@ class WebinarController extends Controller
                 $startDate = convertTimeToUTCzone($data['start_date'], $data['timezone']);
 
                 $data['start_date'] = $startDate->getTimestamp();
-            }
-
+            
             $data['in_days'] = !empty($data['in_days']) ? true : false;
             $data['forum'] = !empty($data['forum']) ? true : false;
             $data['support'] = !empty($data['support']) ? true : false;
-            $data['certificate'] = !empty($data['certificate']) ? true : false;
+            // $data['certificate'] = !empty($data['certificate']) ? true : false;
+            $data['certificate'] =  true ;
             $data['downloadable'] = !empty($data['downloadable']) ? true : false;
             $data['partner_instructor'] = !empty($data['partner_instructor']) ? true : false;
 
@@ -754,6 +784,21 @@ class WebinarController extends Controller
             $data['teacher_id'] = $user->id;
         }
 
+        if($webinar and empty($webinar->qr_code)){
+            // Generate QR code
+            $hashedId = hash('sha256', $webinar->id);
+            $fileName = "qrcodes/{$webinar->id}.png";
+        
+            // Generate the QR code as PNG and save it to the public directory
+            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+            Storage::disk('public')->put($fileName, $qrCode);
+            
+        
+            // Update the webinar with the file path
+            $data['qr_code'] = 'store/'.$fileName;
+           }
+          
+
         $webinar->update($data);
 
         $stepCount = empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? 8 : 7;
@@ -782,20 +827,23 @@ class WebinarController extends Controller
             sendNotification("content_review_request", $notifyOptions, 1);
         }
         
-        if($webinar and empty($webinar->qr_code)){
-            // Generate QR code
-            $hashedId = hash('sha256', $webinar->id);
-            $fileName = "qrcodes/{$webinar->id}.png";
+        // if($webinar and empty($webinar->qr_code)){
+        //     // Generate QR code
+        //     $hashedId = hash('sha256', $webinar->id);
+        //     $fileName = "qrcodes/{$webinar->id}.png";
         
-            // Generate the QR code as PNG and save it to the public directory
-            $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
-            Storage::disk('public')->put($fileName, $qrCode);
+        //     // Generate the QR code as PNG and save it to the public directory
+        //     $qrCode = QrCode::format('png')->size(200)->generate($hashedId);
+        //     Storage::disk('public')->put($fileName, $qrCode);
             
         
-            // Update the webinar with the file path
-            $webinar->qr_code = 'store/'.$fileName;
-            $webinar->save();
-           }
+        //     // Update the webinar with the file path
+        //     $webinar->qr_code = 'store/'.$fileName;
+        //    }
+        //    if($webinar){
+        //     dd($webinar);
+        //     $webinar->save();
+        //    }
 
         return redirect($url);
     }
@@ -1239,9 +1287,10 @@ class WebinarController extends Controller
             })
             ->count();
 
-        $webinarsHours = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
-            ->select(DB::raw('sum(webinars.duration) as duration'))
-            ->sum('duration');
+        $webinars = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->select('webinars.duration', 'webinars.in_days') 
+            ->get(); // Retrieve the data as a collection
+        $webinarsHours = calculateHoursSum($webinars);
         $bundlesHours = deepClone($query)->join('bundle_webinars', 'bundle_webinars.bundle_id', 'sales.bundle_id')
             ->join('webinars', 'webinars.id', 'bundle_webinars.webinar_id')
             ->select(DB::raw('sum(webinars.duration) as duration'))

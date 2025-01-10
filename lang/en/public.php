@@ -374,6 +374,7 @@ return [
     'chapters' => 'Sections',
     'add_new_chapter' => 'Add New Section',
     'add_text_lesson' => 'New Text Lesson',
+    'add_text' => 'New Text',
     'new_chapter' => 'New Section',
     'edit_chapter' => 'Edit Section',
     'chapter_title' => 'Section Title',
