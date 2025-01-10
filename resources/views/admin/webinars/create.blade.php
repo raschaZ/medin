@@ -299,7 +299,7 @@
                                                 @enderror
                                             </div>
                                             <div class="form-group mt-15">
-                                                        <div class=" js-start_date {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? 'd-none' : '' }}">
+                                                        <div class=" {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? '' : '' }}">
                                                             <div class="form-group">
                                                                 <label class="input-label">{{ trans('public.start_date') }}</label>
                                                                 <div class="input-group">
