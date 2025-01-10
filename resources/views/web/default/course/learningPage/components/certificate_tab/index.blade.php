@@ -1,6 +1,6 @@
 @php
     $hasCertificateItem=false;
-    $hasAttended = !$course->hasUserAttended($user->id);
+    $hasAttended = $course->hasUserAttended($user->id);
 @endphp
 
 <div class="content-tab p-15 pb-50">
