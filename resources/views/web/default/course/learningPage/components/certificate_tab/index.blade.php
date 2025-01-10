@@ -1,14 +1,20 @@
 @php
     $hasCertificateItem=false;
+    $hasAttended = !$course->hasUserAttended($user->id);
 @endphp
 
 <div class="content-tab p-15 pb-50">
+    @if(!$hasAttended)
+        <div class="alert alert-warning text-center font-14 p-10 mb-15" style="color: white;">
+            {{ trans('update.reminder_mark_attendance') }}
+        </div>
+    @endif
     @if($course->certificate)
         @php
             $hasCertificateItem = true;
         @endphp
 
-        <div class="course-certificate-item cursor-pointer p-10 border border-gray200 rounded-sm mb-15" data-course-certificate="{{ !empty($courseCertificate) ? $courseCertificate->id : '' }}">
+        <div class="course-certificate-item cursor-pointer p-10 border border-gray200 rounded-sm mb-15" data-course-certificate="{{ !empty($courseCertificate)&&$hasAttended ? $courseCertificate->id : '' }}">
             <div class="d-flex align-items-center">
                 <span class="chapter-icon bg-gray300 mr-10">
                     <i data-feather="award" class="text-gray" width="16" height="16"></i>

@@ -299,7 +299,6 @@
                                                 @enderror
                                             </div>
                                             <div class="form-group mt-15">
-                                                @if(empty($webinar) or (!empty($webinar) and $webinar->isWebinar()))
                                                         <div class=" js-start_date {{ (!empty(old('type')) and old('type') != \App\Models\Webinar::$webinar) ? 'd-none' : '' }}">
                                                             <div class="form-group">
                                                                 <label class="input-label">{{ trans('public.start_date') }}</label>
@@ -318,7 +317,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    @endif
                                             </div>
 
                                             <div class="row mt-15">

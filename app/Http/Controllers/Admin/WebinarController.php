@@ -370,7 +370,8 @@ class WebinarController extends Controller
             $data['start_date'] = null;
         }
 
-        if (!empty($data['start_date']) and $data['type'] == Webinar::$webinar) {
+        // if (!empty($data['start_date']) and $data['type'] == Webinar::$webinar) {
+        if (!empty($data['start_date']) ) {
             if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
             }
@@ -602,11 +603,11 @@ class WebinarController extends Controller
             'price' => 'nullable|numeric|min:0',
         ];
 
-        if ($webinar->isWebinar()) {
+        // if ($webinar->isWebinar()) {
             $rules['start_date'] = 'required|date';
             $rules['duration'] = 'required';
             $rules['capacity'] = 'nullable|numeric|min:0';
-        }
+        // }
 
         $this->validate($request, $rules);
 
@@ -644,7 +645,8 @@ class WebinarController extends Controller
         $data['status'] = $publish ? Webinar::$active : ($reject ? Webinar::$inactive : ($isDraft ? Webinar::$isDraft : Webinar::$pending));
         $data['updated_at'] = time();
 
-        if (!empty($data['start_date']) and $webinar->type == 'webinar') {
+        // if (!empty($data['start_date']) and $webinar->type == 'webinar') {
+        if (!empty($data['start_date'])) {
             if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
             }
