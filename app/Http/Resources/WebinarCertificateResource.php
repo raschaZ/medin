@@ -14,6 +14,8 @@ class WebinarCertificateResource extends JsonResource
      */
     public function toArray($request)
     {
+        $user = apiAuth();
+        // dd($user);
         return [
             'id' => $this->id,
             'webinar' => [
@@ -26,7 +28,7 @@ class WebinarCertificateResource extends JsonResource
             //   'webinar_description' => $this->webinar->description,
             'link' => route('webinar.certificate', $this->id),
             'date' => $this->created_at,
-
+            'has_attended' => $this->webinar ? $this->webinar->hasUserAttended($user->id) : false,
         ];
     }
 }
