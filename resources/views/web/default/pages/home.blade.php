@@ -27,7 +27,7 @@
                 <div class="mask"></div>
             @endif
 
-            <div class="container user-select-none">
+            <div class="container user-select-none move-down ">
 
                 @if($heroSection == "2")
                     <div class="row slider-content align-items-center hero-section2 flex-column-reverse flex-md-row">

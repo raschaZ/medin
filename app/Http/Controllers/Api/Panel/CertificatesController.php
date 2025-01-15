@@ -58,18 +58,22 @@ class CertificatesController extends Controller
             ->whereHas('quiz', function ($query) {
                 $query->where('status', Quiz::ACTIVE);
             })
-            ->get()->map(function ($result) {
-
-                return array_merge($result->details,
-                    ['certificate' => $result->certificate->brief ?? null]
+            ->get()
+            ->map(function ($result) use ($user) {
+                $hasAttended = $result->quiz->webinar 
+                    ? $result->quiz->webinar->hasUserAttended($user->id) 
+                    : false;
+    
+                return array_merge(
+                    $result->details,
+                    [
+                        'certificate' => $result->certificate->brief ?? null,
+                        'has_attended' => $hasAttended,
+                    ]
                 );
-
             });
 
-
         return apiResponse2(1, 'retrieved', trans('public.retrieved'), $results);
-
-
     }
 
     public function makeCertificate($quizResultId)

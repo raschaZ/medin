@@ -414,76 +414,84 @@ class MakeCertificate
                // Replace placeholders in template body
                $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
                $date = dateTimeFormat($certificate->created_at, "j M Y");
-               $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
-    //   dd($template->body);
+            //    $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
+               $body = isset($template->body) 
+               ? str_replace([':title', ':date'], [$title, $date], $template->body) 
+               : '';
+           
+           if ($body) {
+               // Use regex to remove the style attribute from the first <div>
+               $body = preg_replace('/<div([^>]*?)\sstyle="[^"]*"/', '<div$1', $body, 1);
+           }
+           
                // Build the HTML content
-            $htmlContent = '
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Certificate</title>
-                <style>
-                    body {
-                        background-image: url("' . htmlspecialchars($backgroundImage) . '");
-                        background-repeat: no-repeat;
-                        background-size: cover;
-                        background-position: center;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                    }
-                    .container {
-                        text-align: center;
-                        margin-top: 210px;
-                        padding: 40px;
-                    }
-                    h1 {
-                        font-size: 36pt;
-                        margin-bottom: 10px;
-                        color: #2f5496;
-                    }
-                    p {
-                        font-size: 18pt;
-                        font-family: Calibri, sans-serif;
-                        color: #1f3864;
-                    }
-                    .qr-code {
-                        margin-top: 90px;
-                        text-align: center;
-                    }
-                    .qr-code span {
-                        font-size: 14pt;
-                        margin-top: 10px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>
-                        ' . (($type && $type == "instructor") 
-                            ?'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
-                            : htmlspecialchars($certificate->student->full_name)) . '
-                    </h1>
-
-                    <p>' . $body. '</p>
-
-                    <div class="qr-code">
-                        <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
-                        <span>certificate id: ' . htmlspecialchars($certificate->id) . '</span>
-                    </div>
-                </div>
-            </body>
-            </html>';
+               $htmlContent = '
+               <!DOCTYPE html>
+               <html lang="en">
+               <head>
+                   <meta charset="UTF-8">
+                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                   <title>Certificate</title>
+                   <style>
+                       body {
+                           margin: 0;
+                       }
+                       .background {
+                           position: absolute;
+                           top: 0;
+                           left: 0;
+                           width: 100%;
+                           height: 100%;
+                           z-index: -1;
+                       }
+                       .container {
+                           text-align: center;
+                           margin-top: 210px;
+                           padding: 40px;
+                       }
+                       h1 {
+                           font-size: 36pt;
+                           margin-bottom: 10px;
+                           color: #2f5496;
+                       }
+                       p {
+                           font-size: 18pt;
+                           font-family: Calibri, sans-serif;
+                           color: #1f3864;
+                       }
+                       .qr-code {
+                           margin-top: 90px;
+                           text-align: center;
+                       }
+                       .qr-code span {
+                           font-size: 14pt;
+                           margin-top: 10px;
+                       }
+                   </style>
+               </head>
+               <body>
+                   <img src="' . htmlspecialchars($backgroundImage) . '" alt="Background" class="background" />
+                   <div class="container">
+                       <h1>
+                           ' . (($type && $type == "instructor") 
+                               ? 'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
+                               : htmlspecialchars($certificate->student->full_name)) . '
+                       </h1>
+                       <p>' . $body . '</p>
+                       <div class="qr-code">
+                           <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
+                           <span>certificate id: ' . htmlspecialchars($certificate->id) . '</span>
+                       </div>
+                   </div>
+               </body>
+               </html>';
+               
 
             // Generate the PDF using Dompdf via Laravel
         $pdf = PDF::loadHTML($htmlContent)
             ->setPaper('a4', 'landscape') // Adjust paper size
             ->setWarnings(false);
-    
+    // dd($pdf);
         // Save the PDF to the specified path in public storage
         $storage->put($fullPath, $pdf->output());
     

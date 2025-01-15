@@ -336,8 +336,8 @@ class WebinarController extends Controller
         // Automatically set thumbnail to the value of image_cover if it's not already set
         $request->merge([
             // 'thumbnail' =>  $request->input('image_cover'),
-            'thumbnail' =>  $request->input('image_cover')??"/store/1/default_images/cover.jpg",
-            'image_cover' =>  $request->input('image_cover')??"/store/1/default_images/cover.jpg",
+            'thumbnail' =>  $request->input('image_cover')??"/store/1/default_images/thumbnail.png",
+            'image_cover' =>  $request->input('image_cover')??"/store/1/default_images/cover_courses.png",
         ]);
 
         $this->validate($request, $rules);
