@@ -39,6 +39,8 @@
                                             <td>
                                                 @if($template->type == 'quiz')
                                                     <span class="">{{ trans('update.quiz_related') }}</span>
+                                                @elseif($template->type == 'instructor')
+                                                    <span class="">{{ trans('update.instructor_completion') }}</span>
                                                 @else
                                                     <span class="">{{ trans('update.course_completion') }}</span>
                                                 @endif
