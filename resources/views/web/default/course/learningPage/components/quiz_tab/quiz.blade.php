@@ -1,15 +1,15 @@
 @php
     $checkSequenceContent = $item->checkSequenceContent();
+    $hasAttended = $course->hasUserAttended($user->id);
    $sequenceContentHasError = (!empty($checkSequenceContent) and (!empty($checkSequenceContent['all_passed_items_error']) or !empty($checkSequenceContent['access_after_day_error'])));
 @endphp
 
 
-<div class="{{ (!empty($checkSequenceContent) and $sequenceContentHasError) ? 'js-sequence-content-error-modal' : 'tab-item' }} p-10 cursor-pointer {{ $class ?? '' }}"
+<div class="{{ (!empty($checkSequenceContent) and $sequenceContentHasError) ? 'js-sequence-content-error-modal' :( $hasAttended ?'tab-item':'attendance-tab-item' )}} p-10 cursor-pointer {{ $class ?? '' }}"
      data-type="{{ $type }}"
-     data-id="{{ $item->id }}"
+     data-id="{{ $item->id &&  $hasAttended ?? null }}"
      data-passed-error="{{ !empty($checkSequenceContent['all_passed_items_error']) ? $checkSequenceContent['all_passed_items_error'] : '' }}"
-     data-access-days-error="{{ !empty($checkSequenceContent['access_after_day_error']) ? $checkSequenceContent['access_after_day_error'] : '' }}"
->
+     data-access-days-error="{{ !empty($checkSequenceContent['access_after_day_error']) ? $checkSequenceContent['access_after_day_error'] : '' }}">
 
     <div class="d-flex align-items-center">
         <span class="chapter-icon bg-gray300 mr-10">

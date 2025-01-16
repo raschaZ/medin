@@ -43,7 +43,7 @@
                     $hasCertificateItem = true;
                 @endphp
 
-                <div class="certificate-item cursor-pointer p-10 border border-gray200 rounded-sm mb-15" data-result="{{ $courseQuiz->result ? $courseQuiz->result->id : '' }}">
+                <div class="certificate-item cursor-pointer p-10 border border-gray200 rounded-sm mb-15" data-result="{{ ($courseQuiz->result) && $hasAttended ? $courseQuiz->result->id : '' }}">
                     <div class="d-flex align-items-center">
                         <span class="chapter-icon bg-gray300 mr-10">
                             <i data-feather="award" class="text-gray" width="16" height="16"></i>
