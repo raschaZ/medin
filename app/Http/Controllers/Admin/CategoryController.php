@@ -49,6 +49,8 @@ class CategoryController extends Controller
         $this->validate($request, [
             'title' => 'required|min:3|max:128',
             'slug' => 'nullable|max:255|unique:categories,slug',
+            'thumbnail' => 'required', // Add validation for the thumbnail
+            'image_cover' => 'required', // Add validation for the image_cover
         ]);
 
         $data = $request->all();
@@ -59,10 +61,21 @@ class CategoryController extends Controller
             $order = Category::whereNull('parent_id')->count() + 1;
         }
 
+        // Handle the thumbnail and image_cover upload
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+    
+        if ($request->hasFile('image_cover')) {
+            $data['image_cover'] = $request->file('image_cover')->store('image_covers', 'public');
+        }
+    
         $category = Category::create([
             'slug' => $data['slug'] ?? Category::makeSlug($data['title']),
             'icon' => !empty($data['icon']) ? $data['icon'] : null,
             'order' => $order,
+            'thumbnail' => $data['thumbnail'] ?? null,
+            'image_cover' => $data['image_cover'] ?? null,
         ]);
 
         CategoryTranslation::updateOrCreate([
@@ -72,6 +85,7 @@ class CategoryController extends Controller
             'title' => $data['title'],
         ]);
 
+        // Handle subcategories
         $hasSubCategories = (!empty($request->get('has_sub')) and $request->get('has_sub') == 'on');
         $this->setSubCategory($category, $request->get('sub_categories'), $hasSubCategories, $data['locale']);
 
@@ -112,14 +126,27 @@ class CategoryController extends Controller
         $this->validate($request, [
             'title' => 'required|min:3|max:255',
             'slug' => 'nullable|max:255|unique:categories,slug,' . $category->id,
+            'thumbnail' => 'required', // Add validation for the thumbnail
+            'image_cover' => 'required', // Add validation for the image_cover
         ]);
 
         $data = $request->all();
 
+        // Handle the thumbnail and image_cover upload
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+    
+        if ($request->hasFile('image_cover')) {
+            $data['image_cover'] = $request->file('image_cover')->store('image_covers', 'public');
+        }
+    
         $category->update([
             'icon' => !empty($data['icon']) ? $data['icon'] : null,
             'slug' => $data['slug'] ?? Category::makeSlug($data['title']),
             'order' => $data['order'] ?? $category->order,
+            'thumbnail' => $data['thumbnail'] ?? $category->thumbnail,
+            'image_cover' => $data['image_cover'] ?? $category->image_cover,
         ]);
 
         CategoryTranslation::updateOrCreate([
@@ -128,17 +155,18 @@ class CategoryController extends Controller
         ], [
             'title' => $data['title'],
         ]);
-
+    
+        // Handle subcategories
         $hasSubCategories = (!empty($request->get('has_sub')) and $request->get('has_sub') == 'on');
         $this->setSubCategory($category, $request->get('sub_categories'), $hasSubCategories, $data['locale']);
-
-
+    
         cache()->forget(Category::$cacheKey);
-
+    
         removeContentLocale();
-
+    
         return redirect(getAdminPanelUrl() . '/categories');
     }
+    
 
     public function destroy(Request $request, $id)
     {
