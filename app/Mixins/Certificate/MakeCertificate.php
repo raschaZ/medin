@@ -199,15 +199,14 @@ class MakeCertificate
     {
       
         $certificate->quiz_id?
-            $type= ($user?$user->id == $certificate->quiz->teacher->id:false)?'instructor':'course': 
+            $type= ($user?$user->id == $certificate->quiz->teacher->id:false)?'instructor':'quiz': 
                  $type= ($user?$user->id == $certificate->webinar->teacher->id:false)?'instructor':'course';
-
         $template = CertificateTemplate::where('status', 'publish')
          ->where('type', $type)
          ->where('category_id',  $certificate->quiz_id?$certificate->quiz->webinar->category_id: $certificate->webinar->category_id)
          ->first();
         $course = $certificate->webinar??  $certificate->quiz->webinar;
-        if ( !empty($course)) {
+        if ( !empty($course) && !($template == null)  ) {
             $user = $certificate->student;
 
             $userCertificate = $this->saveCourseCertificate($user, $course);

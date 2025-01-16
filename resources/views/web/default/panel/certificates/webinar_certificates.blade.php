@@ -97,7 +97,7 @@
 
                                         <td class="text-center">
                                             @if(!empty($certificate->webinar_id))
-                                                {{ trans('product.course') }}
+                                                {{ trans('webinars.'.$certificate->webinar->type) }}
                                             @else
                                                 {{ trans('update.bundle') }}
                                             @endif

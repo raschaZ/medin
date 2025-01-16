@@ -1,9 +1,16 @@
+@php
+    $hasAttended = $course->hasUserAttended($user->id);
+@endphp
 <div class="content-tab p-15 pb-50">
     @if(!empty($course->quizzes) and $course->quizzes->count())
         @foreach($course->quizzes as $quiz)
             @include('web.default.course.learningPage.components.quiz_tab.quiz',['item' => $quiz, 'type' => 'quiz','class' => 'px-10 border border-gray200 rounded-sm mb-15'])
         @endforeach
-
+        @if(!$hasAttended)
+            <div class="alert alert-warning text-center font-14 p-10 mb-5 mt-10" style="color: white;">
+                {{ trans('update.reminder_mark_attendance_quiz') }}
+            </div>
+        @endif
     @else
         <div class="learning-page-forum-empty d-flex align-items-center justify-content-center flex-column">
             <div class="learning-page-forum-empty-icon d-flex align-items-center justify-content-center">

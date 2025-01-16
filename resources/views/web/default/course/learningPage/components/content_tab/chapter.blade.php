@@ -1,3 +1,7 @@
+@php
+    $hasAttended = $course->hasUserAttended($user->id);
+    $hasQuiz = false;
+@endphp
 @if(!empty($course->chapters) and count($course->chapters))
     <div class="accordion-content-wrapper mt-15" id="chapterAccordion" role="tablist" aria-multiselectable="true">
         @foreach($course->chapters as $chapter)
@@ -37,8 +41,14 @@
                                     @include('web.default.course.learningPage.components.content_tab.assignment-content-tab' ,['item' => $chapterItem->assignment])
                                 @elseif($chapterItem->type == \App\Models\WebinarChapterItem::$chapterQuiz and !empty($chapterItem->quiz) and $chapterItem->quiz->status == 'active')
                                     @include('web.default.course.learningPage.components.quiz_tab.quiz' ,['item' => $chapterItem->quiz, 'type' => 'quiz'])
+                                    @php $hasQuiz = true; @endphp                                    
                                 @endif
                             @endforeach
+                            @if($hasQuiz && !$hasAttended)
+                                <div class="alert alert-warning text-center font-14 p-10 m-10" style="color: white;">
+                                    {{ trans('update.reminder_mark_attendance_quiz') }}
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
