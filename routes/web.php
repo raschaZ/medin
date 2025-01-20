@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\AttendeeController;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\WebinarController;
 use Illuminate\Support\Facades\Route;
@@ -113,6 +114,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 
     Route::group(['prefix' => 'course'], function () {
+               
         Route::get('/{slug}', 'WebinarController@course');
         Route::get('/{slug}/file/{file_id}/download', 'WebinarController@downloadFile');
         Route::get('/{slug}/file/{file_id}/showHtml', 'WebinarController@showHtmlFile');
@@ -125,8 +127,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::post('/{id}/learningStatus', 'WebinarController@learningStatus');
 
         Route::group(['middleware' => 'web.auth'], function () {
+            Route::post('/{id}/attending', [AttendeeController::class,'store']); 
             Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
-
             Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
             Route::post('/learning/personalNotes', 'LearningPageController@personalNotes');
             Route::get('/learning/{slug}', 'LearningPageController@index');
