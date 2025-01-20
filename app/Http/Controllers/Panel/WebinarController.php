@@ -623,8 +623,8 @@ class WebinarController extends Controller
             $rules = [
                 'type' => 'required|in:webinar,course,text_lesson',
                 'title' => 'required|max:255',
-                'thumbnail' => 'required',
-                'image_cover' => 'required',
+                // 'thumbnail' => 'required',
+                // 'image_cover' => 'required',
                 'description' => 'required',
             ];
             $request->merge([
@@ -714,6 +714,19 @@ class WebinarController extends Controller
             if ($data['category_id'] !== $webinar->category_id) {
                 WebinarFilterOption::where('webinar_id', $webinar->id)->delete();
             }
+
+            if ($data['category_id'] ) {
+                $category = Category::find($data['category_id']); // Use `find` for a single record.
+                if ($category) { // Ensure the category exists.
+                    if ($category->thumbnail) {
+                        $data['thumbnail'] = $category->thumbnail;
+                    }
+                    if ($category->image_cover) {
+                        $data['image_cover'] = $category->image_cover;
+                    }
+                }
+            }
+
         }
 
         if ($currentStep == 3) {

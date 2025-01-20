@@ -822,7 +822,7 @@ class WebinarController extends Controller
 
         $webinar->delete();
 
-        return redirect(getAdminPanelUrl() . '/webinars');
+        return back();
     }
 
     public function approve(Request $request, $id)
@@ -850,7 +850,7 @@ class WebinarController extends Controller
 
         sendNotification("course_approve", $notifyOptions, $webinar->teacher->id);
 
-        return redirect(getAdminPanelUrl() . '/webinars')->with(['toast' => $toastData]);
+        return back()->with(['toast' => $toastData]);
     }
 
     public function reject(Request $request, $id)
@@ -869,7 +869,7 @@ class WebinarController extends Controller
             'status' => 'success'
         ];
 
-        return redirect(getAdminPanelUrl() . '/webinars')->with(['toast' => $toastData]);
+        return back()->with(['toast' => $toastData]);
     }
 
     public function unpublish(Request $request, $id)

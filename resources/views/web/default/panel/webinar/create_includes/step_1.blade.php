@@ -93,7 +93,7 @@
             </div>
         </div>
 
-        <div class="form-group mt-15">
+        <!-- <div class="form-group mt-15">
             <label class="input-label">{{ trans('public.cover_image') }}</label>
             <div class="input-group">
                 <div class="input-group-prepend">
@@ -108,7 +108,7 @@
                 </div>
                 @enderror
             </div>
-        </div>
+        </div> -->
 
         <div class="form-group mt-25" style="display: none;">
             <label class="input-label">{{ trans('public.demo_video') }} ({{ trans('public.optional') }})</label>
