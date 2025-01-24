@@ -531,6 +531,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/excel', 'OfflinePaymentController@exportExcel');
                 Route::get('/{id}/reject', 'OfflinePaymentController@reject');
                 Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+                Route::get('/{id}/webinar-approved', 'OfflinePaymentController@offlinePayment');
             });
 
             Route::group(['prefix' => 'discounts'], function () {

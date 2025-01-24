@@ -59,6 +59,7 @@ class WaitlistController extends Controller
             ];
 
             sendNotification("waitlist_submission_for_admin", $notifyOptions, 1);
+            sendNotification("waitlist_submission_for_admin", $notifyOptions, $webinar->teacher_id);
 
             if (!empty($user)) {
                 sendNotification("waitlist_submission", $notifyOptions, $user->id);

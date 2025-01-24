@@ -26,15 +26,22 @@ class PaymentNotificationController extends Controller
     $uploadLink = route('verification.upload', ['token' => $token]);
     
     $emailMessage = '
-    Dear ' . $waitlist->user->full_name . ',
-
-    Congratulations on being accepted into the ' . $waitlist->webinar->getTitleAttribute() . '! 
-
-    To complete the final steps of your enrollment, we kindly request you to proceed to  payment via the following link: 
-    ' . $uploadLink . '
-
-    Should you have any questions or need assistance, feel free to contact us. We look forward to having you as part of the course!';
-    
+    <html>
+        <body>
+            <p>Dear ' . $waitlist->user->full_name . ',</p>
+            
+            <p>Congratulations on being accepted into the <strong> "' . $waitlist->webinar->getTitleAttribute() . '" </strong>!</p>
+            
+            <p>To complete the final steps of your enrollment, we kindly request you to proceed to payment via the following link:</p>
+            
+            <p><a href="' . $uploadLink . '" target="_blank"> Click here. </a></p>
+            
+            <p>Should you have any questions or need assistance, feel free to contact us. We look forward to having you as part of the course!</p>
+            
+            <p>Best regards,<br>Your Team</p>
+        </body>
+    </html>';
+   
     sendNotification('submit_verification_doc_payment', [
         '[c.title]' => $waitlist->webinar->title
     ], $user_id, null, 'system', 'single', null, $emailMessage);

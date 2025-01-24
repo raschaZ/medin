@@ -127,18 +127,18 @@
                                     <div class="mt-0 mb-1 font-weight-bold {{ ($waitlist->is_accepted) ? 'text-success' : 'text-warning' }}" >{{ trans($waitlist->is_accepted?'public.accepted':'public.not_accepted') }}</div>
                                 </td>
                                 <td class="">
-                                    <div class="d-flex align-items-center justify-content-start">
+                                    <div class="d-flex justify-content-between">
                                         @include('admin.includes.delete_button',[
                                             'url' => getAdminPanelUrl("/waitlists/items/{$waitlist->id}/delete"),
                                             'btnClass' => 'text-danger',
                                             'btnText' => '<i class="fa fa-times"></i>'
                                         ])
 
-                                        @can('admin_enrollment_add_student_to_items')
+                                        <!-- @can('admin_enrollment_add_student_to_items')
                                             <li class="{{ (request()->is(getAdminPanelUrl('/enrollments/add-student-to-class', false))) ? 'active' : '' }}">
                                                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/enrollments/add-student-form?user_id={{ $waitlist->user->id }}&webinar_id={{ $waitlist->webinar->id }}&waitlist_id={{ $waitlist->id }}&amount={{$ticket?$ticket->getPriceWithDiscount($waitlist->webinar->price, !empty($waitlist->webinar->activeSpecialOffer()) ? $waitlist->webinar->activeSpecialOffer() :null):  $waitlist->webinar->price}}"><i class="fa fa-user-plus"></i></a>
                                             </li>
-                                        @endcan
+                                        @endcan -->
                                         @include('admin.includes.notification_button',[
                                             'url' =>getAdminPanelUrl ("/notifications/users/{$waitlist->user->id}/waitlist/{$waitlist->id}"),
                                             'btnClass' => 'text-warning',
@@ -153,7 +153,7 @@
                                             @endcan-->
 
                                             @can('admin_users_edit')
-                                                <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/edit" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
+                                                <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/edit" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             @endcan

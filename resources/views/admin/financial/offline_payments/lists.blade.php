@@ -142,6 +142,7 @@
                                         <th>{{trans('admin/main.user')}}</th>
                                         <th>{{trans('admin/main.role')}}</th>
                                         <th>{{trans('admin/main.amount')}}</th>
+                                        <th>{{trans('admin/main.course')}}</th>
                                         <th>{{trans('admin/main.bank')}}</th>
                                         <th>{{trans('admin/main.referral_code')}}</th>
                                         <th>{{trans('admin/main.phone')}}</th>
@@ -168,10 +169,16 @@
 
                                                 <td>{{ handlePrice($offlinePayment->amount) }}</td>
 
+                                                @if(!empty($offlinePayment->webinar->slug))
+                                                   <td>{{ $offlinePayment->webinar->slug }}</td>
+                                                @else
+                                                   <td>-</td>
+                                                @endif
+
                                                 @if(!empty($offlinePayment->offlineBank->title))
-                                                <td>{{ $offlinePayment->offlineBank->title }}</td>
-                                               @else
-                                                <td>-</td>
+                                                   <td>{{ $offlinePayment->offlineBank->title }}</td>
+                                                @else
+                                                   <td>-</td>
                                                 @endif
 
                                                 <td>
@@ -206,22 +213,33 @@
                                                     <td>
                                                         @if($offlinePayment->status == \App\Models\OfflinePayment::$waiting)
                                                             @can('admin_offline_payments_approved')
-                                                                @include('admin.includes.delete_button',[
+                                                                @if(!empty($offlinePayment->webinar_id))
+                                                                    {{-- Call the new method for webinar payments --}}
+                                                                    @include('admin.includes.delete_button', [
+                                                                        'url' => getAdminPanelUrl().'/financial/offline_payments/'. $offlinePayment->id .'/webinar-approved',
+                                                                        'tooltip' => trans('financial.approve'),
+                                                                        'btnIcon' => 'fa-check'
+                                                                    ])
+                                                                @else
+                                                                    {{-- Default approval path --}}
+                                                                    @include('admin.includes.delete_button', [
                                                                         'url' => getAdminPanelUrl().'/financial/offline_payments/'. $offlinePayment->id .'/approved',
                                                                         'tooltip' => trans('financial.approve'),
                                                                         'btnIcon' => 'fa-check'
                                                                     ])
+                                                                @endif
                                                             @endcan
 
                                                             @can('admin_offline_payments_reject')
-                                                                @include('admin.includes.delete_button',[
-                                                                        'url' => getAdminPanelUrl().'/financial/offline_payments/'. $offlinePayment->id .'/reject',
-                                                                        'tooltip' => trans('public.reject'),
-                                                                        'btnIcon' => 'fa-times-circle',
-                                                                        'btnClass' => 'ml-2',
-                                                                    ])
+                                                                @include('admin.includes.delete_button', [
+                                                                    'url' => getAdminPanelUrl().'/financial/offline_payments/'. $offlinePayment->id .'/reject',
+                                                                    'tooltip' => trans('public.reject'),
+                                                                    'btnIcon' => 'fa-times-circle',
+                                                                    'btnClass' => 'ml-2',
+                                                                ])
                                                             @endcan
                                                         @endif
+
                                                     </td>
                                                 @endif
                                             </tr>

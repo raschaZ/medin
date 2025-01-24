@@ -257,6 +257,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             Route::get('/{id}/edit', 'AccountingController@account');
             Route::post('/{id}/update', 'AccountingController@updateOfflinePayment');
             Route::get('/{id}/delete', 'AccountingController@deleteOfflinePayment');
+            Route::get('/webinar-account/{webinar_id?}', 'AccountingController@webinarAccount');
+            Route::post('/webinar-account/{webinar_id?}', 'AccountingController@webinarCharge');
         });
 
         Route::group(['prefix' => 'subscribes'], function () {

@@ -34,6 +34,7 @@ class WebinarStudents implements FromCollection, WithHeadings, WithMapping
             trans('admin/main.email'),
             trans('admin/main.mobile'),
             trans('panel.purchase_date'),
+            trans('admin/main.attendance'),
         ];
     }
 
@@ -42,11 +43,16 @@ class WebinarStudents implements FromCollection, WithHeadings, WithMapping
      */
     public function map($sale): array
     {
+        $attended = $sale->buyer->attendees()
+            ->where('webinar_id', $sale->webinar_id)
+            ->exists();
+
         return [
             $sale->buyer->full_name,
             $sale->buyer->email,
             $sale->buyer->mobile,
-            dateTimeFormat($sale->created_at, 'j M Y | H:i')
+            dateTimeFormat($sale->created_at, 'j M Y | H:i'),
+            $attended ? trans('panel.attended') : '', // Attendance status
         ];
     }
 }

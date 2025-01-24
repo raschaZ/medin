@@ -641,7 +641,7 @@ class WebinarController extends Controller
             ];
 
             // if ($webinar->isWebinar()) {
-                $rules['start_date'] = 'required|date';
+                $rules['start_date'] = 'required|date|after:' . now()->addMonth()->format('Y-m-d');
             // }
         }
 
@@ -995,7 +995,7 @@ class WebinarController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $sales = Sale::query()
+                $sales = Sale::query()
                 ->where(function ($query) use ($webinar, $giftsIds) {
                     $query->where('webinar_id', $webinar->id);
                     $query->orWhereIn('gift_id', $giftsIds);
@@ -1006,7 +1006,11 @@ class WebinarController extends Controller
                     'buyer' => function ($query) {
                         $query->select('id', 'full_name', 'email', 'mobile');
                     }
-                ])->get();
+                ])
+                ->get()
+                ->each(function ($sale) use ($webinar) {
+                    $sale->webinar_id = $webinar->id; // Pass webinar ID for attendance check
+                });            
 
             if (!empty($sales) and !$sales->isEmpty()) {
 

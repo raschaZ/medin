@@ -94,7 +94,15 @@
     <section class="mt-30">
         <h2 class="section-title">{{ trans('financial.select_the_payment_gateway') }}</h2>
 
-        <form action="/panel/financial/{{ !empty($editOfflinePayment) ? 'offline-payments/'. $editOfflinePayment->id .'/update' : 'charge' }}" method="post" enctype="multipart/form-data" class="mt-25">
+        <form     
+            action="{{ 
+                isset($webinar->id) 
+                    ? url('panel/financial/offline-payments/webinar-account/' . $webinar->id) 
+                    : (!empty($editOfflinePayment) 
+                        ? url('financial/offline-payments/' . $editOfflinePayment->id . '/update') 
+                        : url('financial/offline-payments/charge')) 
+                }}" 
+            method="post" enctype="multipart/form-data" class="mt-25">
             {{csrf_field()}}
 
             @if($errors->has('gateway'))
@@ -159,7 +167,22 @@
                     @endforeach
                 </div>
             @endif
-
+            @isset($webinar->id)
+                <input type="hidden" name="webinar_id" value="{{ $webinar->id }}">
+            @endisset
+            @if(!empty($webinar))
+                        <div class="mb-30">
+                            <h3 class="section-title mb-20">{{ trans('webinars.webinar_details') }}</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>{{ $webinar->title }}</h5>
+                                    <p class="text-muted">{{ trans('public.instructor') }}: {{ $webinar->teacher->full_name }}</p>
+                                    <p class="text-muted">{{ trans('public.date') }}: {{ dateTimeFormat($webinar->start_date, 'j M Y | H:i') }}</p>
+                                    <p class="text-muted">{{ trans('public.price') }}: {{ $currency }}{{ $webinar->price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
             <div class="">
                 <h3 class="section-title mb-20">{{ trans('financial.finalize_payment') }}</h3>
 
