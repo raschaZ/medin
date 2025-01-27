@@ -4,7 +4,9 @@
     <link rel="stylesheet" href="/assets/default/css/css-stars.css">
     <link rel="stylesheet" href="/assets/default/vendors/video/video-js.min.css">
 @endpush
-
+@push('scripts_top')
+<script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+@endpush
 
 @section('content')
     <section class="course-cover-container {{ empty($activeSpecialOffer) ? 'not-active-special-offer' : '' }}">
@@ -531,7 +533,32 @@
                                 </a>
                             </div>
                         @endif
-                       
+                        @if(auth()->user() && $course->qr_code)
+                            <div id="qr-code-container" class="mt-20 d-flex flex-column">
+                                <!-- Scan Button -->
+                                <button type="button" class="btn btn-primary" id="start-scan">
+                                    Start Scan
+                                </button>
+                                <button type="button" class="btn btn-danger" id="stop-scan" style="display: none;">
+                                    Stop Scan
+                                </button>
+
+                                <!-- QR Code Scanner -->
+                                <div id="qr-code-scanner" style="display: none; margin-top: 20px;">
+                                    <div id="reader" style="width: 300px; margin: auto;"></div>
+                                </div>
+
+                                <!-- QR Code Form -->
+                                <form id="qr-code-form" action="/course/{{ $course->id }}/attending" method="POST" style="margin-top: 20px;">
+                                    @csrf
+                                    <input type="hidden" name="qr_code" id="qr-code-input">
+                                    <button type="submit" class="btn btn-success" id="submit-qr-code" style="display: none;">
+                                        Submit QR Code
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
 <!-- end -->
@@ -689,4 +716,84 @@
             })(jQuery)
         </script>
     @endif
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const startScanButton = document.getElementById('start-scan');
+            const stopScanButton = document.getElementById('stop-scan');
+            const scannerContainer = document.getElementById('qr-code-scanner');
+            const html5QrCode = new Html5Qrcode("reader");
+
+            // Check if the page is served over HTTPS
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                alert("Camera access requires HTTPS. Please use a secure connection.");
+                return;
+            }
+
+            // Detect mobile devices
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            // Adjust QR box size based on the device
+            const qrbox = isMobile ? { width: 200, height: 200 } : { width: 250, height: 250 };
+
+            let isScanning = false;
+
+            // Start scan button handler
+            startScanButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent form submission behavior
+
+                if (isScanning) return; // Prevent starting a new scan while already scanning
+
+                isScanning = true;
+                scannerContainer.style.display = 'block';
+                startScanButton.style.display = 'none';
+                stopScanButton.style.display = 'inline-block';
+
+                html5QrCode.start(
+                    { facingMode: "environment" }, // Use rear camera
+                    { fps: 10, qrbox: qrbox },
+                    (decodedText, decodedResult) => {
+                        console.log(`QR Code Scanned: ${decodedText}`);
+
+                        // Set the QR code content in the hidden input
+                        document.getElementById('qr-code-input').value = decodedText;
+
+                        // Automatically submit the form
+                        document.getElementById('qr-code-form').submit();
+
+                        // Stop scanning
+                        html5QrCode.stop().then(() => {
+                            scannerContainer.style.display = 'none';
+                            startScanButton.style.display = 'inline-block';
+                            stopScanButton.style.display = 'none';
+                            isScanning = false;
+                        }).catch(err => {
+                            console.error("Unable to stop QR scanner:", err);
+                        });
+                    },
+                    errorMessage => {
+                        console.warn(`QR Code Scan Error: ${errorMessage}`);
+                    }
+                ).catch(err => {
+                    console.error("Unable to start QR scanner:", err);
+                    alert("Camera access denied or not available.");
+                });
+            });
+
+            // Stop scan button handler
+            stopScanButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent form submission behavior
+
+                html5QrCode.stop().then(() => {
+                    scannerContainer.style.display = 'none';
+                    startScanButton.style.display = 'inline-block';
+                    stopScanButton.style.display = 'none';
+                    isScanning = false;
+                }).catch(err => {
+                    console.error("Error stopping the scanner:", err);
+                });
+            });
+        });
+
+    </script>
+
 @endpush

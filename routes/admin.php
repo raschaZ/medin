@@ -469,6 +469,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/', 'CertificateController@settings');
                 Route::post('/', 'CertificateController@storeSettings');
             });
+
+            Route::group(['prefix' => 'certificate-requests'], function () {
+                Route::get('/', 'CertificateRequestController@index');
+                Route::get('/{id}/approve', 'CertificateRequestController@approve');
+                Route::get('/{id}/reject', 'CertificateRequestController@reject');
+            });
         });
 
         Route::group(['prefix' => 'reviews'], function () {
@@ -531,6 +537,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/excel', 'OfflinePaymentController@exportExcel');
                 Route::get('/{id}/reject', 'OfflinePaymentController@reject');
                 Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+                Route::get('/{id}/webinar-approved', 'OfflinePaymentController@offlinePayment');
             });
 
             Route::group(['prefix' => 'discounts'], function () {

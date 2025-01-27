@@ -30,6 +30,7 @@ class WebinarsController extends Controller
 {
     public function index(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if ($user->isUser()) {
@@ -53,6 +54,7 @@ class WebinarsController extends Controller
 
     public function invitations(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         $invitedWebinarIds = WebinarPartnerTeacher::where('teacher_id', $user->id)->pluck('webinar_id')->toArray();
@@ -205,6 +207,7 @@ class WebinarsController extends Controller
 
     public function create(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -236,6 +239,7 @@ class WebinarsController extends Controller
 
     public function store(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -282,6 +286,7 @@ class WebinarsController extends Controller
 
     public function storeAll(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -414,6 +419,7 @@ class WebinarsController extends Controller
 
     public function update(Request $request, $id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -571,6 +577,7 @@ class WebinarsController extends Controller
 
     public function edit($id, $step = 1)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
         $isOrganization = $user->isOrganization();
 
@@ -697,6 +704,7 @@ class WebinarsController extends Controller
 
     public function updateAll(Request $request, $id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -841,6 +849,7 @@ class WebinarsController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -865,6 +874,7 @@ class WebinarsController extends Controller
 
     public function duplicate($id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
         if (!$user->isTeacher() and !$user->isOrganization()) {
             abort(404);
@@ -896,6 +906,7 @@ class WebinarsController extends Controller
 
     public function exportStudentsList($id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -938,6 +949,7 @@ class WebinarsController extends Controller
 
     public function search(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -984,6 +996,7 @@ class WebinarsController extends Controller
 
     public function invoice($id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         $sale = Sale::where('buyer_id', $user->id)
@@ -1034,6 +1047,7 @@ class WebinarsController extends Controller
 
     public function purchases(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
         $webinarIds = $user->getPurchasedCoursesIds();
 
@@ -1104,7 +1118,8 @@ class WebinarsController extends Controller
     {
         $data = $request->all();
         if (!empty($data['webinar_id'])) {
-            $user = auth()->user();
+            /** @var \App\User $user */
+        $user = auth()->user();
 
             $checkSale = Sale::where('buyer_id', $user->id)
                 ->where('webinar_id', $data['webinar_id'])
@@ -1143,6 +1158,7 @@ class WebinarsController extends Controller
 
     public function getNextSessionInfo($id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         $webinar = Webinar::where('id', $id)
@@ -1176,6 +1192,7 @@ class WebinarsController extends Controller
 
     public function orderItems(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
         $data = $request->all();
 

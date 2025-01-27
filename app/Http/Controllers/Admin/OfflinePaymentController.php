@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\PaymentController;
 use App\Mixins\Cashback\CashbackAccounting;
 use App\Models\Accounting;
+use App\Models\Bundle;
 use App\Models\Cart;
 use App\Models\Discount;
 use App\Models\OfflineBank;
@@ -15,10 +16,14 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use App\Models\Product;
+use App\Models\ProductOrder;
 use App\Models\ReserveMeeting;
 use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\Role;
+use App\Models\Sale;
+use App\Models\Waitlist;
+use App\Models\Webinar;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -154,6 +159,7 @@ class OfflinePaymentController extends Controller
 
     public function approved($id)
     {
+        // dd("approved");
         $this->authorize('admin_offline_payments_approved');
 
         $offlinePayment = OfflinePayment::findOrFail($id);
@@ -374,4 +380,166 @@ class OfflinePaymentController extends Controller
         ]);
     }
 
+    
+    public function offlinePayment(Request $request, $id)
+    {
+        $this->authorize('admin_offline_payments_approved');
+    
+        $offlinePayment = OfflinePayment::findOrFail($id);
+    
+        // Ensure the payment is still pending
+        if ($offlinePayment->status !== OfflinePayment::$waiting) {
+            return response()->json([
+                'code' => 400,
+                'message' => trans('update.payment_already_processed'),
+            ], 400);
+        }
+    
+        // Create accounting entry
+        Accounting::create([
+            'creator_id' => auth()->user()->id,
+            'user_id' => $offlinePayment->user_id,
+            'amount' => $offlinePayment->amount,
+            'type' => Accounting::$addiction,
+            'type_account' => Accounting::$asset,
+            'description' => trans('admin/pages/setting.notification_offline_payment_approved'),
+            'created_at' => time(),
+        ]);
+    
+
+        // Mark the payment as approved
+        $offlinePayment->update(['status' => OfflinePayment::$approved]);
+
+        Waitlist::where('webinar_id', $offlinePayment->webinar_id)
+        ->where('user_id', $offlinePayment->user_id) 
+        ->delete();
+
+        // Send notification about payment approval
+        sendNotification('offline_payment_approved', [
+            '[amount]' => handlePrice($offlinePayment->amount),
+        ], $offlinePayment->user_id);
+    
+        $user = User::find($offlinePayment->user_id);
+    
+        if ($user) {
+            $sellerId = null;
+            $itemType = null;
+            $itemId = null;
+            $itemColumnName = null;
+            $productOrder = null;
+    
+            if (!empty($offlinePayment->webinar_id)) {
+                $course = Webinar::find($offlinePayment->webinar_id);
+    
+                if ($course && !$course->isOwner($user->id) && !$course->checkUserHasBought($user)) {
+                    $sellerId = $course->creator_id;
+                    $itemId = $course->id;
+                    $itemType = Sale::$webinar;
+                    $itemColumnName = 'webinar_id';
+                } else {
+                    return $this->errorResponse($request, $course, 'course');
+                }
+            } elseif (!empty($offlinePayment->bundle_id)) {
+                $bundle = Bundle::find($offlinePayment->bundle_id);
+    
+                if ($bundle && !$bundle->isOwner($user->id) && !$bundle->checkUserHasBought($user)) {
+                    $sellerId = $bundle->creator_id;
+                    $itemId = $bundle->id;
+                    $itemType = Sale::$bundle;
+                    $itemColumnName = 'bundle_id';
+                } else {
+                    return $this->errorResponse($request, $bundle, 'bundle');
+                }
+            } elseif (!empty($offlinePayment->product_id)) {
+                $product = Product::find($offlinePayment->product_id);
+    
+                if ($product && !$product->isOwner($user->id) && !$product->checkUserHasBought($user)) {
+                    $sellerId = $product->creator_id;
+                    $itemId = $product->id;
+                    $itemType = Sale::$product;
+                    $itemColumnName = 'product_order_id';
+    
+                    $productOrder = ProductOrder::create([
+                        'product_id' => $product->id,
+                        'seller_id' => $sellerId,
+                        'buyer_id' => $user->id,
+                        'specifications' => null,
+                        'quantity' => 1,
+                        'status' => 'pending',
+                        'created_at' => time(),
+                    ]);
+    
+                    $itemId = $productOrder->id;
+                } else {
+                    return $this->errorResponse($request, $product, 'product');
+                }
+            }
+    
+            if ($sellerId && $itemType && $itemId && $itemColumnName) {
+                $sale = Sale::create([
+                    'buyer_id' => $user->id,
+                    'seller_id' => $sellerId,
+                    $itemColumnName => $itemId,
+                    'type' => $itemType,
+                    'manual_added' => true,
+                    'payment_method' => Sale::$credit,
+                    'amount' => $offlinePayment->amount,
+                    'total_amount' => $offlinePayment->amount,
+                    'created_at' => time(),
+                ]);
+    
+                if ($productOrder) {
+                    $productOrder->update([
+                        'sale_id' => $sale->id,
+                        'status' => $product->isVirtual() ? ProductOrder::$success : ProductOrder::$waitingDelivery,
+                    ]);
+                }
+    
+                return $this->successResponse($request, $course ?? $bundle ?? $product);
+            }
+        }
+    
+        return response()->json([
+            'code' => 422,
+            'message' => trans('update.something_went_wrong'),
+        ], 422);
+    }
+    
+    /**
+     * Handle success response.
+     */
+    private function successResponse($request, $item)
+    {
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('webinars.success_store'),
+            'status' => 'success',
+        ];
+    
+        $notifyOptions = ['[c.title]' => $item->slug];
+        sendNotification("you_have_been_accepted", $notifyOptions, $item->creator_id);
+    
+        if ($request->ajax()) {
+            return response()->json(['code' => 200]);
+        }
+    
+        return redirect(getAdminPanelUrl() . '/enrollments/history')->with(['toast' => $toastData]);
+    }
+    
+    /**
+     * Handle error response.
+     */
+    private function errorResponse($request, $item, $type)
+    {
+        $errors = [
+            'user_id' => [trans("update.cant_purchase_your_{$type}")],
+        ];
+    
+        if ($request->ajax()) {
+            return response()->json(['code' => 422, 'errors' => $errors], 422);
+        }
+    
+        return back()->withErrors($errors);
+    }
+    
 }

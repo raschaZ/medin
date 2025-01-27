@@ -623,8 +623,8 @@ class WebinarController extends Controller
             $rules = [
                 'type' => 'required|in:webinar,course,text_lesson',
                 'title' => 'required|max:255',
-                'thumbnail' => 'required',
-                'image_cover' => 'required',
+                // 'thumbnail' => 'required',
+                // 'image_cover' => 'required',
                 'description' => 'required',
             ];
             $request->merge([
@@ -641,7 +641,7 @@ class WebinarController extends Controller
             ];
 
             // if ($webinar->isWebinar()) {
-                $rules['start_date'] = 'required|date';
+                $rules['start_date'] = 'required|date|after:' . now()->addMonth()->format('Y-m-d');
             // }
         }
 
@@ -714,6 +714,19 @@ class WebinarController extends Controller
             if ($data['category_id'] !== $webinar->category_id) {
                 WebinarFilterOption::where('webinar_id', $webinar->id)->delete();
             }
+
+            if ($data['category_id'] ) {
+                $category = Category::find($data['category_id']); // Use `find` for a single record.
+                if ($category) { // Ensure the category exists.
+                    if ($category->thumbnail) {
+                        $data['thumbnail'] = $category->thumbnail;
+                    }
+                    if ($category->image_cover) {
+                        $data['image_cover'] = $category->image_cover;
+                    }
+                }
+            }
+
         }
 
         if ($currentStep == 3) {
@@ -982,7 +995,7 @@ class WebinarController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $sales = Sale::query()
+                $sales = Sale::query()
                 ->where(function ($query) use ($webinar, $giftsIds) {
                     $query->where('webinar_id', $webinar->id);
                     $query->orWhereIn('gift_id', $giftsIds);
@@ -993,7 +1006,11 @@ class WebinarController extends Controller
                     'buyer' => function ($query) {
                         $query->select('id', 'full_name', 'email', 'mobile');
                     }
-                ])->get();
+                ])
+                ->get()
+                ->each(function ($sale) use ($webinar) {
+                    $sale->webinar_id = $webinar->id; // Pass webinar ID for attendance check
+                });            
 
             if (!empty($sales) and !$sales->isEmpty()) {
 

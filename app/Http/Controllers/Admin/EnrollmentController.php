@@ -602,6 +602,7 @@ class EnrollmentController extends Controller
                     ];
             
                     sendNotification("you_have_been_accepted", $notifyOptions,$user->id);
+                    sendNotification("you_have_been_accepted", $notifyOptions,$user->id,null,'system','single',null,);
                     return redirect(getAdminPanelUrl().'/enrollments/history')->with(['toast' => $toastData]);
                 }
             }

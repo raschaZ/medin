@@ -214,6 +214,11 @@ class Webinar extends Model implements TranslatableContract
         return $this->hasMany('App\Models\Attendee', 'webinar_id', 'id');
     }
     
+    public function certificateRequest()
+    {
+        return $this->hasOne('App\Models\CertificateRequest', 'webinar_id', 'id');
+    }
+    
     /**
      * Check if a user attended the webinar.
      *
@@ -222,7 +227,11 @@ class Webinar extends Model implements TranslatableContract
      */
     public function hasUserAttended(int $userId): bool
     {
-        return $this->attendees()->where('user_id', $userId)->exists();
+        return $this->attendees()->where('user_id', $userId)->exists() ||
+               $this->certificateRequest()
+                    ->where('instructor_id', $userId)
+                    ->where('status', CertificateRequest::$done)
+                    ->exists();
     }
 
     public function getRate()

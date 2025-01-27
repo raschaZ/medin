@@ -24,6 +24,12 @@ class OfflinePayment extends Model
         return $this->belongsTo('App\Models\OfflineBank', 'offline_bank_id', 'id');
     }
 
+    // Relationship with Webinar
+    public function webinar()
+    {
+        return $this->belongsTo('App\Models\Webinar', 'webinar_id', 'id');
+    }
+
     public function getAttachmentPath()
     {
         return '/store/' . $this->user_id . '/offlinePayments/' . $this->attachment;

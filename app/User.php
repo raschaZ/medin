@@ -1026,4 +1026,11 @@ class User extends Authenticatable
     
         return !empty($sale) && !empty($sale->webinar) && $sale->webinar->checkUserHasBought($this);
     }
+
+    // In App\User model
+    public function attendees()
+    {
+        return $this->hasMany('App\Models\Attendee', 'user_id', 'id');
+    }
+
 }

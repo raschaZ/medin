@@ -11,6 +11,7 @@ use App\Models\OfflinePayment;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentChannel;
+use App\Models\Webinar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
@@ -358,4 +359,123 @@ class AccountingController extends Controller
 
         return response()->json([], 422);
     }
+
+    public function webinarAccount( $webinar_id = null,$id = null,)
+    {
+        $this->authorize("panel_financial_charge_account");
+        $userAuth = auth()->user();
+    
+        $editOfflinePayment = null;
+        if (!empty($id)) {
+            $editOfflinePayment = OfflinePayment::where('id', $id)
+                ->where('user_id', $userAuth->id)
+                ->first();
+        }
+    
+        $offlinePayments = OfflinePayment::where('user_id', $userAuth->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $offlineBanks = OfflineBank::query()
+            ->orderBy('created_at', 'desc')
+            ->with(['specifications'])
+            ->get();
+            $webinar = !empty($webinar_id) ? Webinar::find($webinar_id) : null;
+            
+        $data = [
+            'pageTitle' => trans('financial.charge_account_page_title'),
+            'offlinePayments' => $offlinePayments,
+            'paymentChannels' => [],
+            'offlineBanks' => $offlineBanks,
+            'accountCharge' => $userAuth->getAccountingCharge(),
+            'readyPayout' => $userAuth->getPayout(),
+            'totalIncome' => $userAuth->getIncome(),
+            'editOfflinePayment' => $editOfflinePayment,
+            'razorpay' => null,
+            'registrationBonusAmount' =>null,
+            'cashbackRules' => $cashbackRules ?? null,
+            'webinar' => $webinar,
+        ];
+    
+        return view('web.default.panel.financial.account', $data);
+    }
+
+    public function webinarCharge(Request $request) 
+    {
+        $this->authorize("panel_financial_charge_account");
+        // Define validation rules for offline payment
+        $rules = [
+            'amount' => 'required|numeric|min:0',
+            'gateway' => 'required|in:offline',  // Only 'offline' gateway allowed
+            'webinar_id' => 'required|exists:webinars,id', 
+            'account' => 'required',
+            'referral_code' => 'required',
+            'date' => 'required',
+        ];
+    
+        // Validate the request
+        if ($request->hasFile('attachment')) {
+            $rules['attachment'] = 'image|mimes:jpeg,png,jpg|max:10240';
+        }
+        $this->validate($request, $rules);
+    
+        // Retrieve inputs
+        $amount = $request->input('amount');
+        $account = $request->input('account');
+        $referenceNumber = $request->input('referral_code');
+        $date = $request->input('date');
+        $webinarId = $request->input('webinar_id');
+        $userAuth = auth()->user();
+    
+        // Ensure amount is greater than 0
+        if ($amount <= 0) {
+            return back()->withErrors([
+                'amount' => trans('update.the_amount_must_be_greater_than_0')
+            ]);
+        }
+    
+        // Convert the amount to default currency
+        $amount = convertPriceToDefaultCurrency($amount);
+    
+        // Handle attachment upload if provided
+        $attachment = null;
+        if ($request->hasFile('attachment')) {
+            $attachment = $this->handleUploadAttachment($userAuth, $request->file('attachment'));
+        }
+    
+        // Convert date to UTC
+        $date = convertTimeToUTCzone($date, getTimezone());
+    
+        // Create OfflinePayment record and associate it with the webinar
+        OfflinePayment::create([
+            'user_id' => $userAuth->id,
+            'amount' => $amount,
+            'offline_bank_id' => $account,
+            'reference_number' => $referenceNumber,
+            'status' => OfflinePayment::$waiting,
+            'pay_date' => $date->getTimestamp(),
+            'attachment' => $attachment,
+            'created_at' => time(),
+            'webinar_id' => $webinarId, 
+        ]);
+    
+        // Send notifications to user and admin
+        $webinarName = Webinar::find($webinarId)->title;
+        $notifyOptions = [
+            '[amount]' => handlePrice($amount),
+            '[u.name]' => $userAuth->full_name,
+            '[webinar_name]' => $webinarName,
+        ];
+        sendNotification('offline_payment_request', $notifyOptions, $userAuth->id);
+        sendNotification('new_offline_payment_request', $notifyOptions, 1);
+    
+        // Return success message
+        return back()->with([
+            'sweetalert' => [
+                'msg' => trans('financial.offline_payment_request_success_store'),
+                'status' => 'success'
+            ]
+        ]);
+    }    
+    
 }

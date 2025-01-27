@@ -97,6 +97,50 @@
                                         <div class="invalid-feedback">@error('icon') {{ $message }} @enderror</div>
                                     </div>
                                 </div>
+                                <div class="form-group mt-15">
+                                                <label class="input-label">{{ trans('public.thumbnail_image') }}</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="input-group-text admin-file-manager" data-input="thumbnail" data-preview="holder">
+                                                            <i class="fa fa-upload"></i>
+                                                        </button>
+                                                    </div>
+                                                    <input type="text" name="thumbnail" id="thumbnail" value="{{ !empty($category) ? $category->thumbnail : old('thumbnail') }}" class="form-control @error('thumbnail')  is-invalid @enderror"/>
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="input-group-text admin-file-view" data-input="thumbnail">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                    @error('thumbnail')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">{{ trans('public.cover_image') }}</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="input-group-text admin-file-manager" data-input="cover_image" data-preview="holder">
+                                                            <i class="fa fa-upload"></i>
+                                                        </button>
+                                                    </div>
+                                                    <input type="text" name="image_cover" id="cover_image" value="{{ !empty($category) ? $category->image_cover : old('image_cover') }}" class="form-control @error('image_cover')  is-invalid @enderror"/>
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="input-group-text admin-file-view" data-input="cover_image">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                    @error('image_cover')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
 
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">

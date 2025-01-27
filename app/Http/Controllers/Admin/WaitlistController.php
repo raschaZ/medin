@@ -19,6 +19,7 @@ class WaitlistController extends Controller
 
         $waitlists = Webinar::query()
             ->where('enable_waitlist', true)
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         foreach ($waitlists as $waitlist) {
