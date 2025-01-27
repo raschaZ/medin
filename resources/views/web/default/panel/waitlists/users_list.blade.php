@@ -58,7 +58,7 @@
                             <div class="col-md-2">
                                 <div class="form-group mt-1">
                                     <label class="input-label mb-1"> </label>
-                                    <input type="submit" class="text-center btn btn-primary w-100" value="{{trans('admin/main.show_results')}}">
+                                    <input type="submit" class="text-center btn btn-primary" value="{{trans('admin/main.show_results')}}">
                                 </div>
                             </div>
 
@@ -130,48 +130,18 @@
                                 </td>                                
                                 <td class="text-center">
                                     <div class="d-flex align-items-center justify-content-start">
-                                        <a href="/panel//waitlists/items/{$waitlist->id}/delete" 
+                                        <a href="/panel/waitlists/items/{{$waitlist->id}}/delete" 
                                             title="reject"
                                             class="delete-action btn btn-sm btn-transparent text-danger ml-3">
                                             <i class="fa fa-times"></i>
                                         </a>
-                                        <a href="/panel//notifications/users/{$waitlist->user->id}/waitlist/{$waitlist->id}" 
+                                        <a href="/panel/waitlists/notifications/users/{{$waitlist->user->id}}/waitlist/{{$waitlist->id}}" 
                                             title="accept & notify"
-                                            class="delete-action btn btn-sm btn-transparent text-warning  ml-3">
+                                            class="notification-action text-warning text-decoration-none btn-transparent ml-3">
                                             <i class="fa fa-bell"></i>
                                         </a>
                                     </div>
                                 </td>
-
-                                {{-- <td class="text-center">
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        @include('admin.includes.delete_button',[
-                                            'url' => getAdminPanelUrl("/waitlists/items/{$waitlist->id}/delete"),
-                                            'btnClass' => 'text-danger',
-                                            'btnText' => '<i class="fa fa-times"></i>'
-                                        ])
-
-                                        @include('admin.includes.notification_button',[
-                                            'url' =>getAdminPanelUrl ("/notifications/users/{$waitlist->user->id}/waitlist/{$waitlist->id}"),
-                                            'btnClass' => 'text-warning ml-3',
-                                            'btnText' => '<i class="fa fa-bell"></i>'
-                                        ])
-
-                                   @if(!empty($waitlist->user))
-                                          <!--    @can('admin_users_impersonate')
-                                                <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/impersonate" target="_blank" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.login') }}">
-                                                    <i class="fa fa-user-shield"></i>
-                                                </a>
-                                            @endcan-->
-
-                                            @can('admin_users_edit')
-                                                <a href="{{ getAdminPanelUrl() }}/users/{{ $waitlist->user->id }}/edit" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                            @endcan
-                                        @endif 
-                                    </div>
-                                </td> --}}
                             </tr>
                         @endforeach
                         </tbody>

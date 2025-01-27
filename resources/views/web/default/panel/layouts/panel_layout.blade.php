@@ -75,6 +75,10 @@
 <script type="text/javascript" src="/assets/default/vendors/simplebar/simplebar.min.js"></script>
 
 <script>
+    var notificationAlertTitle ='{{ trans('public.are_you_sure') }}';
+    var notificationAlertHint ='{{ trans('public.notificationAlertHint') }}';
+    var notificationAlertConfirm ='{{ trans('public.notificationAlertConfirm') }}';
+    var notificationAlertCancel ='{{ trans('public.cancel') }}';
     var deleteAlertTitle = '{{ trans('public.are_you_sure') }}';
     var deleteAlertHint = '{{ trans('public.deleteAlertHint') }}';
     var deleteAlertConfirm = '{{ trans('public.deleteAlertConfirm') }}';

@@ -242,6 +242,9 @@ return [
 
     'are_you_sure' => 'Are you sure?',
     'deleteAlertHint' => "This action cannot be undone!",
+    'notificationAlertHint' => "Are you sure you want to notify this user?",
+    'notificationAlertConfirm' => "Yes, Notify",
+    'notification_sent' => "Notification sent",
     'deleteAlertConfirm' => 'Delete',
     'deleteAlertFailHint' => 'Error while deleting item!',
     'deleteAlertSuccessHint' => 'Item successfully deleted.',

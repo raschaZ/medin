@@ -166,21 +166,21 @@ class WaitlistController extends Controller
 
         return Excel::download($export, 'waitlist_items.xlsx');
     }
-
-
     public function deleteWaitlistItems($waitlistId)
     {
-        // $this->authorize('admin_waitlists_users');
+        $delete = Waitlist::query()->where('id', $waitlistId)->delete();
 
-        Waitlist::query()
-            ->where('id', $waitlistId)
-            ->delete();
-
-        $toastData = [
-            'title' => trans('public.request_success'),
-            'msg' => trans('update.waitlist_item_deleted_successful'),
-            'status' => 'success'
-        ];
-        return back()->with(['toast' => $toastData]);
+        if ($delete) {
+            return response()->json([
+                'code' => 200,
+                'title' => trans('public.request_success'),
+                'text' => trans('update.waitlist_item_deleted_successful'),
+            ]);
+        }
+        return response()->json([
+            'code' => 400,
+            'title' => trans('public.request_failed'),
+            'text' => trans('update.waitlist_item_delete_failed')
+        ]);
     }
 }
