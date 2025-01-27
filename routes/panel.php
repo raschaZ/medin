@@ -23,6 +23,13 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
         Route::get('/login-history/{session_id}/end-session', 'UserLoginHistoryController@endSession');
     });
 
+    Route::group(['prefix' => 'waitlists'], function () {
+        Route::group(['middleware' => 'user.not.access'], function () {
+            Route::get('/', 'WaitlistController@index');
+            Route::get('/{webinarId}/view_list','WaitlistController@viewList');
+        });
+    });
+
     Route::group(['prefix' => 'webinars'], function () {
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'WebinarController@index');
