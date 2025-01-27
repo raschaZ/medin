@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Api\Controller;
 use App\Models\Attendee;
+use App\Models\CertificateRequest;
 use App\Models\Webinar;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class AttendeeController extends Controller
                 // return apiResponse2(0, 'invalid', trans('api.public.error'));
                 return $this->redirectWithToast('public.request_success', 'api.public.error', 'success');
             }
-            if (!$user->hasPurchasedWebinar($webinar->id)) {
+            if ($webinar->teacher->id != $user->id && !$user->hasPurchasedWebinar($webinar->id)) {
                 // return apiResponse2(0, 'invalid', trans('webinars.no_access'));
                 return $this->redirectWithToast('public.request_success', 'webinars.no_access', 'success');
             }
@@ -53,17 +54,44 @@ class AttendeeController extends Controller
                 return $this->redirectWithToast('public.request_success', 'webinars.attendee_exist', 'success');
             }
 
-            // Create new attendee
-            Attendee::create([
-                'user_id' => $user->id,
-                'webinar_id' => $webinar->id,
-            ]);
+            if($webinar->teacher->id == $user->id ){ 
+                
+                $notifyOptions = [
+                    '[u.name]' => $user->full_name,
+                    '[c.title]' => $webinar->slug,
+                ];
+                sendNotification('certificate_request_send', $notifyOptions, 1);
+
+                $attendeeExists = CertificateRequest::where([
+                    'instructor_id' => $user->id,
+                    'webinar_id' => $webinar->id,
+                    'status'=> CertificateRequest::$waiting,
+                ])->exists();
+                if ($attendeeExists) {
+                    // return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
+                    return $this->redirectWithToast('public.request_success', 'webinars.attendee_exist', 'success');
+                }else{
+                    CertificateRequest::create([
+                        'instructor_id' => $user->id,
+                        'webinar_id' => $webinar->id,
+                        'created_at'=> time(),
+                    ]); 
+                }
+
+                
+            }
+            else{ // Create new attendee
+                Attendee::create([
+                    'user_id' => $user->id,
+                    'webinar_id' => $webinar->id,
+                ]);
+            }
             // return apiResponse2(1, 'valid', trans('webinars.attendee_stored'));
 
             return $this->redirectWithToast('public.request_success', 'webinars.attendee_stored', 'success');
         } catch (\Exception $e) {
             \Log::error("Error storing attendee: {$e->getMessage()}");
-            return $this->redirectWithToast('public.request_success', 'api.unexpected_error', 'error');
+            return $this->redirectWithToast('public.request_success', 'public.unexpected_error', 'error');
         }
     }
     private function redirectWithToast($title, $message, $status)

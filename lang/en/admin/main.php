@@ -213,6 +213,7 @@ return [
 //Certificate
 
 'certificate_list_page_title' => 'Certificates List',
+'certificate_requests_list_page_title' => 'Certificates Requests List',
 'certificate' => 'Certificate',
 'certificate_id' => 'Certificate ID',
 'certificate_count' => 'Certificates',
@@ -1518,4 +1519,5 @@ By enabling this feature, newly registered users will require approval using thi
 'discount_title' => 'Discount Title',
 'mark_present'=>'Registering attendance',
 'confirm_send_verification_request'=> 'Confirm sending payment verification request',
+'certificate_requests_list'=>'Certificate Requests',
 ];

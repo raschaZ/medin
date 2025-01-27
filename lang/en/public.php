@@ -393,4 +393,5 @@ return [
     'course_not_found'=>'Course Not Found !!',
     'accepted'=> 'Accepted',
     'not_accepted'=> 'Not Accepted',
+    'unexpected_error'=> 'Unexpected Error',
 ];

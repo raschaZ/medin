@@ -469,6 +469,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/', 'CertificateController@settings');
                 Route::post('/', 'CertificateController@storeSettings');
             });
+
+            Route::group(['prefix' => 'certificate-requests'], function () {
+                Route::get('/', 'CertificateRequestController@index');
+                Route::get('/{id}/approve', 'CertificateRequestController@approve');
+                Route::get('/{id}/reject', 'CertificateRequestController@reject');
+            });
         });
 
         Route::group(['prefix' => 'reviews'], function () {

@@ -182,6 +182,13 @@
                             </li>
                         @endcan
 
+                        @can('admin_certificate_list')
+                            <li class="{{ (request()->is(getAdminPanelUrl('/certificates/certificate-requests', false))) ? 'active' : '' }}">
+                                <a class="nav-link"
+                                href="{{ getAdminPanelUrl() }}/certificates/certificate-requests">{{ trans('admin/main.certificate_requests_list') }}</a>
+                            </li>
+                        @endcan
+
                         @can('admin_certificate_settings')
                             <li class="{{ (request()->is(getAdminPanelUrl('/certificates/settings', false))) ? 'active' : '' }}">
                                 <a class="nav-link"
