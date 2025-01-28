@@ -46,9 +46,11 @@ class WaitlistController extends Controller
 
     public function exportExcel(Request $request)
     {
+        $user = auth()->user();
         // $this->authorize('admin_waitlists_exports');
         $waitlists = Webinar::query()
             ->where('enable_waitlist', true)
+            ->where('teacher_id', $user->id)
             ->get();
 
         foreach ($waitlists as $waitlist) {

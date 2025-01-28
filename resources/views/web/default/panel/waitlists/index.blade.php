@@ -60,13 +60,11 @@
                                             <i class="fa fa-ellipsis-v"></i>
                                         </button>
                                         <div class="dropdown-menu webinars-lists-dropdown">
-
                                             @can('panel_webinars_create')
-                                                @include('admin.includes.delete_button',[
-                                                    'url' => "/panel/waitlists/{$waitlist->id}/clear_list",
-                                                    'btnClass' => 'd-flex align-items-center text-warning text-decoration-none btn-transparent btn-sm mt-1',
-                                                    'btnText' => '<i class="fa fa-times danger"></i><span class="ml-2">'. trans("update.clear_list") .'</span>'
-                                                ])
+                                                <a href="/panel/waitlists/{{$waitlist->id}}/clear_list" class="d-flex align-items-center text-warning text-decoration-none btn-transparent btn-sm mt-1">
+                                                    <i class="fa fa-times danger"></i>
+                                                    <span class="ml-2">{{ trans("update.clear_list") }}</span>
+                                                </a>
                                             @endcan
 
                                             @can('panel_webinars_create')
@@ -77,18 +75,17 @@
                                             @endcan
 
                                             @can('panel_webinars_create')
-                                                <a href="/panel/waitlists/{$waitlist->id}/export_list" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm mt-1">
+                                                <a href="/panel/waitlists/{{$waitlist->id}}/export_list" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm mt-1">
                                                     <i class="fa fa-download"></i>
                                                     <span class="ml-2">{{ trans("update.export_list") }}</span>
                                                 </a>
                                             @endcan
 
                                             @can('panel_webinars_create')
-                                                @include('admin.includes.delete_button',[
-                                                        'url' => "/panel/waitlists/{$waitlist->id}/disable",
-                                                        'btnClass' => 'd-flex align-items-center text-danger text-decoration-none btn-transparent btn-sm mt-1',
-                                                        'btnText' => '<i class="fa fa-lock"></i><span class="ml-2">'. trans("update.disable_waitlist") .'</span>'
-                                                    ])
+                                                <a href="/panel/waitlists/{{$waitlist->id}}/disable" class="d-flex align-items-center text-danger text-decoration-none btn-transparent btn-sm mt-1">
+                                                    <i class="fa fa-lock"></i>
+                                                    <span class="ml-2">{{ trans("update.disable_waitlist") }}</span>
+                                                </a>
                                             @endcan
                                         </div>
                                     </div>

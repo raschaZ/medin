@@ -30,6 +30,10 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             Route::get('/{webinarId}/view_list','WaitlistController@viewList');
             Route::get('/items/{waitlistId}/delete', 'WaitlistController@deleteWaitlistItems');
             Route::get('/notifications/users/{userId}/waitlist/{waitlistId}', [PaymentNotificationController::class, 'sendNotification']);
+            Route::get('/export', 'WaitlistController@exportExcel');            
+            Route::get( '/{id}/export_list', 'WaitlistController@exportUsersList');
+            Route::get('/{id}/clear_list', 'WaitlistController@clearList');
+            Route::get('/{id}/disable', 'WaitlistController@disableWaitlist');
         });
     });
 
