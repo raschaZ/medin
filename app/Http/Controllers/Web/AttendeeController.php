@@ -90,7 +90,7 @@ class AttendeeController extends Controller
 
             return $this->redirectWithToast('public.request_success', 'webinars.attendee_stored', 'success');
         } catch (\Exception $e) {
-            \Log::error("Error storing attendee: {$e->getMessage()}");
+            // \Log::error("Error storing attendee: {$e->getMessage()}");
             return $this->redirectWithToast('public.request_success', 'public.unexpected_error', 'error');
         }
     }
