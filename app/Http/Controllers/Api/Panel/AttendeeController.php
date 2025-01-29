@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Panel;
 use App\Http\Controllers\Api\Controller;
 use App\Models\Api\Attendee;
 use App\Models\Api\Webinar;
+use App\Models\CertificateRequest;
 use Illuminate\Http\Request;
 
 class AttendeeController extends Controller
@@ -26,7 +27,7 @@ class AttendeeController extends Controller
         if (empty($webinar)) {
             return apiResponse2(0, 'invalid', trans('api.public.error'));
         }
-        if (!$user->hasPurchasedWebinar($webinar->id)) {
+        if ($webinar->teacher->id != $user->id && !$user->hasPurchasedWebinar($webinar->id)) {
             return apiResponse2(0, 'invalid', trans('webinars.no_access'));
         }
 
@@ -46,11 +47,37 @@ class AttendeeController extends Controller
             return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
         }
 
-        // Create new attendee
-        Attendee::create([
-            'user_id' => $user->id,
-            'webinar_id' => $webinar->id,
-        ]);
+        if($webinar->teacher->id == $user->id ){ 
+                
+            $notifyOptions = [
+                '[u.name]' => $user->full_name,
+                '[c.title]' => $webinar->slug,
+            ];
+            sendNotification('certificate_request_send', $notifyOptions, 1);
+
+            $attendeeExists = CertificateRequest::where([
+                'instructor_id' => $user->id,
+                'webinar_id' => $webinar->id,
+                'status'=> CertificateRequest::$waiting,
+            ])->exists();
+            if ($attendeeExists) {
+                return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
+            }else{
+                CertificateRequest::create([
+                    'instructor_id' => $user->id,
+                    'webinar_id' => $webinar->id,
+                    'created_at'=> time(),
+                ]); 
+                return apiResponse2(1, 'passed', trans('webinars.request_sent'));
+            }
+        }
+        else{ 
+            // Create new attendee
+            Attendee::create([
+                'user_id' => $user->id,
+                'webinar_id' => $webinar->id,
+            ]);
+        }
 
         return apiResponse2(1, 'passed', trans('webinars.attendee_stored'));
     }

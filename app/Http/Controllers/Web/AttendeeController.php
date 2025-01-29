@@ -76,6 +76,8 @@ class AttendeeController extends Controller
                         'webinar_id' => $webinar->id,
                         'created_at'=> time(),
                     ]); 
+                    
+                return $this->redirectWithToast('public.request_success', 'webinars.request_sent', 'success');
                 }
 
                 
@@ -90,7 +92,7 @@ class AttendeeController extends Controller
 
             return $this->redirectWithToast('public.request_success', 'webinars.attendee_stored', 'success');
         } catch (\Exception $e) {
-            \Log::error("Error storing attendee: {$e->getMessage()}");
+            // \Log::error("Error storing attendee: {$e->getMessage()}");
             return $this->redirectWithToast('public.request_success', 'public.unexpected_error', 'error');
         }
     }
