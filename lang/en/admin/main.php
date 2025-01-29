@@ -1520,4 +1520,5 @@ By enabling this feature, newly registered users will require approval using thi
 'mark_present'=>'Registering attendance',
 'confirm_send_verification_request'=> 'Confirm sending payment verification request',
 'certificate_requests_list'=>'Certificate Requests',
+'certificate_requests'=>'Certificate Requests',
 ];

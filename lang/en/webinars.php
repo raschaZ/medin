@@ -146,6 +146,7 @@ return [
     'code_error'=>'OOPs! Wrong Code !!',
     'attendee_exist'=>'OOPs! Attendee allredy exist !!',
     'attendee_stored'=>'Attendee registred',
+    'request_sent'=>'Your certificate request has been sent to Admin',
     'no_access'=>'You don\'t have access'
     
 ];

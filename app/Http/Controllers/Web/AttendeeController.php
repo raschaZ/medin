@@ -76,6 +76,8 @@ class AttendeeController extends Controller
                         'webinar_id' => $webinar->id,
                         'created_at'=> time(),
                     ]); 
+                    
+                return $this->redirectWithToast('public.request_success', 'webinars.request_sent', 'success');
                 }
 
                 
