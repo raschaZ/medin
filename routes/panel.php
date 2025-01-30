@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Panel\PaymentNotificationController;
+use App\Http\Controllers\Panel\TeachersCertificatesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -240,6 +241,21 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
         Route::group(['prefix' => 'bundles'], function () {
             Route::get('/{certificateId}/show', 'WebinarCertificateController@showBundleCertificate');
         });
+
+        Route::group(['prefix' => 'teachers-certificates'], function () {
+            // Route to display the teacher list for a specific webinar
+            Route::get('/{webinarId}', [TeachersCertificatesController::class, 'index']);
+            
+            // Route to store a new teacher list for a specific webinar and instructor
+            Route::post('/', [TeachersCertificatesController::class, 'store']);
+            
+            // Route to delete a TeacherWebinarList (this will delete the list and associated teachers)
+            Route::delete('/teacher-webinar/{id}', [TeachersCertificatesController::class, 'destroy']);
+            
+            // Route to remove a teacher from a specific webinar list
+            Route::delete('/{webinarId}/teacher/{teacherId}', [TeachersCertificatesController::class, 'removeTeacher']);
+        });
+        
     });
 
     Route::group(['prefix' => 'meetings'], function () {

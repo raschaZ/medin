@@ -121,12 +121,23 @@ class WebinarCertificateController extends Controller
 
     public function showCourseCertificate($certificateId)
     {
+
         $user = auth()->user();
 
         $certificate = Certificate::where('id', $certificateId)
             ->where('student_id', $user->id)
             ->whereNotNull('webinar_id')
             ->first();
+        $has_attended=$certificate->webinar->hasUserAttended($user->id);
+        
+        if(!$has_attended){
+            $toastData = [
+                'title' => trans('public.request_failed'),
+                'msg' => trans('admin/main.mark_present_first'),
+                'status' => 'error'
+            ];
+            return back()->with(['toast' => $toastData]);
+        }
 
         if (!empty($certificate)) {
             $makeCertificate = new MakeCertificate();

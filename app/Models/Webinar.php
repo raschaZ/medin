@@ -1166,5 +1166,14 @@ class Webinar extends Model implements TranslatableContract
 
         return $count;
     }
-
+    
+    /**
+     * Define the relationship between Webinar and TeachersCertificates.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function teachers()
+    {
+        return $this->hasMany(TeachersCertificates::class, 'webinar_id');  // Foreign key is 'webinar_id'
+    }
 }
