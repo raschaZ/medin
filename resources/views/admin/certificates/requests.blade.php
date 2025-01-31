@@ -63,6 +63,7 @@
                                             <th>{{ trans('admin/main.instructor') }}</th>
                                             <th>{{ trans('admin/main.webinar') }}</th>
                                             <th>{{ trans('admin/main.status') }}</th>
+                                            <th>{{ trans('admin/main.list') }}</th>
                                             <th>{{ trans('admin/main.created_at') }}</th>
                                             <th>{{ trans('admin/main.actions') }}</th>
                                         </tr>
@@ -86,6 +87,16 @@
                                                             <span class="text-warning">{{ trans('admin/main.pending') }}</span>
                                                         @endif
                                                     </td>
+                                                    <td class="text-center align-middle">
+                                                        @if(!empty($certificateRequest->teachersList))
+                                                            <button class="btn btn-primary btn-sm view-list" 
+                                                                    data-list="{{ json_encode($certificateRequest->teachersList) }}">
+                                                                {{ trans('public.view') }}
+                                                            </button>
+                                                        @else
+                                                            ---
+                                                        @endif
+                                                    </td>                                                                                                   
                                                     <td>{{ dateTimeFormat($certificateRequest->created_at, 'j M Y H:i') }}</td>
 
                                                     <td>
@@ -116,4 +127,46 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="listModal" tabindex="-1" aria-labelledby="listModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="listModalLabel">{{ trans('admin/main.list_details') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="listModalContent">
+                        <p class="text-center">{{ trans('admin/main.loading') }}...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.view-list').on('click', function () {
+                let listData = $(this).data('list');
+                let modalContent = $('#listModalContent');
+    
+                if (listData && listData.length > 0) {
+                    let html = '<ul class="list-group">';
+                    listData.forEach(item => {
+                        html += `<li class="list-group-item">${item.full_name}</li>`; // Adjust based on your data
+                    });
+                    html += '</ul>';
+                    modalContent.html(html);
+                } else {
+                    modalContent.html('<p class="text-danger text-center">{{ trans("admin/main.no_data_found") }}</p>');
+                }
+    
+                $('#listModal').modal('show');
+            });
+        });
+    </script>
+    
 @endsection

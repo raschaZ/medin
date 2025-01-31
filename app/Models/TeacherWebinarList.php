@@ -6,19 +6,35 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherWebinarList extends Model
 {
-    protected $fillable = ['webinar_id', 'instructor_id', 'teacher_ids'];
+    protected $fillable = ['webinar_id', 'instructor_id', 'teacher_ids', 'status'];
     
     protected $casts = [
         'teacher_ids' => 'array', 
+        'status' => 'string',
     ];
-    
+
     /**
-     * Define the relationship between TeachersCertificates and Webinar.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Relationship: Webinar
      */
     public function webinar()
     {
         return $this->belongsTo(Webinar::class, 'webinar_id'); 
+    }
+
+    /**
+     * Relationship: Certificate Request
+     */
+    public function certificateRequest()
+    {
+        return $this->belongsTo(CertificateRequest::class, 'list_id');
+    }
+
+    /**
+     * Relationship: Teachers (one-to-Many)
+     */
+
+    public function teachers()
+    {
+        return TeachersCertificates::whereIn('id', $this->teacher_ids)->get();
     }
 }

@@ -399,4 +399,6 @@ return [
     'not_accepted'=> 'Not Accepted',
     'unexpected_error'=> 'Unexpected Error',
     'empty'=>'Empty',
+    'request_exist'=>'OOPs! Request allredy exist !!',
+
 ];

@@ -21,7 +21,7 @@ class CertificateRequestController extends Controller
         $query = CertificateRequest::query();
         $query = $this->filters($query, $request);
 
-        $certificateRequests = $query->with(['instructor', 'webinar'])
+        $certificateRequests = $query->with(['instructor', 'webinar', 'teachersList'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -31,6 +31,7 @@ class CertificateRequestController extends Controller
             'certificate_requests' => $certificateRequests,
             'instructor' => $request->get('instructor') ?? null,
             'webinar' => $request->get('webinar') ?? null,
+            'teachersList' => $request->get('teachersList') ?? null,
         ];
 
         // Add teachers if IDs are provided
@@ -45,7 +46,7 @@ class CertificateRequestController extends Controller
                 ->get();
         }
 
-        return view('admin.certificates.requests', $data);
+        return view('admin.certificates.requests', data: $data);
     }
 
     /**

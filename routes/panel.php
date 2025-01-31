@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Panel\CertificateRequestController;
 use App\Http\Controllers\Panel\PaymentNotificationController;
 use App\Http\Controllers\Panel\TeachersCertificatesController;
 use Illuminate\Support\Facades\Route;
@@ -254,6 +255,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             
             // Route to remove a teacher from a specific webinar list
             Route::delete('/{webinarId}/teacher/{teacherId}', [TeachersCertificatesController::class, 'removeTeacher']);
+        
+            Route::post('/send-to-admin', [CertificateRequestController::class, 'store']);
+
         });
         
     });

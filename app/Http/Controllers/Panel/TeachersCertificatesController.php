@@ -32,7 +32,7 @@ class TeachersCertificatesController extends Controller
             $webinar = $teacherWebinarList->webinar;
             $teacherIds = json_decode($teacherWebinarList->teacher_ids); // Decode the JSON into an array
             $teachers = TeachersCertificates::whereIn('id', $teacherIds)->get();
-            return view(getTemplate() . '.panel.teachers.index', compact('teachers', 'webinar'));
+            return view(getTemplate() . '.panel.teachers.index', compact('teachers', 'webinar','teacherWebinarList'));
         }
        
         $webinar= Webinar::findOrFail($webinarId);
