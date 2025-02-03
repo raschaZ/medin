@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('webinar_id')->unsigned();
             $table->string('name');
             $table->string('email');
-            $table->enum('status', ['waiting', 'done', 'reject']);
+            $table->enum('status', ['draft','waiting', 'done', 'reject'])->default('draft');
 
             $table->integer('created_at');
 

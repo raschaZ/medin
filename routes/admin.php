@@ -474,6 +474,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/', 'CertificateRequestController@index');
                 Route::get('/{id}/approve', 'CertificateRequestController@approve');
                 Route::get('/{id}/reject', 'CertificateRequestController@reject');
+                Route::get('/{id}/destroy' ,'CertificateRequestController@destroy');
             });
         });
 

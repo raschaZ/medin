@@ -724,10 +724,10 @@
             const html5QrCode = new Html5Qrcode("reader");
 
             // Check if the page is served over HTTPS
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                alert("Camera access requires HTTPS. Please use a secure connection.");
-                return;
-            }
+            // if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            //     alert("Camera access requires HTTPS. Please use a secure connection.");
+            //     return;
+            // }
 
             // Detect mobile devices
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);

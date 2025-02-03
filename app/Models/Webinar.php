@@ -1156,6 +1156,14 @@ class Webinar extends Model implements TranslatableContract
         }
     }
 
+    public function makeCertificateForTeacher($user)
+    {
+        if (!empty($user) and $this->certificate ) {
+            $makeCertificate = new MakeCertificate();
+            $makeCertificate->saveCourseCertificate($user, $this);
+        }
+    }
+
     public function getSalesCount()
     {
         $count = $this->sales()->count();

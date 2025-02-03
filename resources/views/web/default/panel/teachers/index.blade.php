@@ -28,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if($teachers->isNotEmpty()) 
+                @if($teachers and $teachers->isNotEmpty()) 
                     @foreach($teachers as $index => $teacher)
                         <tr>
                             <td class="align-middle">{{ $loop->iteration }}</td>

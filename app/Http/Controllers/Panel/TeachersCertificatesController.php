@@ -27,11 +27,9 @@ class TeachersCertificatesController extends Controller
         $teacherWebinarList = TeacherWebinarList::where('webinar_id', $webinarId)
                                                  ->where('instructor_id', $user->id)
                                                  ->first();
-
         if ($teacherWebinarList) {   
             $webinar = $teacherWebinarList->webinar;
-            $teacherIds = json_decode($teacherWebinarList->teacher_ids); // Decode the JSON into an array
-            $teachers = TeachersCertificates::whereIn('id', $teacherIds)->get();
+            $teachers = $teacherWebinarList->teachers;
             return view(getTemplate() . '.panel.teachers.index', compact('teachers', 'webinar','teacherWebinarList'));
         }
        
@@ -56,32 +54,34 @@ class TeachersCertificatesController extends Controller
             'name' => 'required|string', // Teacher name validation
             'email' => 'required|email', // Validate email as a string
         ]);
-
-        // Store the teacher in the TeachersCertificates table
-        $teacher = TeachersCertificates::create([
-            'webinar_id' => $request->webinar_id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'created_at' => time(),
-        ]);
-
+        
         // Find the existing TeacherWebinarList or create a new one
         $teacherWebinarList = TeacherWebinarList::where('webinar_id', $request->webinar_id)
                                                  ->where('instructor_id', $user->id)
                                                  ->first();
-
-        // If a list exists, append the new teacher to it; otherwise, create a new list
+                                                 
         if ($teacherWebinarList) {
-            $teacherIds = json_decode($teacherWebinarList->teacher_ids); // Decode the teacher_ids
-            $teacherIds[] = $teacher->id; // Add the new teacher's ID to the list
-            $teacherWebinarList->teacher_ids = json_encode($teacherIds); // Re-encode and save
-            $teacherWebinarList->save();
+            // Store the teacher in the TeachersCertificates table
+            TeachersCertificates::create([
+                'webinar_id' => $request->webinar_id,
+                'name' => $request->name,
+                'list_id' => $teacherWebinarList->id,
+                'email' => $request->email,
+                'created_at' => time(),
+            ]);
         } else {
             // Create a new TeacherWebinarList with the teacher's ID
-            TeacherWebinarList::create([
+            $teacherWebinarList = TeacherWebinarList::create([
                 'webinar_id' => $request->webinar_id,
                 'instructor_id' => $user->id,
-                'teacher_ids' => json_encode([$teacher->id]),
+            ]);
+            
+            TeachersCertificates::create([
+                'webinar_id' => $request->webinar_id,
+                'name' => $request->name,
+                'list_id' => $teacherWebinarList->id,
+                'email' => $request->email,
+                'created_at' => time(),
             ]);
         }
         // Redirect back with success message
@@ -105,36 +105,12 @@ class TeachersCertificatesController extends Controller
                                                 ->first();
 
         if ($teacherWebinarList) {
-            $teacherIds = json_decode($teacherWebinarList->teacher_ids); // Decode the JSON into an array
-            $teachers = TeachersCertificates::whereIn('id', $teacherIds)->get();
+            $teachers = $teacherWebinarList->teachers;
             return view('panel.teachers.show', compact('teachers', 'teacherWebinarList'));
         }
 
         return redirect()->back()->with('error', 'Teacher list not found for this webinar.');
-    }
-
-    /**
-     * Delete the TeacherWebinarList record and its associated teacher records.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($id)
-    {
-        // Find the TeacherWebinarList record
-        $teacherWebinarList = TeacherWebinarList::findOrFail($id);
-
-        // Decode the teacher_ids from the list (if it's stored as JSON)
-        $teacherIds = json_decode($teacherWebinarList->teacher_ids);
-
-        // Delete the teachers associated with this webinar list
-        TeachersCertificates::whereIn('id', $teacherIds)->delete();
-
-        // Now delete the TeacherWebinarList itself
-        $teacherWebinarList->delete();
-
-        return redirect()->back()->with('success', 'Teacher list and associated teachers deleted successfully.');
-    }
+    } 
 
     /**
      * Remove a teacher from a specific webinar's teacher list.
@@ -143,32 +119,28 @@ class TeachersCertificatesController extends Controller
      * @param  int  $teacherId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function removeTeacher($webinarId, $teacherId)
+    public function removeTeacher($webinarId, $teacherid)
     {
-        // Get the authenticated teacher (instructor)
-        $teacher = auth()->user();
-
-        // Find the TeacherWebinarList for the given webinar_id and the instructor (authenticated teacher)
+        // Récupérer l'instructeur authentifié
+        $user = auth()->user();
+    
+        // Vérifier si la liste de l'instructeur existe pour ce webinar
         $teacherWebinarList = TeacherWebinarList::where('webinar_id', $webinarId)
-                                                 ->where('instructor_id', $teacher->id)
-                                                 ->first();
-
+                                                ->where('instructor_id', $user->id)
+                                                ->first();
+    
         if ($teacherWebinarList) {
-            // Decode the teacher_ids from JSON
-            $teacherIds = json_decode($teacherWebinarList->teacher_ids);
-
-            // If teacherId exists in the list, remove it
-            if (($key = array_search($teacherId, $teacherIds)) !== false) {
-                unset($teacherIds[$key]);
-                // Re-encode the teacher IDs and save back to the model
-                $teacherWebinarList->teacher_ids = json_encode(array_values($teacherIds));
-                $teacherWebinarList->save();
-
+            // Supprimer l'enseignant de TeachersCertificates
+            $deleted = TeachersCertificates::where('list_id', $teacherWebinarList->id)
+                                           ->where('id', $teacherid)
+                                           ->delete();
+            if ($deleted) {
                 return redirect()->back()->with('success', 'Teacher removed from webinar.');
             }
         }
-
+    
         return redirect()->back()->with('error', 'Teacher not found in this webinar.');
     }
+    
 }
 

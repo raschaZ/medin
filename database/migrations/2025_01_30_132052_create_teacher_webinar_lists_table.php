@@ -17,7 +17,6 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('webinar_id');
             $table->unsignedInteger('instructor_id');
-            $table->json('teacher_ids'); 
             $table->timestamps();
 
             // Foreign key constraints (optional)

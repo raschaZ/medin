@@ -55,33 +55,9 @@ class AttendeeController extends Controller
             }
 
             if($webinar->teacher->id == $user->id ){ 
-                
-                $notifyOptions = [
-                    '[u.name]' => $user->full_name,
-                    '[c.title]' => $webinar->slug,
-                ];
-                sendNotification('certificate_request_send', $notifyOptions, 1);
-
-                $attendeeExists = CertificateRequest::where([
-                    'instructor_id' => $user->id,
-                    'webinar_id' => $webinar->id,
-                    'status'=> CertificateRequest::$waiting,
-                ])->exists();
-                if ($attendeeExists) {
-                    // return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
-                    return $this->redirectWithToast('public.request_success', 'webinars.attendee_exist', 'success');
-                }else{
-                    CertificateRequest::create([
-                        'instructor_id' => $user->id,
-                        'webinar_id' => $webinar->id,
-                        'created_at'=> time(),
-                    ]); 
-                    
-                return $this->redirectWithToast('public.request_success', 'webinars.request_sent', 'success');
-                }
-
-                
+                return redirect('/panel/certificates/teachers-certificates/' . $webinar->id);
             }
+
             else{ // Create new attendee
                 Attendee::create([
                     'user_id' => $user->id,

@@ -249,10 +249,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             
             // Route to store a new teacher list for a specific webinar and instructor
             Route::post('/', [TeachersCertificatesController::class, 'store']);
-            
-            // Route to delete a TeacherWebinarList (this will delete the list and associated teachers)
-            Route::delete('/teacher-webinar/{id}', [TeachersCertificatesController::class, 'destroy']);
-            
+                        
             // Route to remove a teacher from a specific webinar list
             Route::delete('/{webinarId}/teacher/{teacherId}', [TeachersCertificatesController::class, 'removeTeacher']);
         

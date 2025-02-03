@@ -33,8 +33,9 @@ class TeacherWebinarList extends Model
      * Relationship: Teachers (one-to-Many)
      */
 
-    public function teachers()
-    {
-        return TeachersCertificates::whereIn('id', $this->teacher_ids)->get();
-    }
+     public function teachers()
+     {
+         return $this->hasMany(TeachersCertificates::class, 'list_id');
+     }
+
 }

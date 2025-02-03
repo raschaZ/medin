@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('certificate_requests', function (Blueprint $table) {
+        Schema::table('teachers_certificates', function (Blueprint $table) {
             $table->unsignedInteger('list_id')->nullable(); 
         });
     
-        Schema::table('certificate_requests', function (Blueprint $table) {
+        Schema::table('teachers_certificates', function (Blueprint $table) {
             $table->foreign('list_id')->references('id')->on('teacher_webinar_lists')->cascadeOnDelete();
         });
     }
@@ -29,7 +29,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('certificate_requests', function (Blueprint $table) {
+        Schema::table('teachers_certificates', function (Blueprint $table) {
             $table->dropForeign(['list_id']);
             $table->dropColumn('list_id');
         });

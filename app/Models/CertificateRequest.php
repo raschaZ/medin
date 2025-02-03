@@ -25,7 +25,6 @@ class CertificateRequest extends Model
     }
     public function teachersList()
     {
-        return $this->hasOne('App\Models\TeacherWebinarList
-        ', 'id', 'list_id');
-    }
+        return $this->belongsTo(TeacherWebinarList::class, 'list_id', 'id');
+    }    
 }
