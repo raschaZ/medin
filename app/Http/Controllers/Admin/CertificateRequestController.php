@@ -88,7 +88,9 @@ class CertificateRequestController extends Controller
 
         }
         $certificateRequest->update(['status' => CertificateRequest::$done]);
-        
+
+        $certificateRequest->teachersList->update(['status' => TeacherWebinarList::$done]);
+
         $notifyOptions = [
             '[title]' => $certificateRequest->webinar->slug,
         ];
@@ -107,6 +109,7 @@ class CertificateRequestController extends Controller
         
         $certificateRequest->update(['status' => CertificateRequest::$reject]);
         
+        $certificateRequest->teachersList->update(['status' => TeacherWebinarList::$reject]);
         
         $notifyOptions = [
             '[c.title]' => $certificateRequest->webinar->slug,

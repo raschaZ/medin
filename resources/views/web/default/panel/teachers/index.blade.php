@@ -17,14 +17,16 @@
     @endif
 
     <!-- Teachers List -->
-    <div class="teachers-list-container mt-15">
+    <div class="teachers-list-container overflow mt-15">
         <table class="table text-center custom-table">
             <thead>
                 <tr>
                     <th class="text-center">#</th>
                     <th class="text-center">{{ trans('public.name') }}</th>
                     <th class="text-center">{{ trans('public.email') }}</th>
-                    <th class="text-center">{{ trans('public.controls') }}</th>
+                    @if (empty($teacherWebinarList)||(!empty($teacherWebinarList) && ($teacherWebinarList->status=='draft')))
+                        <th class="text-center">{{ trans('public.controls') }}</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -38,16 +40,18 @@
                             <td class="align-middle">
                                 <span class="d-block text-dark-blue font-weight-500">{{ $teacher->email }}</span>
                             </td>
-                            <td>
-                                <!-- Delete Button -->
-                                <form 
-                                    action="/panel/certificates/teachers-certificates/{{$webinar->id}}/teacher/{{ $teacher->id }}" 
-                                    method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">{{ trans('public.delete') }}</button>
-                                </form>
-                            </td>
+                            @if (!empty($teacherWebinarList) && ($teacherWebinarList->status=='draft'))
+                                <td>
+                                    <!-- Delete Button -->
+                                    <form 
+                                        action="/panel/certificates/teachers-certificates/{{$webinar->id}}/teacher/{{ $teacher->id }}" 
+                                        method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger">{{ trans('public.delete') }}</button>
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 @else
@@ -59,42 +63,44 @@
         </table>
     </div>
 
-    <!-- Add Teacher Form -->
-    <div class="panel-section-card py-20 px-25 mt-20">
-        <form action="/panel/certificates/teachers-certificates" method="POST" class="mt-15">
-            @csrf
-            <input type="hidden" name="webinar_id" value="{{ $webinar->id }}">
-            <div class="container">
-                <div class="row">
-                    <!-- Name -->
-                    <div class="col-sm">
-                        <input type="text" name="name" class="form-control" placeholder="{{ trans('public.name') }}" required>
-                    </div>
-                    <!-- Email -->
-                    <div class="col-sm">
-                        <input type="email" name="email" class="form-control" placeholder="{{ trans('public.email') }}" required>
-                    </div>
-                    <!-- Submit -->
-                    <div class="col-12 col-lg-2 d-flex align-items-center justify-content-end">
-                        <button type="submit" class="btn btn-sm btn-primary w-100">{{ trans('admin\main.add') }}</button>
+    @if (empty($teacherWebinarList)||(!empty($teacherWebinarList) && ($teacherWebinarList->status=='draft')))
+        <!-- Add Teacher Form -->
+        <div class="panel-section-card py-20 px-25 mt-20">
+            <form action="/panel/certificates/teachers-certificates" method="POST">
+                @csrf
+                <input type="hidden" name="webinar_id" value="{{ $webinar->id }}">
+                <div class="container">
+                    <div class="row">
+                        <!-- Name -->
+                        <div class="col-sm mt-5">
+                            <input type="text" name="name" class="form-control" placeholder="{{ trans('public.name') }}" required>
+                        </div>
+                        <!-- Email -->
+                        <div class="col-sm mt-5">
+                            <input type="email" name="email" class="form-control" placeholder="{{ trans('public.email') }}" required>
+                        </div>
+                        <!-- Submit -->
+                        <div class="col-12 col-lg-2 mt-5 d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-sm btn-primary w-100">{{ trans('admin\main.add') }}</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
 
-    <!-- Submit List ID to Admin -->
-    <div class=" py-20 px-25 mt-20 ">
-        <form action="/panel/certificates/teachers-certificates/send-to-admin" method="POST" class="mt-15">
-            @csrf
-            <input type="hidden" name="teacher_webinar_list_id" value="{{ $teacherWebinarList->id ?? '' }}">
-            
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary  w-25  btn-lg">
-                    {{ trans('update.send') }}
-                </button>
-            </div>
-        </form>
-    </div>
+        <!-- Submit List ID to Admin -->
+        <div class=" py-20 px-25 mt-20 ">
+            <form action="/panel/certificates/teachers-certificates/send-to-admin" method="POST" class="mt-15">
+                @csrf
+                <input type="hidden" name="teacher_webinar_list_id" value="{{ $teacherWebinarList->id ?? '' }}">
+                
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary  w-25  btn-lg">
+                        {{ trans('update.send') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    @endif
 </section>
 @endsection

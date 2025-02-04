@@ -6,12 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherWebinarList extends Model
 {
-    protected $fillable = ['webinar_id', 'instructor_id', 'teacher_ids', 'status'];
-    
+    protected $fillable = ['webinar_id', 'instructor_id', 'teacher_ids', 'status','created_at'];
+    public $timestamps = false;
+
     protected $casts = [
-        'teacher_ids' => 'array', 
         'status' => 'string',
     ];
+    public static $draft = 'draft';
+
+    public static $waiting = 'waiting';
+    public static $done = 'done';
+    public static $reject = 'reject';
 
     /**
      * Relationship: Webinar

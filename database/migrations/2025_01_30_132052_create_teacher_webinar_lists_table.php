@@ -17,7 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('webinar_id');
             $table->unsignedInteger('instructor_id');
-            $table->timestamps();
+            $table->integer('created_at');
 
             // Foreign key constraints (optional)
             $table->foreign('webinar_id')->references('id')->on('webinars')->cascadeOnDelete();

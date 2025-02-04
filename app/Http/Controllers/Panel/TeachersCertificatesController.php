@@ -19,6 +19,14 @@ class TeachersCertificatesController extends Controller
      */
     public function index($webinarId)
     {
+        /** @var \App\User $user */
+        $user = auth()->user();
+        $webinar= Webinar::findOrFail($webinarId);
+
+        if (!$user->isTeacher() and $webinar->teacher->id != $user->id  ) {
+            abort(404);
+        }
+
         $teachers=null;
         // Get the authenticated teacher
         $user = auth()->user(); // Assuming teacher is authenticated as 'user'
@@ -32,8 +40,6 @@ class TeachersCertificatesController extends Controller
             $teachers = $teacherWebinarList->teachers;
             return view(getTemplate() . '.panel.teachers.index', compact('teachers', 'webinar','teacherWebinarList'));
         }
-       
-        $webinar= Webinar::findOrFail($webinarId);
         return view(getTemplate() . '.panel.teachers.index', compact('teachers', 'webinar'));
     }
     
@@ -59,9 +65,16 @@ class TeachersCertificatesController extends Controller
         $teacherWebinarList = TeacherWebinarList::where('webinar_id', $request->webinar_id)
                                                  ->where('instructor_id', $user->id)
                                                  ->first();
-                                                 
+        
         if ($teacherWebinarList) {
-            // Store the teacher in the TeachersCertificates table
+            if ( $teacherWebinarList->status !='draft') {  
+                $toastData = [
+                    'title' => trans('public.request_failed'),
+                    'msg' => trans("Teacher list already submmetted and can't be changed."),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]); 
+            }       
             TeachersCertificates::create([
                 'webinar_id' => $request->webinar_id,
                 'name' => $request->name,
@@ -69,11 +82,12 @@ class TeachersCertificatesController extends Controller
                 'email' => $request->email,
                 'created_at' => time(),
             ]);
-        } else {
+        } elseif(empty($teacherWebinarList)) {
             // Create a new TeacherWebinarList with the teacher's ID
             $teacherWebinarList = TeacherWebinarList::create([
                 'webinar_id' => $request->webinar_id,
                 'instructor_id' => $user->id,
+                'created_at' => time(),
             ]);
             
             TeachersCertificates::create([
@@ -85,7 +99,7 @@ class TeachersCertificatesController extends Controller
             ]);
         }
         // Redirect back with success message
-        return redirect()->back()->with('success', 'Teacher added to the webinar.');
+        return redirect()->back();
     }
 
     /**
@@ -109,7 +123,7 @@ class TeachersCertificatesController extends Controller
             return view('panel.teachers.show', compact('teachers', 'teacherWebinarList'));
         }
 
-        return redirect()->back()->with('error', 'Teacher list not found for this webinar.');
+        return redirect()->back();
     } 
 
     /**
@@ -128,18 +142,25 @@ class TeachersCertificatesController extends Controller
         $teacherWebinarList = TeacherWebinarList::where('webinar_id', $webinarId)
                                                 ->where('instructor_id', $user->id)
                                                 ->first();
-    
         if ($teacherWebinarList) {
+            if ( $teacherWebinarList->status !='draft') {  
+                $toastData = [
+                    'title' => trans('public.request_failed'),
+                    'msg' => trans("Teacher list already submmetted and can't be changed."),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]); 
+            } 
             // Supprimer l'enseignant de TeachersCertificates
             $deleted = TeachersCertificates::where('list_id', $teacherWebinarList->id)
-                                           ->where('id', $teacherid)
-                                           ->delete();
+                                    ->where('id', $teacherid)
+                                    ->delete();
             if ($deleted) {
-                return redirect()->back()->with('success', 'Teacher removed from webinar.');
+                return redirect()->back();
             }
         }
     
-        return redirect()->back()->with('error', 'Teacher not found in this webinar.');
+        return redirect()->back();
     }
     
 }
