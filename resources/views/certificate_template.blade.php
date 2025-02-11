@@ -19,12 +19,12 @@
     <div class="container">
         <h1>{{ $teacherName }}</h1>
         <p>{!! $body !!}</p>
-        @if($showQr){ 
+        @if($showQr)
             <div class="qr-code">
                 <img src="data:image/png;base64,{{ $qrCodeImage }}" alt="QR Code" /><br>
                 <span>Certificate ID: {{ $certificateId }}</span>
             </div>
-        }@endif  
+        @endif  
     </div>
 </body>
 </html>

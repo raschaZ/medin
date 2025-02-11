@@ -415,10 +415,12 @@ class MakeCertificate
         );
 
         // Generate and save the PDF
-        $pathSave =$this->generateAndSavePdf($userCertificate, $template, 'instructor',true,false);
+        $pathSave =$this->generateAndSavePdf($userCertificate, $template, 'instructor',true,false,$teacher);
 
-        // Generate the public URL for the certificate
-        $certificateUrl = url("store/certificates/{$user->id}/certificate_{$userCertificate->id}.pdf");
+
+        // Ensure the file name is safe
+        $safeTeacherName = $teacher->name ? str_replace(' ', '_', $teacher->name) : $userCertificate->id;
+        $certificateUrl = url("store/certificates/{$user->id}/certificate_{$safeTeacherName}.pdf");
         try {
             \Mail::to($teacher->email)->send(new CertificateGenerated($certificateUrl,$teacher,$course));
         } catch (Exception $exception) {
@@ -437,13 +439,16 @@ class MakeCertificate
         return redirect()->back()->with(['toast' => $toastData]);
     }
     
-    private function generateAndSavePdf($certificate, $template, $type, $returnPath=false,$showQr=true )
+    private function generateAndSavePdf($certificate, $template, $type, $returnPath=false,$showQr=true,$teacher=null )
     {
         // Define the storage path and filename
         $userId = $certificate->student_id;
         $path = "certificates/{$userId}";
-        $fileName = "certificate_{$certificate->id}.pdf";
-    
+
+        $safeTeacherName =($teacher && $teacher->name) ? str_replace(' ', '_', $teacher->name) : $certificate->id;
+
+        $fileName = "certificate_{$safeTeacherName}.pdf"; 
+           
         // Ensure the storage path exists
         $storage = Storage::disk('public');
         if (!$storage->exists($path)) {
@@ -480,7 +485,7 @@ class MakeCertificate
         // Build the HTML content
         $htmlContent = view('certificate_template', [
             'backgroundImage' => $backgroundImage,
-            'teacherName' => ($type === 'instructor') ? 'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) : htmlspecialchars($certificate->student->full_name),
+            'teacherName' => ($type === 'instructor') ? 'Dr ' . htmlspecialchars($teacher->name??$certificate->webinar->teacher->full_name) : htmlspecialchars($teacher->name??$certificate->student->full_name),
             'body' => $body,
             'showQr'=> $showQr,
             'qrCodeImage' => $qrCodeImage,

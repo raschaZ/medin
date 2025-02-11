@@ -81,7 +81,7 @@
                         </div>
                         <!-- Submit -->
                         <div class="col-12 col-lg-2 mt-5 d-flex align-items-center justify-content-end">
-                            <button type="submit" class="btn btn-sm btn-primary w-100">{{ trans('admin\main.add') }}</button>
+                            <button type="submit" class="btn btn-sm btn-primary w-100">{{ trans('admin/main.add') }}</button>
                         </div>
                     </div>
                 </div>
