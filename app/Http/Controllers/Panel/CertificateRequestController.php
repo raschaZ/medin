@@ -35,12 +35,26 @@ class CertificateRequestController extends Controller
                 'instructor_id' => $user->id,
                 'webinar_id' => $list->webinar->id,
                 'list_id' => $list->id,
-            ])->exists();
-            if ($attendeeExists) {
+            ])->first();
+            
+            if ($attendeeExists && $attendeeExists->status != CertificateRequest::$waiting) {
                 $toastData = [
                     'title' => trans('public.request_failed'),
                     'msg' => trans('public.request_exist'),
                     'status' => 'error',
+                ];
+        
+                return redirect('/course/'.$list->webinar->slug)->with(['toast' => $toastData]);
+            }elseif($attendeeExists && $attendeeExists->status == CertificateRequest::$waiting){
+                $notifyOptions = [
+                    '[u.name]' => $user->full_name,
+                    '[c.title]' => $list->webinar->slug,
+                ];
+                sendNotification('certificate_request_send', $notifyOptions, 1);    
+                $toastData = [
+                    'title' => trans('public.request_success'),
+                    'msg' => trans('webinars.request_sent'),
+                    'status' => 'success',
                 ];
         
                 return redirect('/course/'.$list->webinar->slug)->with(['toast' => $toastData]);
