@@ -7,7 +7,6 @@ use App\Models\TeachersCertificates;
 use App\Models\TeacherWebinarList;
 use App\Models\Webinar;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class TeachersCertificatesController extends Controller
 {
