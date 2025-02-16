@@ -201,11 +201,11 @@
                                                       
                                                         <div class="dropdown-menu webinars-lists-dropdown">
                                                             @if($offlinePayment->status == \App\Models\OfflinePayment::$waiting)
-                                                                <a href="/panel/financial/offline_payments/requests/{{ $offlinePayment->id }}/approved" class="d-block text-success">
+                                                                <a href="/panel/financial/offline-payments/requests/{{ $offlinePayment->id }}/approved" class="d-block text-success">
                                                                     <i class="fa fa-check mr-1"></i>
                                                                     <span class="ml-2">{{ trans("financial.approve") }}</span>    
                                                                 </a>
-                                                                <a href="/panel/financial/offline_payments/requests/{{ $offlinePayment->id }}/reject" class="d-block text-danger">
+                                                                <a href="/panel/financial/offline-payments/requests/{{ $offlinePayment->id }}/reject" class="d-block text-danger">
                                                                     <i class="fa fa-times-circle mr-1"></i> 
                                                                     <span class="ml-2">{{ trans("public.reject") }}</span>   
                                                                 </a>

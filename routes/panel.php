@@ -294,7 +294,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
                 Route::get('/', 'OfflinePaymentController@index');
                 Route::get('/excel', 'OfflinePaymentController@exportExcel');
                 Route::get('/{id}/reject', 'OfflinePaymentController@reject');
-                Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+                Route::get('/{id}/approved', 'OfflinePaymentController@offlinePayment');
             });
         });
 
