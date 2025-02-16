@@ -459,7 +459,7 @@ class AccountingController extends Controller
         ]);
     
         // Send notifications to user and admin
-        $webinar = !empty($webinar_id) ? Webinar::find($webinar_id) : null;
+        $webinar = !empty($webinarId) ? Webinar::find($webinarId) : null;
         $webinarName = $webinar ? $webinar->getTitleAttribute() : null;
         $teacherId = $webinar && $webinar->teacher ? $webinar->teacher->id : null;
 
@@ -468,7 +468,6 @@ class AccountingController extends Controller
             '[u.name]' => $userAuth->full_name,
             '[webinar_name]' => $webinarName,
         ];
-
         sendNotification('offline_payment_request', $notifyOptions, $userAuth->id);
         sendNotification('new_offline_payment_request', $notifyOptions, 1);
 

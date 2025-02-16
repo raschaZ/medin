@@ -241,9 +241,7 @@ class OfflinePaymentController extends Controller
     
     
     public function offlinePayment(Request $request, $id)
-    {
-        $this->authorize('admin_offline_payments_approved');
-    
+    {    
         $offlinePayment = OfflinePayment::findOrFail($id);
     
         // Ensure the payment is still pending
@@ -362,6 +360,42 @@ class OfflinePaymentController extends Controller
             'code' => 422,
             'message' => trans('update.something_went_wrong'),
         ], 422);
+    }
+    
+    
+    /**
+     * Handle success response.
+     */
+    private function successResponse($request, $item)
+    {
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('webinars.success_store'),
+            'status' => 'success',
+        ];
+    
+        $notifyOptions = ['[c.title]' => $item->slug];
+        sendNotification("you_have_been_accepted", $notifyOptions, $item->creator_id);
+    
+        if ($request->ajax()) {
+            return response()->json(['code' => 200]);
+        }
+    
+        return back()->with(['toast' => $toastData]);
+    }
+    
+    /**
+     * Handle error response.
+     */
+    private function errorResponse($request, $item, $type)
+    {
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('public.request_failed'),
+            'status' => 'error',
+        ];
+    
+        return back()->with(['toast' => $toastData]);
     }
     
 }
