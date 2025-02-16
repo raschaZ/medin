@@ -52,7 +52,7 @@ class OfflinePaymentsExport implements FromCollection, WithHeadings, WithMapping
             $offlinePayment->user->full_name,
             $offlinePayment->user->role->caption,
             $this->currency . '' . $offlinePayment->amount,
-            $offlinePayment->bank,
+            $offlinePayment->bank??$offlinePayment->offlineBank->getTitleAttribute(),
             $offlinePayment->reference_number,
             $offlinePayment->user->mobile,
             dateTimeFormat($offlinePayment->pay_date, 'j M Y H:i'),

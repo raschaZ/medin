@@ -4,7 +4,7 @@
 @endpush
 @section('content')
     <section class="section">
-        <div class="section-header">
+        <div class="section-header mb-2">
             <h1>{{ $webinarTitle }} - {{ trans('update.waitlists') }}</h1>
             {{-- <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="{{ getAdminPanelUrl() }}">{{trans('admin/main.dashboard')}}</a>
@@ -15,7 +15,7 @@
 
         <div class="section-body">
 
-            <div class="card">
+            <div class="card mb-2">
                 <div class="card-body">
                     <form method="get" class="mb-0">
                         <div class="row">
@@ -56,8 +56,8 @@
                             </div>
 
                             <div class="col-md-2">
-                                <div class="form-group mt-1">
-                                    <label class="input-label mb-1"> </label>
+                                <div class="form-group mt-3">
+                                    <label class="input-label"> </label>
                                     <input type="submit" class="text-center btn btn-primary" value="{{trans('admin/main.show_results')}}">
                                 </div>
                             </div>
