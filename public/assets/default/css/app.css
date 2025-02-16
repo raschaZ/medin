@@ -19739,3 +19739,7 @@ p {
 .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
   opacity: 0.6 !important;
 }
+
+img.img-cover.flip {
+  border-radius: 0 10px 10px 0;
+}

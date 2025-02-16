@@ -15,9 +15,6 @@
 
     <div class="container">
         <div class="row login-container">
-            <div class="col-12 col-md-6 pl-0">
-                <img src="{{ getPageBackgroundSettings('register') }}" class="img-cover" alt="Login">
-            </div>
             <div class="col-12 col-md-6">
                 <div class="login-card">
                     <h1 class="font-20 font-weight-bold">{{ trans('auth.signup') }}</h1>
@@ -25,9 +22,15 @@
                     <form method="post" action="/register" class="mt-35">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-                        @if(!empty($selectRolesDuringRegistration) and count($selectRolesDuringRegistration))
+                        @if(!empty($selectRolesDuringRegistration) and count($selectRolesDuringRegistration)-1)
                             @php
                                 $oldAccountType = old("account_type");
+
+                                if (($key = array_search("organization", $selectRolesDuringRegistration)) !== false) {
+                                    unset($selectRolesDuringRegistration[$key]);
+                                }
+
+                                $selectRolesDuringRegistration = array_values($selectRolesDuringRegistration);
                             @endphp
 
                             <div class="form-group">
@@ -184,6 +187,9 @@
                     </div>
 
                 </div>
+            </div>
+            <div class="col-12 col-md-6 pl-0 pr-0">
+                <img src="{{ getPageBackgroundSettings('register') }}" class="img-cover flip" alt="Login">
             </div>
         </div>
     </div>
