@@ -581,42 +581,58 @@
     $('body').on('click', '.js-save-waitlist', function (e) {
         e.preventDefault();
         const $this = $(this);
-
+    
         const path = '/waitlists/join';
         const $form = $this.closest('#waitlistModal').find('.waitlist-modal-form');
         let data = serializeObjectByTag($form);
-
+    
         $this.addClass('loadingbar primary').prop('disabled', true);
         $form.find('input').removeClass('is-invalid');
         $form.find('textarea').removeClass('is-invalid');
-
+    
         $.post(path, data, function (result) {
             if (result && result.code === 200) {
-                //window.location.reload();
                 Swal.fire({
                     icon: 'success',
                     html: '<h3 class="font-16 text-center text-dark-blue py-25">' + result.msg + '</h3>',
                     showConfirmButton: false,
                     width: '25rem',
                 });
-
+    
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             }
         }).fail(function (err) {
             $this.removeClass('loadingbar primary').prop('disabled', false);
+    
+            // Close the modal
+            $('#waitlistModal').modal('hide');
+        
+            // Show error toast
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.errors,
+                toast: true,
+                position: 'center',
+                showConfirmButton: false,
+                timer: 3000,
+            });
+    
+            // Handle form errors
             var errors = err.responseJSON;
-
             if (errors && errors.errors) {
                 Object.keys(errors.errors).forEach((key) => {
                     const error = errors.errors[key];
                     let element = $form.find('.js-ajax-' + key);
-
-                    element.addClass('is-invalid');
-                    element.parent().find('.invalid-feedback').text(error[0]);
+    
+                    if (element.length) {
+                        element.addClass('is-invalid');
+                        element.parent().find('.invalid-feedback').text(error[0]);
+                    }
                 });
             }
-        })
-    })
+        });
+    });
 })(jQuery);

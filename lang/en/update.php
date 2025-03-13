@@ -2536,5 +2536,9 @@ return [
 'instructor_completion'=> 'Course monitoring',
 'reminder_mark_attendance' => 'Before downloading the certificate, please mark your attendance and review the course content.',
 'reminder_mark_attendance_quiz' => 'Before you can take the quiz, make sure to mark your attendance and review the course content.',
+'preparation_days' => 'Preparation Days',
+'preparation_days_placeholder' => 'Enter the number of days required for preparation',
+'preparation_days_hint' => 'This is the number of days required to prepare before a webinar starts.',
+'complete_your_profile_first' => 'Please complete your profile first',
 
 ];

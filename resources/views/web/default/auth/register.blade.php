@@ -75,6 +75,36 @@
                             </div>
                             @enderror
                         </div>
+                        
+                        <div class="form-group">
+                            <label class="input-label" for="grade">{{ trans('auth.grade') }}:</label>
+                            <input name="grade" type="text" value="{{ old('grade') }}" class="form-control @error('grade') is-invalid @enderror">
+                            @error('grade')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="input-label" for="hospital">{{ trans('auth.hospital') }}:</label>
+                            <input name="hospital" type="text" value="{{ old('hospital') }}" class="form-control @error('hospital') is-invalid @enderror">
+                            @error('hospital')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="input-label" for="service">{{ trans('auth.service') }}:</label>
+                            <input name="service" type="text" value="{{ old('service') }}" class="form-control @error('service') is-invalid @enderror">
+                            @error('service')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
 
                         <div class="form-group">
                             <label class="input-label" for="password">{{ trans('auth.password') }}:</label>

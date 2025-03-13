@@ -12,9 +12,21 @@ class WaitlistController extends Controller
 {
     public function store(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
         $data = $request->all();
-
+        if(!$user->isProfileComplete()){
+            $toastData = [
+                'title' => trans('public.request_failed'),
+                'msg' => trans('update.complete_your_profile_first'),
+                'status' => 'error'
+            ];
+            return response()->json([
+                'code' => 422,
+                'errors' => trans('update.complete_your_profile_first')
+            ], 422);
+            return back()->with(['toast' => $toastData]);
+        }
         $rules = [
             'slug' => 'required|exists:webinars,slug'
         ];

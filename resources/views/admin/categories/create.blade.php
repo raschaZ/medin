@@ -3,7 +3,6 @@
 @push('styles_top')
     <link href="/assets/default/vendors/sortable/jquery-ui.min.css"/>
 @endpush
-
 @section('content')
     <section class="section">
         <div class="section-header">
@@ -79,6 +78,20 @@
                                            value="{{ !empty($category) ? $category->order : old('order') }}"/>
                                     <div class="text-muted text-small mt-1">{{ trans('update.category_order_hint') }}</div>
                                     @error('slug')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label>{{ trans('update.preparation_days') }}</label>
+                                    <input type="number" name="preparation_days"
+                                        class="form-control @error('preparation_days') is-invalid @enderror"
+                                        value="{{ !empty($category) ? $category->preparation_days : old('preparation_days') }}"
+                                        placeholder="{{ trans('update.preparation_days_placeholder') }}"/>
+                                    <div class="text-muted text-small mt-1">{{ trans('update.preparation_days_hint') }}</div>
+                                    @error('preparation_days')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>

@@ -38,6 +38,10 @@ class WaitlistController extends Controller
         $webinar = Webinar::find($webinarId);
 
         if (!empty($webinar)) {
+            
+            if(!$user->isProfileComplete()){
+                return apiResponse2(0, 'invalid', trans('api.public.complete_your_profile_first'));
+            }
             // Create a waitlist entry for the authenticated user
             Waitlist::query()->updateOrCreate([
                 'webinar_id' => $webinar->id,
@@ -46,7 +50,7 @@ class WaitlistController extends Controller
                 'full_name' => $user->full_name, // Use the authenticated user's full name
                 'created_at' => time() // Use the current timestamp
             ]);
-
+           
             // Set notification options with placeholders for the webinar title and user's name
             $notifyOptions = [
                 '[c.title]' => $webinar->title,

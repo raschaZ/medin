@@ -27,6 +27,7 @@
                                         <th>{{ trans('admin/main.icon') }}</th>
                                         <th class="text-left">{{ trans('update.order') }}</th>
                                         <th class="text-left">{{ trans('admin/main.title') }}</th>
+                                        <th>{{ trans('update.preparation_days') }}</th>
                                         <th>{{ trans('admin/main.sub_category') }}</th>
                                         <th>{{ trans('panel.classes') }}</th>
                                         <th>{{ trans('home.teachers') }}</th>
@@ -44,6 +45,7 @@
                                             </td>
                                             <td class="text-left">{{ $category->order }}</td>
                                             <td class="text-left">{{ $category->title }}</td>
+                                            <td>{{ $category->preparation_days??0 }}</td>
                                             <td>{{ $category->subCategories->count() }}</td>
                                             <td>{{ count($category->getCategoryCourses()) }}</td>
                                             <td>{{ count($category->getCategoryInstructorsIdsHasMeeting()) }}</td>

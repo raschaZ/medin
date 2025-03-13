@@ -1,6 +1,18 @@
 @extends(getTemplate() .'.panel.layouts.panel_layout')
 @push('styles_top')
     <link rel="stylesheet" href="/assets/vendors/fontawesome/css/all.min.css">
+
+    <style>
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling */
+            width: 100%; /* Ensure the container takes full width */
+        }
+
+        #datatable-details {
+            width: 100%; /* Ensure the table takes full width */
+            min-width: 800px; /* Set a minimum width to ensure it overflows */
+        }
+    </style>
 @endpush
 @section('content')
     <section class="section">
@@ -75,11 +87,15 @@
                 </div>
 
                 <div class="card-body">
-                    <table class="table table-striped font-14" id="datatable-details">
+                <div class="table-container">
+                <table class="table table-striped font-14" id="datatable-details">                        <thead>
                         <thead>
                         <tr>
                             <th class="text-left">{{ trans('admin/main.name') }}</th>
                             <th class="">{{ trans('auth.email') }}</th>
+                            <th class="">{{ trans('auth.grade') }}</th>
+                            <th class="">{{ trans('auth.hospital') }}</th>
+                            <th class="">{{ trans('auth.service') }}</th>
                             <th class="">{{ trans('public.phone') }}</th>
                             <th class="">{{ trans('update.registration_status') }}</th>
                             <th class="">{{ trans('update.submission_date') }}</th>
@@ -101,9 +117,15 @@
                                 <td class="text-left">{{ !empty($waitlist->user) ? $waitlist->user->full_name : $waitlist->full_name }}</td>
 
                                 <td class="text-center">{{ !empty($waitlist->user) ? $waitlist->user->email : $waitlist->email }}</td>
+                                
+                                <td class="text-center">{{ (!empty($waitlist->user) ? $waitlist->user->grade : $waitlist->grade) ?? '-' }}</td>
 
-                                <td class="text-center">{{ !empty($waitlist->user) ? $waitlist->user->mobile : $waitlist->phone }}</td>
+                                <td class="text-center">{{ (!empty($waitlist->user) ? $waitlist->user->hospital : $waitlist->hospital) ?? '-' }}</td>
 
+                                <td class="text-center">{{ (!empty($waitlist->user) ? $waitlist->user->service : $waitlist->service) ?? '-' }}</td>
+                                
+                                <td class="text-center">{{ (!empty($waitlist->user) ? $waitlist->user->phone : $waitlist->phone) ?? '-' }}</td>
+                                
                                 <td class="text-center">
                                     @if(!empty($waitlist->user))
                                         <span class="">{{ trans('update.registered') }}</span>
@@ -147,7 +169,8 @@
                         </tbody>
 
                     </table>
-                </div>
+                    </div>
+                    </div>
 
                 <div class="card-footer text-center">
                     {{ $waitlists->appends(request()->input())->links() }}
