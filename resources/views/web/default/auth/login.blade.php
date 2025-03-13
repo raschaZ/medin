@@ -18,9 +18,6 @@
 
         <div class="row login-container">
 
-            <div class="col-12 col-md-6 pl-0">
-                <img src="{{ getPageBackgroundSettings('login') }}" class="img-cover" alt="Login">
-            </div>
             <div class="col-12 col-md-6">
                 <div class="login-card">
                     <h1 class="font-20 font-weight-bold">{{ trans('auth.login_h1') }}</h1>
@@ -88,6 +85,9 @@
                         <a href="/register" class="text-secondary font-weight-bold">{{ trans('auth.signup') }}</a>
                     </div>
                 </div>
+            </div>
+            <div class="col-12 col-md-6 pl-0 pr-0">
+                <img src="{{ getPageBackgroundSettings('login') }}" class="img-cover flip" alt="Login">
             </div>
         </div>
     </div>

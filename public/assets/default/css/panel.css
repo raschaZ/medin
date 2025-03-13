@@ -146,6 +146,10 @@ $custom-control-indicator-bg:$primary;*/
   overflow: auto;
 }
 
+.overflow{
+  overflow: auto;
+}
+
 @media (max-width: 991px) {
   .conversations-list {
     height: 275px;

@@ -34,7 +34,6 @@ class CategoryController extends Controller
     {
         $this->authorize('admin_categories_create');
 
-
         $data = [
             'pageTitle' => trans('admin/main.category_new_page_title'),
         ];
@@ -51,6 +50,7 @@ class CategoryController extends Controller
             'slug' => 'nullable|max:255|unique:categories,slug',
             'thumbnail' => 'required', // Add validation for the thumbnail
             'image_cover' => 'required', // Add validation for the image_cover
+            'preparation_days' => 'nullable|integer|min:0', // Add validation for preparation_days
         ]);
 
         $data = $request->all();
@@ -76,6 +76,7 @@ class CategoryController extends Controller
             'order' => $order,
             'thumbnail' => $data['thumbnail'] ?? null,
             'image_cover' => $data['image_cover'] ?? null,
+            'preparation_days' => $data['preparation_days'] ?? 0, // Add preparation_days
         ]);
 
         CategoryTranslation::updateOrCreate([
@@ -128,6 +129,7 @@ class CategoryController extends Controller
             'slug' => 'nullable|max:255|unique:categories,slug,' . $category->id,
             'thumbnail' => 'required', // Add validation for the thumbnail
             'image_cover' => 'required', // Add validation for the image_cover
+            'preparation_days' => 'nullable|integer|min:0', // Add validation for preparation_days
         ]);
 
         $data = $request->all();
@@ -147,6 +149,7 @@ class CategoryController extends Controller
             'order' => $data['order'] ?? $category->order,
             'thumbnail' => $data['thumbnail'] ?? $category->thumbnail,
             'image_cover' => $data['image_cover'] ?? $category->image_cover,
+            'preparation_days' => $data['preparation_days'] ?? $category->preparation_days, 
         ]);
 
         CategoryTranslation::updateOrCreate([

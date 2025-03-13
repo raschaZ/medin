@@ -639,9 +639,11 @@ class WebinarController extends Controller
                 'partners' => 'required_if:partner_instructor,on',
                 'capacity' => 'nullable|numeric|min:0'
             ];
-
+            $category = Category::find($data['category_id']); // Use `find` for a single record.
             // if ($webinar->isWebinar()) {
-                $rules['start_date'] = 'required|date|after:' . now()->addMonth()->format('Y-m-d');
+            if ($category && $category->preparation_days) {
+                $rules['start_date'] = 'required|date|after:' . now()->addDays($category->preparation_days)->format('Y-m-d');
+            }
             // }
         }
 

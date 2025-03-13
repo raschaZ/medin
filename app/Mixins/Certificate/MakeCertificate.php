@@ -2,6 +2,7 @@
 
 namespace App\Mixins\Certificate;
 
+use App\Mail\CertificateGenerated;
 use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
@@ -12,6 +13,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Exception;
 use Spatie\Browsershot\Browsershot;
 
 class MakeCertificate
@@ -211,7 +213,7 @@ class MakeCertificate
 
             $userCertificate = $this->saveCourseCertificate($user, $course);
 
-            return $this->generateAndSavePdf($userCertificate, $template,$type);
+            return $this->generateAndSavePdf($userCertificate, $template,$type,false);
         }
 
         $toastData = [
@@ -382,16 +384,71 @@ class MakeCertificate
 
         return $certificate;
     }
-  
 
-    private function generateAndSavePdf($certificate,$template,$type)
+    public function makeCourseCertificateTeacher($teacher, $course)
     {
-      //  dd($template->category_id);
-        // Define the storage path and filename
-        $userId = auth()->id();
-        $path = "certificates/{$userId}";
-        $fileName = "certificate_{$certificate->id}.pdf";
+        
+        // Retrieve the certificate template
+        $template = CertificateTemplate::where('status', 'publish')
+            ->where('type', 'instructor')
+            ->where('category_id', $course->category_id)
+            ->first();
     
+        // Validate course and template
+        if (empty($course) || empty($template)) {
+            $toastData = [
+                'title' => trans('public.request_failed'),
+                'msg' => trans('update.no_certificate_template_is_defined_for_courses'),
+                'status' => 'error'
+            ];
+            return redirect()->back()->with(['toast' => $toastData]);
+        }
+       
+        // Retrieve or create the certificate record
+        $user = $course->teacher;
+        $userCertificate = Certificate::firstOrCreate(
+            ['webinar_id' => $course->id, 'student_id' => $user->id],
+            [
+                'type' => 'course',
+                'created_at' => time()
+            ]
+        );
+
+        // Generate and save the PDF
+        $pathSave =$this->generateAndSavePdf($userCertificate, $template, 'instructor',true,false,$teacher);
+
+
+        // Ensure the file name is safe
+        $safeTeacherName = $teacher->name ? str_replace(' ', '_', $teacher->name) : $userCertificate->id;
+        $certificateUrl = url("store/certificates/{$user->id}/certificate_{$safeTeacherName}.pdf");
+        try {
+            \Mail::to($teacher->email)->send(new CertificateGenerated($certificateUrl,$teacher,$course));
+        } catch (Exception $exception) {
+            //  dd($exception);
+             abort(404);
+        }
+        // Send the certificate link via email
+        // Mail::to($teacher->email)->send(new CertificateGenerated($certificateUrl));
+
+        // Return a success response
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('update.certificate_generated_and_email_sent'),
+            'status' => 'success'
+        ];
+        return redirect()->back()->with(['toast' => $toastData]);
+    }
+    
+    private function generateAndSavePdf($certificate, $template, $type, $returnPath=false,$showQr=true,$teacher=null )
+    {
+        // Define the storage path and filename
+        $userId = $certificate->student_id;
+        $path = "certificates/{$userId}";
+
+        $safeTeacherName =($teacher && $teacher->name) ? str_replace(' ', '_', $teacher->name) : $certificate->id;
+
+        $fileName = "certificate_{$safeTeacherName}.pdf"; 
+           
         // Ensure the storage path exists
         $storage = Storage::disk('public');
         if (!$storage->exists($path)) {
@@ -399,7 +456,8 @@ class MakeCertificate
         }
     
         $fullPath = $path . '/' . $fileName;
-// Convert background image to base64
+    
+        // Convert background image to base64
         $backgroundPath = public_path($template->image);
         $backgroundImage = '';
         if (file_exists($backgroundPath)) {
@@ -407,93 +465,45 @@ class MakeCertificate
             $base64 = base64_encode($imageData);
             $backgroundImage = 'data:image/png;base64,' . $base64;
         }
+    
         // Generate the QR code as a base64 image
         $url = url("/certificate_validation");
         $qrCodeImage = base64_encode(QrCode::format('png')->size(100)->generate($url));
-               // Replace placeholders in template body
-               $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
-               $date = dateTimeFormat($certificate->created_at, "j M Y");
-            //    $body = isset($template->body) ? str_replace([':title', ':date'], [$title, $date], $template->body) : '';
-               $body = isset($template->body) 
-               ? str_replace([':title', ':date'], [$title, $date], $template->body) 
-               : '';
-           
-           if ($body) {
-               // Use regex to remove the style attribute from the first <div>
-               $body = preg_replace('/<div([^>]*?)\sstyle="[^"]*"/', '<div$1', $body, 1);
-           }
-           
-               // Build the HTML content
-               $htmlContent = '
-               <!DOCTYPE html>
-               <html lang="en">
-               <head>
-                   <meta charset="UTF-8">
-                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                   <title>Certificate</title>
-                   <style>
-                       body {
-                           margin: 0;
-                       }
-                       .background {
-                           position: absolute;
-                           top: 0;
-                           left: 0;
-                           width: 100%;
-                           height: 100%;
-                           z-index: -1;
-                       }
-                       .container {
-                           text-align: center;
-                           margin-top: 210px;
-                           padding: 40px;
-                       }
-                       h1 {
-                           font-size: 36pt;
-                           margin-bottom: 10px;
-                           color: #2f5496;
-                       }
-                       p {
-                           font-size: 18pt;
-                           font-family: Calibri, sans-serif;
-                           color: #1f3864;
-                       }
-                       .qr-code {
-                           margin-top: 90px;
-                           text-align: center;
-                       }
-                       .qr-code span {
-                           font-size: 14pt;
-                           margin-top: 10px;
-                       }
-                   </style>
-               </head>
-               <body>
-                   <img src="' . htmlspecialchars($backgroundImage) . '" alt="Background" class="background" />
-                   <div class="container">
-                       <h1>
-                           ' . (($type && $type == "instructor") 
-                               ? 'Dr ' . htmlspecialchars($certificate->webinar->teacher->full_name) 
-                               : htmlspecialchars($certificate->student->full_name)) . '
-                       </h1>
-                       <p>' . $body . '</p>
-                       <div class="qr-code">
-                           <img src="data:image/png;base64,' . $qrCodeImage . '" alt="QR Code" /><br>
-                           <span>certificate id: ' . htmlspecialchars($certificate->id) . '</span>
-                       </div>
-                   </div>
-               </body>
-               </html>';
-               
-
-            // Generate the PDF using Dompdf via Laravel
-        $pdf = PDF::loadHTML($htmlContent)
-            ->setPaper('a4', 'landscape') // Adjust paper size
-            ->setWarnings(false);
-    // dd($pdf);
-        // Save the PDF to the specified path in public storage
-        $storage->put($fullPath, $pdf->output());
     
+        // Replace placeholders in template body
+        $title = htmlspecialchars($certificate->webinar->getTitleAttribute());
+        $date = dateTimeFormat($certificate->created_at, "j M Y");
+        $body = isset($template->body) 
+            ? str_replace([':title', ':date'], [$title, $date], $template->body) 
+            : '';
+    
+        if ($body) {
+            // Use regex to remove the style attribute from the first <div>
+            $body = preg_replace('/<div([^>]*?)\sstyle="[^"]*"/', '<div$1', $body, 1);
+        }
+    
+        // Build the HTML content
+        $htmlContent = view('certificate_template', [
+            'backgroundImage' => $backgroundImage,
+            'teacherName' => ($type === 'instructor') ? 'Dr ' . htmlspecialchars($teacher->name??$certificate->webinar->teacher->full_name) : htmlspecialchars($teacher->name??$certificate->student->full_name),
+            'body' => $body,
+            'showQr'=> $showQr,
+            'qrCodeImage' => $qrCodeImage,
+            'certificateId' => $certificate->id
+        ])->render();
+    
+        // Generate the PDF using Dompdf
+        $pdf = PDF::loadHTML($htmlContent)
+            ->setPaper('a4', 'landscape')
+            ->setWarnings(false);
+    
+        // Save the PDF to the specified path
+        $storage->put($fullPath, $pdf->output());
+
+        if($returnPath){
+            return $storage->path($fullPath);
+        }
+            
         // Generate URL for download
         $downloadPath = $storage->path($fullPath);
     

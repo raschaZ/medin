@@ -1518,6 +1518,7 @@ By enabling this feature, newly registered users will require approval using thi
 'discount_amount' => 'Discount Amount',
 'discount_title' => 'Discount Title',
 'mark_present'=>'Registering attendance',
+'mark_present_first'=>'Registering your attendance First',
 'confirm_send_verification_request'=> 'Confirm sending payment verification request',
 'certificate_requests_list'=>'Certificate Requests',
 'certificate_requests'=>'Certificate Requests',

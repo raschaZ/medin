@@ -63,6 +63,7 @@
                                             <th>{{ trans('admin/main.instructor') }}</th>
                                             <th>{{ trans('admin/main.webinar') }}</th>
                                             <th>{{ trans('admin/main.status') }}</th>
+                                            <th>{{ trans('admin/main.list') }}</th>
                                             <th>{{ trans('admin/main.created_at') }}</th>
                                             <th>{{ trans('admin/main.actions') }}</th>
                                         </tr>
@@ -86,6 +87,16 @@
                                                             <span class="text-warning">{{ trans('admin/main.pending') }}</span>
                                                         @endif
                                                     </td>
+                                                    <td class="text-center align-middle">
+                                                        @if(!empty($certificateRequest->teachersList))
+                                                            <button class="btn btn-primary btn-sm view-list" 
+                                                                    data-list="{{ json_encode($certificateRequest->teachersList->teachers) }}">
+                                                                {{ trans('public.view') }}
+                                                            </button>
+                                                        @else
+                                                            ---
+                                                        @endif
+                                                    </td>                                                                                                   
                                                     <td>{{ dateTimeFormat($certificateRequest->created_at, 'j M Y H:i') }}</td>
 
                                                     <td>
@@ -98,7 +109,13 @@
                                                             'url' => getAdminPanelUrl().'/certificates/certificate-requests/'. $certificateRequest->id .'/reject',
                                                             'tooltip' => trans('public.reject'),
                                                             'btnIcon' => 'fa-times-circle',
-                                                            'btnClass' => 'ml-2',
+                                                            'btnClass' => 'text-warning ml-2',
+                                                        ])
+                                                        @include('admin.includes.delete_button', [
+                                                            'url' => getAdminPanelUrl().'/certificates/certificate-requests/'. $certificateRequest->id.'/destroy' ,
+                                                            'tooltip' => trans('public.delete'),
+                                                            'btnIcon' => 'fa-trash',
+                                                            'btnClass' => 'text-danger ml-2',
                                                         ])
                                                     </td>
                                                 </tr>
@@ -116,4 +133,52 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="listModal" tabindex="-1" aria-labelledby="listModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="listModalLabel">{{ trans('admin/main.list') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="listModalContent">
+                        <p class="text-center">{{ trans('admin/main.loading') }}...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
+@push('scripts_bottom')
+
+
+    <script>
+        $(document).ready(function () {
+            $('.view-list').on('click', function () {
+                let listData = $(this).data('list');
+                let modalContent = $('#listModalContent');
+                
+                console.log("List Data: ", listData); 
+
+                if (Array.isArray(listData) && listData.length > 0) {
+                    let html = '<table class="table"><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody>';
+                    listData.forEach(item => {
+                        html += `<tr><td>${item.name}</td><td>${item.email}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                    modalContent.html(html);
+                } else {
+                    modalContent.html('<p class="text-danger text-center">{{ trans("admin/main.no_data_found") }}</p>');
+                }
+
+                $('#listModal').modal('show');
+            });
+        });
+
+    </script>
+@endpush

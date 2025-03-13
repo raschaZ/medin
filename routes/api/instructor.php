@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\Instructor\BundleController;
+use App\Http\Controllers\Api\Instructor\BundleWebinarController;
+use App\Http\Controllers\Api\Instructor\CertificateRequestController;
+use App\Http\Controllers\Api\Instructor\TeachersCertificatesController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {
@@ -10,6 +14,14 @@ Route::group([], function () {
     Route::apiResource('bundles', BundleController::class)->middleware('api.level-access:teacher');
     Route::apiResource('bundles.webinars', BundleWebinarController::class)->middleware('api.level-access:teacher')->only(['index']);
 
+    Route::group(['prefix' => 'certificates/teachers-certificates'], function () {
+        Route::get('/{webinarId}', [TeachersCertificatesController::class, 'index']);
+        Route::post('/', [TeachersCertificatesController::class, 'store']);
+        Route::get('/{id}', [TeachersCertificatesController::class, 'show']);
+        Route::put('/{id}', [TeachersCertificatesController::class, 'update']);
+        Route::delete('/{webinarId}/teacher/{teacherId}', [TeachersCertificatesController::class, 'removeTeacher']);
+        Route::post('/send-to-admin', [CertificateRequestController::class, 'store']);
+    });
 
     Route::group(['prefix' => 'webinar'], function () {
         Route::post('/', ['uses' => 'WebinarsController@storeAll']);

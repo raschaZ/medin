@@ -47,29 +47,8 @@ class AttendeeController extends Controller
             return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
         }
 
-        if($webinar->teacher->id == $user->id ){ 
-                
-            $notifyOptions = [
-                '[u.name]' => $user->full_name,
-                '[c.title]' => $webinar->slug,
-            ];
-            sendNotification('certificate_request_send', $notifyOptions, 1);
-
-            $attendeeExists = CertificateRequest::where([
-                'instructor_id' => $user->id,
-                'webinar_id' => $webinar->id,
-                'status'=> CertificateRequest::$waiting,
-            ])->exists();
-            if ($attendeeExists) {
-                return apiResponse2(0, 'invalid', trans('webinars.attendee_exist'));
-            }else{
-                CertificateRequest::create([
-                    'instructor_id' => $user->id,
-                    'webinar_id' => $webinar->id,
-                    'created_at'=> time(),
-                ]); 
-                return apiResponse2(1, 'passed', trans('webinars.request_sent'));
-            }
+        if($webinar->teacher->id == $user->id ){      
+            return apiResponse2(0, 'go_step_2', trans('api.auth.go_step_2'),['webinar_id' =>$webinar->id]);
         }
         else{ 
             // Create new attendee

@@ -11,6 +11,7 @@ return [
     'title' => 'Title',
     'sub_title' => 'Subtitle',
     'name' => 'Name',
+    "teachers_certificates"=>"Teachers List",
     'seo_description' => 'SEO Meta Description',
     'cover_image' => 'Cover Image',
     'thumbnail_image' => 'Thumbnail',
@@ -397,4 +398,7 @@ return [
     'accepted'=> 'Accepted',
     'not_accepted'=> 'Not Accepted',
     'unexpected_error'=> 'Unexpected Error',
+    'empty'=>'Empty',
+    'request_exist'=>'OOPs! Request allredy exist !!',
+
 ];

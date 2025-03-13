@@ -1156,6 +1156,14 @@ class Webinar extends Model implements TranslatableContract
         }
     }
 
+    public function makeCertificateForTeacher($user)
+    {
+        if (!empty($user) and $this->certificate ) {
+            $makeCertificate = new MakeCertificate();
+            $makeCertificate->saveCourseCertificate($user, $this);
+        }
+    }
+
     public function getSalesCount()
     {
         $count = $this->sales()->count();
@@ -1166,5 +1174,14 @@ class Webinar extends Model implements TranslatableContract
 
         return $count;
     }
-
+    
+    /**
+     * Define the relationship between Webinar and TeachersCertificates.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function teachers()
+    {
+        return $this->hasMany(TeachersCertificates::class, 'webinar_id');  // Foreign key is 'webinar_id'
+    }
 }

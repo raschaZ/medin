@@ -23,4 +23,8 @@ class CertificateRequest extends Model
     {
         return $this->hasOne('App\Models\Webinar', 'id', 'webinar_id');
     }
+    public function teachersList()
+    {
+        return $this->belongsTo(TeacherWebinarList::class, 'list_id', 'id');
+    }    
 }

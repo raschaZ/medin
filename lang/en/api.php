@@ -6,7 +6,8 @@ return [
         'deleted' => ' the item removed successfully',
         'updated' => ' the item updated successfully',
         'status' => ':item :status successfully',
-        'error'  =>  'OOPs! Something went wrong !!'
+        'error'  =>  'OOPs! Something went wrong !!',
+        'complete_your_profile_first' => 'Please complete your profile first',
     ],
     'auth' => [
         'not_verified' => 'the user is not verified',
