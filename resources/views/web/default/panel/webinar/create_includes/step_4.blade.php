@@ -7,8 +7,15 @@
 
 <section class="mt-50">
     <div class="">
-        <h2 class="section-title after-line">{{ trans('public.chapters') }} ({{ trans('public.optional') }})</h2>
+        <h2 class="section-title after-line">{{ trans('public.chapters') }}</h2>
     </div>
+
+    {{-- Show validation errors --}}
+    @if ($errors->has('chapters'))
+        <div class="alert alert-danger mt-2">
+            {{ $errors->first('chapters') }}
+        </div>
+    @endif
 
     <button type="button" class="js-add-chapter btn btn-primary btn-sm mt-15" data-webinar-id="{{ $webinar->id }}">{{ trans('public.new_chapter') }}</button>
 
