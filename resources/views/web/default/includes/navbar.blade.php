@@ -42,6 +42,7 @@
                 </div>
 
                 <ul class="navbar-nav mr-auto d-flex align-items-center">
+                   
                     @if(!empty($categories) and count($categories))
                         <li class="mr-lg-25">
                             <div class="menu-category">
@@ -98,6 +99,26 @@
                                 <a class="nav-link" href="{{ $navbarPage['link'] }}">{{ $navbarPage['title'] }}</a>
                             </li>
                         @endforeach
+                    @endif
+                                                           
+                    @if($authUser->isAdmin())
+                        <li class="nav-item">
+                            <a href="{{ getAdminPanelUrl() }}" class="nav-link">
+                                <span class="ml-5">{{ trans('panel.dashboard') }}</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ getAdminPanelUrl("/settings") }}" class="nav-link">
+                                <span class="ml-5">{{ trans('panel.settings') }}</span>
+                            </a>
+                        </li>
+                    @elseif(!empty($authUser))
+                        <li class="nav-item">
+                            <a href="/panel" class="nav-link">
+                                <span class="ml-5">{{ trans('panel.dashboard') }}</span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

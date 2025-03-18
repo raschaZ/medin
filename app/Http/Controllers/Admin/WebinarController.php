@@ -607,7 +607,7 @@ class WebinarController extends Controller
             'category_id' => 'required',
             'price' => 'nullable|numeric|min:0',
         ];
-
+        if (isset($data['category_id'])) {
         // if ($webinar->isWebinar()) {
             $category = Category::find($data['category_id']); // Use `find` for a single record.
             // if ($webinar->isWebinar()) {
@@ -616,7 +616,7 @@ class WebinarController extends Controller
             }            $rules['duration'] = 'required';
             $rules['capacity'] = 'nullable|numeric|min:0';
         // }
-
+        }
         $this->validate($request, $rules);
 
         if (!empty($data['capacity']) and !empty($data['sales_count_number']) and $data['sales_count_number'] > $data['capacity']) {

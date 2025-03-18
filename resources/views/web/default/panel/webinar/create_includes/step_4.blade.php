@@ -4,10 +4,19 @@
     <link rel="stylesheet" href="/assets/vendors/summernote/summernote-bs4.min.css">
     <link href="/assets/default/vendors/sortable/jquery-ui.min.css"/>
 @endpush
+<!-- resources/views/web/default/panel/webinar/create_includes/steps.blade.php -->
 
+<!-- Step 4: Webinar Content -->
+<section class="mt-50">
+    <div class="step-content step-4">
+        <h2 class="section-title after-line">{{ trans('panel.content') }}</h2>
+
+        @include('web.default.panel.webinar.create_includes.accordions.content', ['webinar' => $webinar])
+    </div>
+</section>
 <section class="mt-50">
     <div class="">
-        <h2 class="section-title after-line">{{ trans('public.chapters') }}</h2>
+        <h2 class="section-title after-line">{{ trans('public.chapters')}} ({{ trans('public.optional') }}) </h2>
     </div>
 
     {{-- Show validation errors --}}
