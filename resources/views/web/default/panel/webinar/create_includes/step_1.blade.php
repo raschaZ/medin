@@ -93,6 +93,30 @@
             </div>
         </div>
 
+
+        <div class="form-group mt-15">
+            <label class="input-label">{{ trans('public.category') }}</label>
+
+            <select id="categories" class="custom-select @error('category_id')  is-invalid @enderror" name="category_id" required>
+                <option {{ (!empty($webinar) and !empty($webinar->category_id)) ? '' : 'selected' }} disabled>{{ trans('public.choose_category') }}</option>
+                @foreach($categories as $category)
+                    @if(!empty($category->subCategories) and $category->subCategories->count() > 0)
+                        <optgroup label="{{  $category->title }}">
+                            @foreach($category->subCategories as $subCategory)
+                                <option value="{{ $subCategory->id }}" {{ ((!empty($webinar) and $webinar->category_id == $subCategory->id) or old('category_id') == $subCategory->id) ? 'selected' : '' }}>{{ $subCategory->title }}</option>
+                            @endforeach
+                        </optgroup>
+                    @else
+                        <option value="{{ $category->id }}" {{ ((!empty($webinar) and $webinar->category_id == $category->id) or old('category_id') == $category->id) ? 'selected' : '' }}>{{ $category->title }}</option>
+                    @endif
+                @endforeach
+            </select>
+            @error('category_id')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+            @enderror
+        </div>
         <!-- <div class="form-group mt-15">
             <label class="input-label">{{ trans('public.cover_image') }}</label>
             <div class="input-group">
@@ -196,6 +220,41 @@
     </div>
 @endif
 
+<div class="form-group mt-15 {{ (!empty($webinarCategoryFilters) and count($webinarCategoryFilters)) ? '' : 'd-none' }}" id="categoriesFiltersContainer">
+    <span class="input-label d-block">{{ trans('public.category_filters') }}</span>
+    <div id="categoriesFiltersCard" class="row mt-20">
+
+        @if(!empty($webinarCategoryFilters) and count($webinarCategoryFilters))
+            @foreach($webinarCategoryFilters as $filter)
+                <div class="col-12 col-md-3">
+                    <div class="webinar-category-filters">
+                        <strong class="category-filter-title d-block">{{ $filter->title }}</strong>
+                        <div class="py-10"></div>
+
+                        @php
+                            $webinarFilterOptions = $webinar->filterOptions->pluck('filter_option_id')->toArray();
+
+                            if (!empty(old('filters'))) {
+                                $webinarFilterOptions = array_merge($webinarFilterOptions, old('filters'));
+                            }
+                        @endphp
+
+                        @foreach($filter->options as $option)
+                            <div class="form-group mt-10 d-flex align-items-center justify-content-between">
+                                <label class="cursor-pointer font-14 text-gray" for="filterOptions{{ $option->id }}">{{ $option->title }}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" name="filters[]" value="{{ $option->id }}" {{ ((!empty($webinarFilterOptions) && in_array($option->id, $webinarFilterOptions)) ? 'checked' : '') }} class="custom-control-input" id="filterOptions{{ $option->id }}">
+                                    <label class="custom-control-label" for="filterOptions{{ $option->id }}"></label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        @endif
+
+    </div>
+</div>
 @push('scripts_bottom')
     <script src="/assets/vendors/summernote/summernote-bs4.min.js"></script>
 
