@@ -384,30 +384,30 @@ class WebinarController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
-            // Create default chapters
-                $defaultChapters = [
-                    ['type' => 'text_lesson', 'title' => 'Objectives'],
-                    ['type' => 'text_lesson', 'title' => 'Target Audience'],
-                    ['type' => 'file', 'title' => 'Program'],
-                ];
+            // // Create default chapters
+            //     $defaultChapters = [
+            //         ['type' => 'text_lesson', 'title' => 'Objectives'],
+            //         ['type' => 'text_lesson', 'title' => 'Target Audience'],
+            //         ['type' => 'file', 'title' => 'Program'],
+            //     ];
 
-                foreach ($defaultChapters as $defaultChapter) {
-                    $chapter = WebinarChapter::create([
-                        'user_id' => $user->id,
-                        'webinar_id' => $webinar->id,
-                        'type' => $defaultChapter['type'],
-                        'status' => WebinarChapter::$chapterActive,
-                        'check_all_contents_pass' => false,
-                        'created_at' => time(),
-                    ]);
+            //     foreach ($defaultChapters as $defaultChapter) {
+            //         $chapter = WebinarChapter::create([
+            //             'user_id' => $user->id,
+            //             'webinar_id' => $webinar->id,
+            //             'type' => $defaultChapter['type'],
+            //             'status' => WebinarChapter::$chapterActive,
+            //             'check_all_contents_pass' => false,
+            //             'created_at' => time(),
+            //         ]);
 
-                    WebinarChapterTranslation::updateOrCreate([
-                        'webinar_chapter_id' => $chapter->id,
-                        'locale' => mb_strtolower($data['locale']),
-                    ], [
-                        'title' => $defaultChapter['title'],
-                    ]);
-                }
+            //         WebinarChapterTranslation::updateOrCreate([
+            //             'webinar_chapter_id' => $chapter->id,
+            //             'locale' => mb_strtolower($data['locale']),
+            //         ], [
+            //             'title' => $defaultChapter['title'],
+            //         ]);
+            //     }
         }
 
 
@@ -661,19 +661,10 @@ class WebinarController extends Controller
         }
         if ($currentStep == 4) {
             $rules = [
-                'objectives' => 'required',
-                'target_audience' => 'required',
-                'program' => 'required',
+                'objectives' => 'required|string',
+                'target_audience' => 'required|string',
+                'program' => 'required|string',
                 'attach_file' => 'required|string',
-            ];
-        }
-
-        if ($currentStep == 4) {
-            $request->merge(['chapters' => $webinar->chapters->toArray()]);
-
-            // Define validation rules
-            $rules = [
-                'chapters' => [new \App\Rules\ChapterItemsRequired($webinar)]
             ];
         }
 
