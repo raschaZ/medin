@@ -1034,7 +1034,7 @@ class User extends Authenticatable
     }
     public function isProfileComplete()
     {
-        return ($this->full_name && !$this->email && $this->grade && $this->service && $this->hospital);
+        return ($this->full_name && $this->email && $this->grade && $this->service && $this->hospital);
     }
 
 }
