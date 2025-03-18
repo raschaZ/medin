@@ -668,9 +668,17 @@ class WebinarController extends Controller
             ];
         }
 
+        if ($currentStep == 4) {
+            $request->merge(['chapters' => $webinar->chapters->toArray()]);
+
+            // Define validation rules
+            $rules = [
+                'chapters' => [new \App\Rules\ChapterItemsRequired($webinar)]
+            ];
+        }
+
         $webinarRulesRequired = false;
         $directPublicationOfCourses = !empty(getGeneralOptionsSettings('direct_publication_of_courses'));
-
         if (!$directPublicationOfCourses and (($currentStep == 8 and !$getNextStep and !$isDraft) or (!$getNextStep and !$isDraft))) {
             $webinarRulesRequired = empty($data['rules']);
         }

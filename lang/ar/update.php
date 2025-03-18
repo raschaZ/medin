@@ -2473,4 +2473,5 @@ return [
 'preparation_days_placeholder' => 'أدخل عدد الأيام المطلوبة للتحضير',
 'preparation_days_hint' => 'هذا هو عدد الأيام المطلوبة للتحضير قبل بدء الندوة.',
 'complete_your_profile_first' => 'الرجاء إكمال ملفك الشخصي أولاً',
+'chapter_items_required' => 'يجب أن يحتوي كل فصل على عنصر واحد على الأقل.',
 ];
