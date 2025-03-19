@@ -211,6 +211,34 @@
             </li>
         @endcan
 
+        @if($authUser->isTeacher()) 
+            <li class="sidenav-item {{ (request()->is('panel/financial/offline-payments/requests') or request()->is('panel/financial/offline_payments/requests*')) ? 'sidenav-item-active' : '' }}">
+                <a class="d-flex align-items-center" data-toggle="collapse" href="#offlinePaymentsCollapse" role="button" aria-expanded="false" aria-controls="offlinePaymentsCollapse">
+                    <span class="sidenav-item-icon mr-10">
+                        @include('web.default.panel.includes.sidebar_icons.offline_payment')
+                    </span>
+                    <span class="font-14 text-dark-blue font-weight-500">{{ trans('admin/main.offline_payments') }}</span>
+                </a>
+
+                <div class="collapse {{ (request()->is('panel/financial/offline-payments/requests') or request()->is('panel/financial/offline-payments/requests*')) ? 'show' : '' }}" id="offlinePaymentsCollapse">
+                    <ul class="sidenav-item-collapse">
+                        <li class="{{ (request()->is('panel/financial/offline-payments/requests') and request()->get('page_type') == 'requests') ? 'active' : '' }}">
+                            <a href="/panel/financial/offline-payments/requests?page_type=requests" class="nav-link @if(!empty($sidebarBeeps['offlinePayments']) and $sidebarBeeps['offlinePayments']) beep beep-sidebar @endif">
+                                <span>{{ trans('panel.requests') }}</span>
+                            </a>
+                        </li>
+
+                        <li class="{{ (request()->is('panel/financial/offline-payments/requests') and request()->get('page_type') == 'history') ? 'active' : '' }}">
+                            <a href="/panel/financial/offline-payments/requests?page_type=history" class="nav-link">
+                                <span>{{ trans('public.history') }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        @endif
+
+
         @if(!empty(getFeaturesSettings('upcoming_courses_status')))
             @can('panel_upcoming_courses')
                 <li class="sidenav-item {{ (request()->is('panel/upcoming_courses') or request()->is('panel/upcoming_courses/*')) ? 'sidenav-item-active' : '' }}">

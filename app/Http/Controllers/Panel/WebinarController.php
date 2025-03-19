@@ -26,6 +26,7 @@ use App\Models\WebinarChapterItem;
 use App\Models\WebinarExtraDescription;
 use App\User;
 use App\Models\Webinar;
+use App\Models\WebinarContent;
 use App\Models\WebinarPartnerTeacher;
 use App\Models\WebinarFilterOption;
 use Illuminate\Http\Request;
@@ -331,6 +332,7 @@ class WebinarController extends Controller
             // 'thumbnail' => 'required',
             // 'image_cover' => 'required',
             'description' => 'required',
+            'category_id' => 'required',
         ];
 
         // Automatically set thumbnail to the value of image_cover if it's not already set
@@ -352,6 +354,7 @@ class WebinarController extends Controller
             'type' => $data['type'],
             'private' => (!empty($data['private']) and $data['private'] == 'on') ? true : false,
             'thumbnail' => $data['thumbnail'],
+            'category_id' => $data['category_id'],
             'image_cover' => $data['image_cover'],
             'video_demo' => $data['video_demo'],
             'video_demo_source' => $data['video_demo'] ? $data['video_demo_source'] : null,
@@ -381,30 +384,30 @@ class WebinarController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
-            // Create default chapters
-                $defaultChapters = [
-                    ['type' => 'text_lesson', 'title' => 'Objectives'],
-                    ['type' => 'text_lesson', 'title' => 'Target Audience'],
-                    ['type' => 'file', 'title' => 'Program'],
-                ];
+            // // Create default chapters
+            //     $defaultChapters = [
+            //         ['type' => 'text_lesson', 'title' => 'Objectives'],
+            //         ['type' => 'text_lesson', 'title' => 'Target Audience'],
+            //         ['type' => 'file', 'title' => 'Program'],
+            //     ];
 
-                foreach ($defaultChapters as $defaultChapter) {
-                    $chapter = WebinarChapter::create([
-                        'user_id' => $user->id,
-                        'webinar_id' => $webinar->id,
-                        'type' => $defaultChapter['type'],
-                        'status' => WebinarChapter::$chapterActive,
-                        'check_all_contents_pass' => false,
-                        'created_at' => time(),
-                    ]);
+            //     foreach ($defaultChapters as $defaultChapter) {
+            //         $chapter = WebinarChapter::create([
+            //             'user_id' => $user->id,
+            //             'webinar_id' => $webinar->id,
+            //             'type' => $defaultChapter['type'],
+            //             'status' => WebinarChapter::$chapterActive,
+            //             'check_all_contents_pass' => false,
+            //             'created_at' => time(),
+            //         ]);
 
-                    WebinarChapterTranslation::updateOrCreate([
-                        'webinar_chapter_id' => $chapter->id,
-                        'locale' => mb_strtolower($data['locale']),
-                    ], [
-                        'title' => $defaultChapter['title'],
-                    ]);
-                }
+            //         WebinarChapterTranslation::updateOrCreate([
+            //             'webinar_chapter_id' => $chapter->id,
+            //             'locale' => mb_strtolower($data['locale']),
+            //         ], [
+            //             'title' => $defaultChapter['title'],
+            //         ]);
+            //     }
         }
 
 
@@ -457,16 +460,17 @@ class WebinarController extends Controller
                 $query->orWhereHas('webinarPartnerTeacher', function ($query) use ($user) {
 
                 });
-            });
-        if ($step == 1) {
-            $data['teachers'] = $user->getOrganizationTeachers()->get();
-        } elseif ($step == 2) {
-            $query->with([
+            })->with([
                 'category' => function ($query) {
                     $query->with(['filters' => function ($query) {
                         $query->with('options');
                     }]);
-                },
+                }
+            ]);;
+        if ($step == 1) {
+            $data['teachers'] = $user->getOrganizationTeachers()->get();
+        } elseif ($step == 2) {
+            $query->with([
                 'filterOptions',
                 'webinarPartnerTeacher' => function ($query) {
                     $query->with(['teacher' => function ($query) {
@@ -507,6 +511,7 @@ class WebinarController extends Controller
                         }
                     ]);
                 },
+                'content'
             ]);
         } elseif ($step == 5) {
             $query->with([
@@ -625,7 +630,8 @@ class WebinarController extends Controller
                 'title' => 'required|max:255',
                 // 'thumbnail' => 'required',
                 // 'image_cover' => 'required',
-                'description' => 'required',
+                'description' => 'required',                
+                'category_id' => 'required',
             ];
             $request->merge([
                 'thumbnail' =>  $request->input('image_cover'),
@@ -634,15 +640,18 @@ class WebinarController extends Controller
 
         if ($currentStep == 2) {
             $rules = [
-                'category_id' => 'required',
                 'duration' => 'required|numeric',
                 'partners' => 'required_if:partner_instructor,on',
                 'capacity' => 'nullable|numeric|min:0'
             ];
-
-            // if ($webinar->isWebinar()) {
-                $rules['start_date'] = 'required|date|after:' . now()->addMonth()->format('Y-m-d');
-            // }
+            if (isset($data['category_id'])) {
+                $category = Category::find($data['category_id']); // Use `find` for a single record.
+                // if ($webinar->isWebinar()) {
+                if ($category && $category->preparation_days) {
+                    $rules['start_date'] = 'required|date|after:' . now()->addDays($category->preparation_days)->format('Y-m-d');
+                }
+                // }
+            }
         }
 
         if ($currentStep == 3) {
@@ -650,10 +659,17 @@ class WebinarController extends Controller
                 'price' => 'nullable|numeric|min:0',
             ];
         }
+        if ($currentStep == 4) {
+            $rules = [
+                'objectives' => 'required|string',
+                'target_audience' => 'required|string',
+                'program' => 'required|string',
+                'attach_file' => 'required|string',
+            ];
+        }
 
         $webinarRulesRequired = false;
         $directPublicationOfCourses = !empty(getGeneralOptionsSettings('direct_publication_of_courses'));
-
         if (!$directPublicationOfCourses and (($currentStep == 8 and !$getNextStep and !$isDraft) or (!$getNextStep and !$isDraft))) {
             $webinarRulesRequired = empty($data['rules']);
         }
@@ -715,7 +731,7 @@ class WebinarController extends Controller
                 WebinarFilterOption::where('webinar_id', $webinar->id)->delete();
             }
 
-            if ($data['category_id'] ) {
+            if (isset($data['category_id'])) {
                 $category = Category::find($data['category_id']); // Use `find` for a single record.
                 if ($category) { // Ensure the category exists.
                     if ($category->thumbnail) {
@@ -733,6 +749,31 @@ class WebinarController extends Controller
             $data['subscribe'] = !empty($data['subscribe']) ? true : false;
             $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
             $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
+        }
+        if ($currentStep == 4) {
+            // Find the content by webinar_id
+            $content = WebinarContent::where('webinar_id', $webinar->id)->first();
+        
+            if ($content) {
+                // Update existing content
+                $content->update([
+                    'objectives' => $data['objectives'],
+                    'target_audience' => $data['target_audience'],
+                    'program' => $data['program'],
+                    'file_path' => $data['attach_file'],
+                    'updated_at' => time(),
+                ]);
+            } else {
+                // Create new content
+                $content = WebinarContent::create([
+                    'webinar_id' => $webinar->id,
+                    'objectives' => $data['objectives'],
+                    'target_audience' => $data['target_audience'],
+                    'program' => $data['program'],
+                    'file_path' => $data['attach_file'],
+                    'updated_at' => time(),
+                ]);
+            }
         }
 
         $filters = $request->get('filters', null);

@@ -82,7 +82,7 @@ class UsersController extends Controller
     public function update(Request $request)
     {
         $available_inputs = [
-            'full_name', 'language', 'email', 'mobile', 'newsletter', 'public_message', 'timezone', 'password',
+            'full_name', 'language', 'email','grade','hospital','service','mobile', 'newsletter', 'public_message', 'timezone', 'password',
             'about', 'bio',
             'account_type', 'iban', 'account_id',
             'level_of_training', 'meeting_type',
@@ -95,6 +95,9 @@ class UsersController extends Controller
 
         validateParam($request->all(), [
             'full_name' => 'string',
+            'grade' => 'string',
+            'hospital' => 'string',
+            'service' => 'string',
             'language' => 'string',
             'email' => 'email|unique:users,email,' . $user->id,
             'mobile' => 'numeric|unique:users,mobile,' . $user->id,

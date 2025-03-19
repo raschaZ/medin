@@ -290,6 +290,12 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             Route::get('/{id}/delete', 'AccountingController@deleteOfflinePayment');
             Route::get('/webinar-account/{webinar_id?}', 'AccountingController@webinarAccount');
             Route::post('/webinar-account/{webinar_id?}', 'AccountingController@webinarCharge');
+            Route::group(['prefix' => 'requests'], function () {
+                Route::get('/', 'OfflinePaymentController@index');
+                Route::get('/excel', 'OfflinePaymentController@exportExcel');
+                Route::get('/{id}/reject', 'OfflinePaymentController@reject');
+                Route::get('/{id}/approved', 'OfflinePaymentController@offlinePayment');
+            });
         });
 
         Route::group(['prefix' => 'subscribes'], function () {

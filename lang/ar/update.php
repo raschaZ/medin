@@ -2469,6 +2469,9 @@ return [
 'restrictions_hint_description_2' => 'You can define an IP range and block all IPs in the range with a single click',
 'restrictions_hint_title_3' => 'Block Country IPs',
 'restrictions_hint_description_3' => 'We have a database of country IPs, so you can easily block IP ranges from specific countries',
-
-
+'preparation_days' => 'أيام التحضير',
+'preparation_days_placeholder' => 'أدخل عدد الأيام المطلوبة للتحضير',
+'preparation_days_hint' => 'هذا هو عدد الأيام المطلوبة للتحضير قبل بدء الندوة.',
+'complete_your_profile_first' => 'الرجاء إكمال ملفك الشخصي أولاً',
+'chapter_items_required' => 'يجب أن يحتوي كل فصل على عنصر واحد على الأقل.',
 ];

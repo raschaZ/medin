@@ -23,6 +23,39 @@
                 @enderror
             </div>
 
+            <!-- Add Grade Field -->
+            <div class="form-group">
+                <label class="input-label">{{ trans('auth.grade') }}</label>
+                <input type="text" name="grade" value="{{ (!empty($user) and empty($new_user)) ? $user->grade : old('grade') }}" class="form-control @error('grade')  is-invalid @enderror" placeholder=""/>
+                @error('grade')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+            </div>
+
+            <!-- Add Hospital Field -->
+            <div class="form-group">
+                <label class="input-label">{{ trans('auth.hospital') }}</label>
+                <input type="text" name="hospital" value="{{ (!empty($user) and empty($new_user)) ? $user->hospital : old('hospital') }}" class="form-control @error('hospital')  is-invalid @enderror" placeholder=""/>
+                @error('hospital')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+            </div>
+
+            <!-- Add Service Field -->
+            <div class="form-group">
+                <label class="input-label">{{ trans('auth.service') }}</label>
+                <input type="text" name="service" value="{{ (!empty($user) and empty($new_user)) ? $user->service : old('service') }}" class="form-control @error('service')  is-invalid @enderror" placeholder=""/>
+                @error('service')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+            </div>
+
             <div class="form-group">
                 <label class="input-label">{{ trans('auth.password') }}</label>
                 <input type="password" name="password" value="{{ old('password') }}" class="form-control @error('password')  is-invalid @enderror" placeholder=""/>
@@ -52,7 +85,6 @@
                 </div>
                 @enderror
             </div>
-
 
             @if(!empty($userLanguages))
                 <div class="form-group">
@@ -123,5 +155,4 @@
             </div>
         </div>
     </div>
-
 </section>

@@ -5,7 +5,9 @@ return [
         'stored' => ' تم تخزين العنصر بنجاح',
         'deleted' => ' تمت إزالة العنصر بنجاح',
         'updated' => ' تم تحديث العنصر بنجاح',
-        'status' => ' :status :item بنجاح'
+        'status' => ' :status :item بنجاح',
+        'error'  =>  'عذرًا! حدث خطأ ما !!',
+        'complete_your_profile_first' => 'الرجاء إكمال ملفك الشخصي أولاً',
     ],
     'auth' => [
         'not_verified' => ' لم يتم التحقق من المستخدم',

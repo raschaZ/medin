@@ -7832,7 +7832,7 @@ button.bg-gray100:focus {
 
 .move-down {
   position: relative;
-  top: 50px;
+  top: 75px;
 }
 
 .user-select-none {
@@ -19738,4 +19738,8 @@ p {
 
 .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
   opacity: 0.6 !important;
+}
+
+img.img-cover.flip {
+  border-radius: 0 10px 10px 0;
 }

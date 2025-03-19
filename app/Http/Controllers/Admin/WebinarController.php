@@ -346,13 +346,18 @@ class WebinarController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'duration' => 'required|numeric',
-            'start_date' => 'required_if:type,webinar',
+            'start_date' => 'required|date ',
             'capacity' => 'nullable|numeric|min:0',
             'price' => 'nullable|numeric|min:0',
         ]);
-
+        $category = Category::find($request->input('category_id'));
+        // Add dynamic validation for start_date based on category preparation_days
+        if ($category && $category->preparation_days) {
+            $rules['start_date'] = 'required|after:' . now()->addDays($category->preparation_days)->format('Y-m-d H:i:s');
+            $this->validate($request, $rules);
+        }
+        
         $data = $request->all();
-
 
         if (!empty($data['capacity']) and !empty($data['sales_count_number']) and $data['sales_count_number'] > $data['capacity']) {
             return back()->withErrors([
@@ -602,13 +607,16 @@ class WebinarController extends Controller
             'category_id' => 'required',
             'price' => 'nullable|numeric|min:0',
         ];
-
+        if (isset($data['category_id'])) {
         // if ($webinar->isWebinar()) {
-            $rules['start_date'] = 'required|date';
-            $rules['duration'] = 'required';
+            $category = Category::find($data['category_id']); // Use `find` for a single record.
+            // if ($webinar->isWebinar()) {
+            if ($category && $category->preparation_days) {
+                $rules['start_date'] = 'required|date|after:' . now()->addDays($category->preparation_days)->format('Y-m-d');
+            }            $rules['duration'] = 'required';
             $rules['capacity'] = 'nullable|numeric|min:0';
         // }
-
+        }
         $this->validate($request, $rules);
 
         if (!empty($data['capacity']) and !empty($data['sales_count_number']) and $data['sales_count_number'] > $data['capacity']) {

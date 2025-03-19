@@ -171,6 +171,9 @@ class UserController extends Controller
 
             $rules = array_merge($rules, [
                 'full_name' => 'required|string',
+                'grade' => 'required|string',
+                'hospital' => 'required|string',
+                'service' => 'required|string',
                 'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users,email,' . $user->id,
                 'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users,mobile,' . $user->id,
             ]);
@@ -198,6 +201,9 @@ class UserController extends Controller
                 $updateData = [
                     'email' => $data['email'],
                     'full_name' => $data['full_name'],
+                    'grade' => $data['grade'],
+                    'hospital' => $data['hospital'],
+                    'service' => $data['service'],
                     'mobile' => $data['mobile'],
                     'language' => $data['language'] ?? null,
                     'timezone' => $data['timezone'] ?? null,

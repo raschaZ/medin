@@ -1032,5 +1032,9 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Attendee', 'user_id', 'id');
     }
+    public function isProfileComplete()
+    {
+        return ($this->full_name && $this->email && $this->grade && $this->service && $this->hospital);
+    }
 
 }

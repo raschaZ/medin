@@ -102,6 +102,9 @@ class RegisterController extends Controller
             'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users',
             'term' => 'required',
             'full_name' => 'required|string|min:3',
+            'grade' => 'required|string|max:255', // Add validation for grade
+            'hospital' => 'required|string|max:255', // Add validation for hospital
+            'service' => 'required|string|max:255', // Add validation for service
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
@@ -116,6 +119,9 @@ class RegisterController extends Controller
             'email' => trans('auth.email'),
             'term' => trans('update.terms'),
             'full_name' => trans('auth.full_name'),
+            'grade' => trans('auth.grade'),
+            'hospital' => trans('auth.hospital'),
+            'service' => trans('auth.service'),
             'password' => trans('auth.password'),
             'password_confirmation' => trans('auth.password_repeat'),
             'referral_code' => trans('financial.referral_code'),
@@ -163,6 +169,9 @@ class RegisterController extends Controller
             'mobile' => $data['mobile'] ?? null,
             'email' => $data['email'] ?? null,
             'full_name' => $data['full_name'],
+            'grade' => $data['grade'] ?? null, // Add grade
+            'hospital' => $data['hospital'] ?? null, // Add hospital
+            'service' => $data['service'] ?? null, // Add service
             'status' => User::$pending,
             'access_content' => $accessContent,
             'password' => Hash::make($data['password']),

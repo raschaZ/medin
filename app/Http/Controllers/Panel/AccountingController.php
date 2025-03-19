@@ -402,7 +402,6 @@ class AccountingController extends Controller
 
     public function webinarCharge(Request $request) 
     {
-        $this->authorize("panel_financial_charge_account");
         // Define validation rules for offline payment
         $rules = [
             'amount' => 'required|numeric|min:0',
@@ -460,7 +459,10 @@ class AccountingController extends Controller
         ]);
     
         // Send notifications to user and admin
-        $webinarName = Webinar::find($webinarId)->title;
+        $webinar = !empty($webinarId) ? Webinar::find($webinarId) : null;
+        $webinarName = $webinar ? $webinar->getTitleAttribute() : null;
+        $teacherId = $webinar && $webinar->teacher ? $webinar->teacher->id : null;
+
         $notifyOptions = [
             '[amount]' => handlePrice($amount),
             '[u.name]' => $userAuth->full_name,
@@ -468,7 +470,11 @@ class AccountingController extends Controller
         ];
         sendNotification('offline_payment_request', $notifyOptions, $userAuth->id);
         sendNotification('new_offline_payment_request', $notifyOptions, 1);
-    
+
+        if ($teacherId) {
+            sendNotification('new_offline_payment_request', $notifyOptions, $teacherId);
+        }
+
         // Return success message
         return back()->with([
             'sweetalert' => [
