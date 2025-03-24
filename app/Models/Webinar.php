@@ -1143,8 +1143,21 @@ class Webinar extends Model implements TranslatableContract
         }
     }
 
-    public function makeCertificateForUser($user)
+    public function makeCertificateForUser($user,$progress=false)
     {
+        if (!empty($user) and $this->certificate and $progress=true) {
+            $check = Certificate::where('type', 'course')
+                ->where('student_id', $user->id)
+                ->where('webinar_id', $this->id)
+                ->first();
+            if (empty($check)) {
+                $makeCertificate = new MakeCertificate();
+                $userCertificate = $makeCertificate->saveCourseCertificate($user, $this);
+
+                $certificateReward = RewardAccounting::calculateScore(Reward::CERTIFICATE);
+                RewardAccounting::makeRewardAccounting($userCertificate->student_id, $certificateReward, Reward::CERTIFICATE, $userCertificate->id, true);
+            }
+        }
         if (!empty($user) and $this->certificate and $this->getProgress(true) >= 100) {
             $check = Certificate::where('type', 'course')
                 ->where('student_id', $user->id)
