@@ -73,7 +73,21 @@ class LearningPageController extends Controller
                 return redirect($url);
             }
         }
+       
+        if (isset($course->chapters) && isset($course->chapters->chapterItems)) {
+            $data["courseChapter"] = $course->chapters->chapterItems->count();
+        } elseif ($course->type == 'text_lesson') {
+            $data["courseChapter"] = 1;
+        } else {
+            $data["courseChapter"] = null;
+        }
 
+        // Generate certificate if courseChapter is not null
+        if ($data["courseChapter"] !== null) {
+            $course->makeCertificateForUser($user, true);
+        }
+
+        // Fetch course certificate if available
         if ($course->certificate) {
             $data["courseCertificate"] = Certificate::where('type', 'course')
                 ->where('student_id', $user->id)
