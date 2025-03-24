@@ -727,7 +727,7 @@ class WebinarController extends Controller
                 unset($data['partners']);
             }
 
-            if ($data['category_id'] !== $webinar->category_id) {
+            if (isset($data['category_id']) && $data['category_id'] !== $webinar->category_id) {
                 WebinarFilterOption::where('webinar_id', $webinar->id)->delete();
             }
 
