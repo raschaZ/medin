@@ -20,7 +20,9 @@ Route::group([], function () {
         Route::get('/{id}', [TeachersCertificatesController::class, 'show']);
         Route::put('/{id}', [TeachersCertificatesController::class, 'update']);
         Route::delete('/{webinarId}/teacher/{teacherId}', [TeachersCertificatesController::class, 'removeTeacher']);
-        Route::post('/send-to-admin', [CertificateRequestController::class, 'store']);
+        Route::group(['prefix' => 'send-to-admin'], function () {
+            Route::post('/', [CertificateRequestController::class, 'store']); 
+        });
     });
 
     Route::group(['prefix' => 'webinar'], function () {

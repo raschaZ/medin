@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CertificateRequest;
 use App\Models\TeacherWebinarList;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class CertificateRequestController extends Controller
 {
@@ -42,12 +42,20 @@ class CertificateRequestController extends Controller
             'instructor_id' => $user->id,
             'webinar_id' => $list->webinar->id,
             'list_id' => $list->id,
-        ])->exists();
+        ])->first();
 
-        if ($attendeeExists) {
+        if ($attendeeExists && $attendeeExists->status != CertificateRequest::$waiting) {
             return apiResponse2(0, 'exists', trans('public.request_exist'));
         }
+        elseif($attendeeExists && $attendeeExists->status == CertificateRequest::$waiting){
+                // Envoyer une notification
+            sendNotification('certificate_request_send', [
+                '[u.name]' => $user->full_name,
+                '[c.title]' => $list->webinar->slug,
+            ], 1);
 
+            return apiResponse2(1, 'created', trans('webinars.request_sent'));
+        }
         // Créer la demande de certificat
         CertificateRequest::create([
             'instructor_id' => $user->id,
