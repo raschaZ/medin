@@ -2541,4 +2541,5 @@ return [
 'preparation_days_hint' => 'This is the number of days required to prepare before a webinar starts.',
 'complete_your_profile_first' => 'Please complete your profile first',
 'chapter_items_required' => 'Each chapter must have at least one chapter item.',
+'rib'=>'RIB',
 ];

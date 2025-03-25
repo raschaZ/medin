@@ -576,14 +576,14 @@ class UserController extends Controller
         $becomeInstructor = null;
         $becomeInstructorFormFieldValues = null;
 
-        if (!empty($request->get('type')) and $request->get('type') == 'check_instructor_request') {
+        // if (!empty($request->get('type')) and $request->get('type') == 'check_instructor_request') {
             $becomeInstructor = BecomeInstructor::where('user_id', $user->id)
                 ->first();
 
             if (!empty($becomeInstructor)) {
                 $becomeInstructorFormFieldValues = $this->getBecomeInstructorFormFieldValues($becomeInstructor);
             }
-        }
+        // }
 
         $categories = Category::where('parent_id', null)
             ->with('subCategories')
@@ -666,6 +666,8 @@ class UserController extends Controller
             'categories' => $categories,
             'occupations' => $occupations,
             'becomeInstructor' => $becomeInstructor,
+            'rib' => $becomeInstructor->rib ?? null,
+            'acceptedInstructor' => $becomeInstructor && $becomeInstructor->status === 'accept',
             'userLanguages' => $userLanguages,
             'userRegistrationPackage' => $user->userRegistrationPackage,
             'countries' => $countries,

@@ -1,3 +1,7 @@
+@php 
+ // dd($user,$becomeInstructor,$rib);
+@endphp
+
 <div class="tab-pane mt-3 fade" id="financial" role="tabpanel" aria-labelledby="financial-tab">
     <div class="row">
         <div class="col-12 col-md-6">
@@ -52,6 +56,25 @@
                         </div>
                     </div>
                 </div>
+                
+                @if($acceptedInstructor)
+                    <div class="form-group mt-15">
+                        <label class="input-label">{{ trans('update.rib') }}</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <!-- <button type="button" class="input-group-text admin-file-manager" data-input="rib" data-preview="holder">
+                                    <i class="fa fa-chevron-up"></i>
+                                </button> -->
+                            </div>
+                            <input type="text" name="rib" id="rib" value="{{ !empty($rib) ? $rib : old('rib') }}" class="form-control" disabled/>
+                            <div class="input-group-append">
+                                <button type="button" class="input-group-text admin-file-view" data-input="rib">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="form-group">
                     <label>{{ trans('financial.address') }}</label>

@@ -65,6 +65,19 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="font-weight-500 text-dark-blue ">{{ trans('update.rib') }}</label>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="input-group-text panel-file-manager" data-input="rib" data-preview="holder">
+                                        <i data-feather="arrow-up" width="18" height="18" class="text-white"></i>
+                                    </button>
+                                </div>
+                                <input type="text" name="rib" id="rib" value="{{ !empty($lastRequest) ? $lastRequest->rib : old('rib') }}" class="form-control "/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="js-instructor-label font-weight-500 text-dark-blue {{ !$isInstructorRole ? 'd-none' : '' }}">{{ trans('update.instructor_certificate_and_documents') }}</label>
                             <label class="js-organization-label font-weight-500 text-dark-blue {{ !$isOrganizationRole ? 'd-none' : '' }}">{{ trans('update.organization_certificate_and_documents') }}</label>
 
@@ -77,38 +90,6 @@
                                 <input type="text" name="certificate" id="certificate" value="{{ !empty($lastRequest) ? $lastRequest->certificate : old('certificate') }}" class="form-control "/>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="js-instructor-label font-weight-500 text-dark-blue {{ !$isInstructorRole ? 'd-none' : '' }}">{{ trans('update.instructor_select_account_type') }}</label>
-                            <label class="js-organization-label font-weight-500 text-dark-blue {{ !$isOrganizationRole ? 'd-none' : '' }}">{{ trans('update.organization_select_account_type') }}</label>
-                            <select name="bank_id" class="js-user-bank-input form-control @error('bank_id')  is-invalid @enderror">
-                                <option selected disabled>{{ trans('financial.select_account_type') }}</option>
-
-                                @foreach($userBanks as $userBank)
-                                    <option value="{{ $userBank->id }}" @if(!empty($user) and !empty($user->selectedBank) and $user->selectedBank->user_bank_id == $userBank->id) selected="selected" @endif data-specifications="{{ json_encode($userBank->specifications->pluck('name','id')->toArray()) }}">{{ $userBank->title }}</option>
-                                @endforeach
-                            </select>
-                            @error('bank_id')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-
-                        <div class="js-bank-specifications-card">
-                            @if(!empty($user) and !empty($user->selectedBank) and !empty($user->selectedBank->bank))
-                                @foreach($user->selectedBank->bank->specifications as $specification)
-                                    @php
-                                        $selectedBankSpecification = $user->selectedBank->specifications->where('user_selected_bank_id', $user->selectedBank->id)->where('user_bank_specification_id', $specification->id)->first();
-                                    @endphp
-                                    <div class="form-group">
-                                        <label class="font-weight-500 text-dark-blue">{{ $specification->name }}</label>
-                                        <input type="text" name="bank_specifications[{{ $specification->id }}]" value="{{ (!empty($selectedBankSpecification)) ? $selectedBankSpecification->value : '' }}" class="form-control"/>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
-
 
                         <div class="form-group">
                             <label class="js-instructor-label font-weight-500 text-dark-blue {{ !$isInstructorRole ? 'd-none' : '' }}">{{ trans('update.instructor_identity_scan') }}</label>

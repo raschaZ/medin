@@ -42,12 +42,12 @@ class BecomeInstructorController extends Controller
             $isOrganizationRole = (!empty($lastRequest) and $lastRequest->role == Role::$organization);
             $isInstructorRole = (empty($lastRequest) or $lastRequest->role == Role::$teacher);
 
-            $userBanks = UserBank::query()
-                ->with([
-                    'specifications'
-                ])
-                ->orderBy('created_at', 'desc')
-                ->get();
+            // $userBanks = UserBank::query()
+            //     ->with([
+            //         'specifications'
+            //     ])
+            //     ->orderBy('created_at', 'desc')
+            //     ->get();
 
             $formFields = $this->getFormFieldsByUserType($request, 'become_instructor', true, null, $lastRequest);
 
@@ -59,7 +59,7 @@ class BecomeInstructorController extends Controller
                 'occupations' => $occupations,
                 'isOrganizationRole' => $isOrganizationRole,
                 'isInstructorRole' => $isInstructorRole,
-                'userBanks' => $userBanks,
+                //  'userBanks' => [],
                 'formFields' => $formFields
             ];
 
@@ -71,6 +71,7 @@ class BecomeInstructorController extends Controller
 
     public function store(Request $request)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if ($user->isUser()) {
@@ -84,8 +85,8 @@ class BecomeInstructorController extends Controller
                 'role' => 'required',
                 'occupations' => 'required',
                 'certificate' => 'nullable|string',
-                'bank_id' => 'required',
-                'identity_scan' => 'required',
+                'rib' => 'required',
+                'identity_scan' => 'nullable',
                 'description' => 'nullable|string',
             ];
 
@@ -134,35 +135,36 @@ class BecomeInstructorController extends Controller
                 'role' => $data['role'],
                 'certificate' => $data['certificate'],
                 'description' => $data['description'],
+                'rib' => $data['rib'],
                 'created_at' => time()
             ]);
 
             $user->update([
-                'identity_scan' => $data['identity_scan'],
+                'identity_scan' => $data['identity_scan']??$user->identity_scan,
                 'certificate' => $data['certificate'],
             ]);
 
-            UserSelectedBank::query()->where('user_id', $user->id)->delete();
-            $userSelectedBank = UserSelectedBank::query()->create([
-                'user_id' => $user->id,
-                'user_bank_id' => $data['bank_id']
-            ]);
+            // UserSelectedBank::query()->where('user_id', $user->id)->delete();
+            // $userSelectedBank = UserSelectedBank::query()->create([
+            //     'user_id' => $user->id,
+            //     'user_bank_id' => $data['bank_id']
+            // ]);
 
-            if (!empty($data['bank_specifications'])) {
-                $specificationInsert = [];
+            // if (!empty($data['bank_specifications'])) {
+            //     $specificationInsert = [];
 
-                foreach ($data['bank_specifications'] as $specificationId => $specificationValue) {
-                    if (!empty($specificationValue)) {
-                        $specificationInsert[] = [
-                            'user_selected_bank_id' => $userSelectedBank->id,
-                            'user_bank_specification_id' => $specificationId,
-                            'value' => $specificationValue
-                        ];
-                    }
-                }
+            //     foreach ($data['bank_specifications'] as $specificationId => $specificationValue) {
+            //         if (!empty($specificationValue)) {
+            //             $specificationInsert[] = [
+            //                 'user_selected_bank_id' => $userSelectedBank->id,
+            //                 'user_bank_specification_id' => $specificationId,
+            //                 'value' => $specificationValue
+            //             ];
+            //         }
+            //     }
 
-                UserSelectedBankSpecification::query()->insert($specificationInsert);
-            }
+            //     UserSelectedBankSpecification::query()->insert($specificationInsert);
+            // }
 
             if (!empty($data['occupations'])) {
                 UserOccupation::where('user_id', $user->id)->delete();
@@ -205,6 +207,7 @@ class BecomeInstructorController extends Controller
 
     public function packages()
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         $role = 'instructors';
@@ -239,6 +242,7 @@ class BecomeInstructorController extends Controller
 
     public function checkPackageHasInstallment($id)
     {
+        /** @var \App\User $user */
         $user = auth()->user();
 
         if (!empty($user) and $user->isUser()) {

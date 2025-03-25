@@ -8,14 +8,22 @@
                     <td class="text-left">{{ trans('admin/main.role') }}</td>
                     <td class="text-left">{{ trans('site.extra_information') }}:</td>
                     <td class="text-center">{{ trans('public.certificate_and_documents') }}</td>
-                </tr>
+                    <td class="text-center">{{ trans('update.rib') }}</td>
+
 
                 <tr>
                     <td class="text-left">{{ $becomeInstructor->role }}</td>
-                    <td width="50%" class="text-left">{{ $becomeInstructor->description ?? '-' }}</td>
+                    <td width="40%" class="text-left">{{ $becomeInstructor->description ?? '-' }}</td>
                     <td class="text-center">
                         @if(!empty($becomeInstructor->certificate))
                             <a href="{{ (strpos($becomeInstructor->certificate,'http') != false) ? $becomeInstructor->certificate : url($becomeInstructor->certificate) }}" target="_blank" class="btn btn-sm btn-success">{{ trans('admin/main.show') }}</a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        @if(!empty($becomeInstructor->rib))
+                            <a href="{{ (strpos($becomeInstructor->rib,'http') != false) ? $becomeInstructor->rib : url($becomeInstructor->rib) }}" target="_blank" class="btn btn-sm btn-success">{{ trans('admin/main.show') }}</a>
                         @else
                             -
                         @endif
