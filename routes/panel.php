@@ -260,6 +260,11 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
 
         });
         
+        Route::group(['prefix' => 'certificate-requests'], function () {
+            Route::get('/',  [CertificateRequestController::class, 'index']);
+            Route::get('/{id}/approve', [CertificateRequestController::class, 'approve']);
+            Route::get('/{id}/reject', [CertificateRequestController::class, 'reject']);
+        });
     });
 
     Route::group(['prefix' => 'meetings'], function () {

@@ -75,7 +75,7 @@
         @if($authUser->isOrganization())
 
             @can('panel_organization_instructors')
-                <li class="sidenav-item {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*')) ? 'sidenav-item-active' : '' }}">
+                <li class="sidenav-item {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*') or (request()->is('panel/certificates/certificate-requests')) ) ? 'sidenav-item-active' : '' }}">
                     <a class="d-flex align-items-center" data-toggle="collapse" href="#instructorsCollapse" role="button" aria-expanded="false" aria-controls="instructorsCollapse">
                 <span class="sidenav-item-icon mr-10">
                     @include('web.default.panel.includes.sidebar_icons.teachers')
@@ -83,7 +83,7 @@
                         <span class="font-14 text-dark-blue font-weight-500">{{ trans('public.instructors') }}</span>
                     </a>
 
-                    <div class="collapse {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*')) ? 'show' : '' }}" id="instructorsCollapse">
+                    <div class="collapse {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*') or (request()->is('panel/certificates/certificate-requests'))) ? 'show' : '' }}" id="instructorsCollapse">
                         <ul class="sidenav-item-collapse">
                             @can('panel_organization_instructors_create')
                                 <li class="mt-5 {{ (request()->is('panel/instructors/new')) ? 'active' : '' }}">
@@ -96,6 +96,14 @@
                                     <a href="/panel/manage/instructors">{{ trans('public.list') }}</a>
                                 </li>
                             @endcan
+
+                            
+                            @can('panel_organization_instructors_lists')
+                                <li class="mt-5 {{ (request()->is('panel/certificates/certificate-requests')) ? 'active' : '' }}">
+                                    <a href="/panel/certificates/certificate-requests">{{ trans('admin/main.certificate_requests_list') }}</a>
+                                </li>
+                            @endcan
+
                         </ul>
                     </div>
                 </li>
