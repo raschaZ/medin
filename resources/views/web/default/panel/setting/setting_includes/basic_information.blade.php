@@ -1,10 +1,12 @@
+
+
 <section>
     <h2 class="section-title after-line">{{ trans('financial.account') }}</h2>
 
     <div class="row mt-20">
         <div class="col-12 col-lg-4">
             <div class="form-group">
-                <label class="input-label">{{ trans('public.email') }}</label>
+                <label class="input-label">{{ trans('public.email') }} *</label>
                 <input type="text" name="email" value="{{ (!empty($user) and empty($new_user)) ? $user->email : old('email') }}" class="form-control @error('email')  is-invalid @enderror" placeholder=""/>
                 @error('email')
                 <div class="invalid-feedback">
@@ -14,7 +16,7 @@
             </div>
 
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.name') }}</label>
+                <label class="input-label">{{ trans('auth.name') }} *</label>
                 <input type="text" name="full_name" value="{{ (!empty($user) and empty($new_user)) ? $user->full_name : old('full_name') }}" class="form-control @error('full_name')  is-invalid @enderror" placeholder=""/>
                 @error('full_name')
                 <div class="invalid-feedback">
@@ -25,7 +27,7 @@
 
             <!-- Add Grade Field -->
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.grade') }}</label>
+                <label class="input-label">{{ trans('auth.grade') }} *</label>
                 <input type="text" name="grade" value="{{ (!empty($user) and empty($new_user)) ? $user->grade : old('grade') }}" class="form-control @error('grade')  is-invalid @enderror" placeholder=""/>
                 @error('grade')
                 <div class="invalid-feedback">
@@ -36,7 +38,7 @@
 
             <!-- Add Hospital Field -->
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.hospital') }}</label>
+                <label class="input-label">{{ trans('auth.hospital') }} *</label>
                 <input type="text" name="hospital" value="{{ (!empty($user) and empty($new_user)) ? $user->hospital : old('hospital') }}" class="form-control @error('hospital')  is-invalid @enderror" placeholder=""/>
                 @error('hospital')
                 <div class="invalid-feedback">
@@ -47,7 +49,7 @@
 
             <!-- Add Service Field -->
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.service') }}</label>
+                <label class="input-label">{{ trans('auth.service') }} *</label>
                 <input type="text" name="service" value="{{ (!empty($user) and empty($new_user)) ? $user->service : old('service') }}" class="form-control @error('service')  is-invalid @enderror" placeholder=""/>
                 @error('service')
                 <div class="invalid-feedback">
@@ -57,7 +59,7 @@
             </div>
 
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.password') }}</label>
+                <label class="input-label">{{ trans('auth.password') }} {{ (!empty($user) and empty($new_user)) ? '' : '*' }}</label>                
                 <input type="password" name="password" value="{{ old('password') }}" class="form-control @error('password')  is-invalid @enderror" placeholder=""/>
                 @error('password')
                 <div class="invalid-feedback">
@@ -67,7 +69,7 @@
             </div>
 
             <div class="form-group">
-                <label class="input-label">{{ trans('auth.password_repeat') }}</label>
+                <label class="input-label">{{ trans('auth.password_repeat') }} {{ (!empty($user) and empty($new_user)) ? '' : '*' }}</label>
                 <input type="password" name="password_confirmation" value="{{ old('password_confirmation') }}" class="form-control @error('password_confirmation')  is-invalid @enderror" placeholder=""/>
                 @error('password_confirmation')
                 <div class="invalid-feedback">
@@ -77,7 +79,7 @@
             </div>
 
             <div class="form-group">
-                <label class="input-label">{{ trans('public.mobile') }}</label>
+                <label class="input-label">{{ trans('public.mobile') }} {{ (!empty($user) and empty($new_user)) ? '' : '*' }}</label>
                 <input type="tel" name="mobile" value="{{ (!empty($user) and empty($new_user)) ? $user->mobile : old('mobile') }}" class="form-control @error('mobile')  is-invalid @enderror" placeholder=""/>
                 @error('mobile')
                 <div class="invalid-feedback">

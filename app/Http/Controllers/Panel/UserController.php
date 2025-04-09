@@ -672,6 +672,9 @@ class UserController extends Controller
             $this->validate($request, [
                 'email' => 'required|string|email|max:255|unique:users',
                 'full_name' => 'required|string',
+                'grade' => 'required|string',
+                'service' => 'required|string',
+                'hospital' => 'required|string',
                 'mobile' => 'required|numeric|unique:users',
                 'password' => 'required|confirmed|min:6',
             ]);
@@ -690,6 +693,9 @@ class UserController extends Controller
                 'organ_id' => $organization->id,
                 'password' => Hash::make($data['password']),
                 'full_name' => $data['full_name'],
+                'grade' => $data['grade'],
+                'service' => $data['service'],
+                'hospital' => $data['hospital'],
                 'mobile' => $data['mobile'],
                 'language' => $data['language'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
