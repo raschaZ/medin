@@ -3,6 +3,9 @@
 @push('styles_top')
 
 @endpush
+@php
+//($authUser->isOrganization()); 
+@endphp
 
 @section('content')
     <div class="">
@@ -39,8 +42,13 @@
             </div>
 
             <div class="mt-20 mt-md-0">
-                <button type="button" id="sendForReview" class="btn btn-sm btn-primary">{{ !empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? trans('update.publish') : trans('public.send_for_review') }}</button>
-
+                @if($currentStep != 1)
+                    @if($authUser->isOrganization())
+                        <button type="button" id="sendForReview" class="btn btn-sm btn-primary">{{  trans('update.publish') }}</button>
+                    @else 
+                        <button type="button" id="sendForReview" class="btn btn-sm btn-primary">{{ !empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? trans('update.publish') : trans('public.send_for_review') }}</button>
+                    @endif
+                @endif
                 <button type="button" id="saveAsDraft" class=" btn btn-sm btn-primary">{{ trans('public.save_as_draft') }}</button>
 
                 @if(!empty($webinar) and $webinar->creator_id == $authUser->id)

@@ -143,7 +143,7 @@
             </div>
         </div>
 
-        <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
+        <!-- <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
             <label class="cursor-pointer input-label" for="partnerInstructorSwitch">{{ trans('public.partner_instructor') }}</label>
             <div class="custom-control custom-switch">
                 <input type="checkbox" name="partner_instructor" class="custom-control-input" id="partnerInstructorSwitch" {{ ((!empty($webinar) && $webinar->partner_instructor) or old('partner_instructor') == 'on') ? 'checked' : ''  }}>
@@ -168,7 +168,7 @@
                 {{ $message }}
             </div>
             @enderror
-        </div>
+        </div> -->
 
         <div class="form-group mt-15"   style="display: none !important;">
             <label class="input-label d-block">{{ trans('public.tags') }}</label>

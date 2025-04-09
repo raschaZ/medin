@@ -687,3 +687,10 @@ tbody tr:hover {
   background-color: var(--panel-bg) !important;
   transition: all 0.3s ease;
 }
+.text-success-green {
+  color: #43d477 !important;
+} 
+
+a.text-success-green:hover, a.text-success-green:focus {
+  color: rgb(32, 144, 109) !important;
+}

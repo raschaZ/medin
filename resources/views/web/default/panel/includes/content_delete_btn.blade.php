@@ -1,6 +1,6 @@
 @php
-    $allowInstructorDeleteContent = !!(!empty(getGeneralOptionsSettings('allow_instructor_delete_content')));
-    $contentDeleteMethod = (!empty(getGeneralOptionsSettings('content_delete_method'))) ? getGeneralOptionsSettings('content_delete_method') : 'delete_directly';
+    $allowInstructorDeleteContent = !!(!empty(getGeneralOptionsSettings('allow_instructor_delete_content'))||$authUser->isOrganization());
+    $contentDeleteMethod = (!empty(getGeneralOptionsSettings('content_delete_method'))&&!$authUser->isOrganization()) ? getGeneralOptionsSettings('content_delete_method') : 'delete_directly';
 @endphp
 
 @if($allowInstructorDeleteContent)

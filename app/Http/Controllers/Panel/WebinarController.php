@@ -54,7 +54,9 @@ class WebinarController extends Controller
             if ($user->isTeacher()) {
                 $query->where('teacher_id', $user->id);
             } elseif ($user->isOrganization()) {
-                $query->where('creator_id', $user->id);
+                $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+                $query->where('creator_id', $user->id)
+                ->orWhereIn('teacher_id', $organTeachers);
             }
         });
 
@@ -263,6 +265,7 @@ class WebinarController extends Controller
     {
         $this->authorize("panel_webinars_create");
 
+        /** @var App\User */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -290,7 +293,7 @@ class WebinarController extends Controller
                 ->where('organ_id', $user->id)->get();
         }
 
-        $stepCount = empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? 8 : 7;
+        $stepCount = (empty(getGeneralOptionsSettings('direct_publication_of_courses'))&& !$user->isOrganization()) ? 8 : 7;
 
         $data = [
             'pageTitle' => trans('webinars.new_page_title'),
@@ -429,16 +432,18 @@ class WebinarController extends Controller
     public function edit(Request $request, $id, $step = 1)
     {
         $this->authorize("panel_webinars_create");
-
+        /** @var App\User */
         $user = auth()->user();
         $isOrganization = $user->isOrganization();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
             abort(404);
         }
+       
+
         $locale = $request->get('locale', app()->getLocale());
 
-        $stepCount = empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? 8 : 7;
+        $stepCount = (empty(getGeneralOptionsSettings('direct_publication_of_courses'))&&!$user->isOrganization()) ? 8 : 7;
 
         $data = [
             'pageTitle' => trans('webinars.new_page_title_step', ['step' => $step]),
@@ -449,13 +454,18 @@ class WebinarController extends Controller
             'defaultLocale' => getDefaultLocale(),
             'stepCount' => $stepCount
         ];
-
+        
         $query = Webinar::where('id', $id)
             ->where(function ($query) use ($user) {
                 $query->where(function ($query) use ($user) {
                     $query->where('creator_id', $user->id)
                         ->orWhere('teacher_id', $user->id);
                 });
+
+                if($user->isOrganization()){
+                    $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+                    $query->orWhereIn('teacher_id', $organTeachers);
+                }
 
                 $query->orWhereHas('webinarPartnerTeacher', function ($query) use ($user) {
 
@@ -586,7 +596,7 @@ class WebinarController extends Controller
         if ($step == 3) {
             $data['sumTicketsCapacities'] = $webinar->tickets->sum('capacity');
         }
-
+        
 
         return view(getTemplate() . '.panel.webinar.create', $data);
     }
@@ -594,7 +604,8 @@ class WebinarController extends Controller
     public function update(Request $request, $id)
     {
         $this->authorize("panel_webinars_create");
-
+        
+        /** @var App\User */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -614,6 +625,11 @@ class WebinarController extends Controller
                     $query->where('creator_id', $user->id)
                         ->orWhere('teacher_id', $user->id);
                 });
+
+                if($user->isOrganization()){
+                    $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+                    $query->orWhereIn('teacher_id', $organTeachers);
+                }
 
                 $query->orWhereHas('webinarPartnerTeacher', function ($query) use ($user) {
                     $query->where('teacher_id', $user->id);
@@ -641,6 +657,7 @@ class WebinarController extends Controller
         if ($currentStep == 2) {
             $rules = [
                 'duration' => 'required|numeric',
+                'start_date' => 'required',
                 'partners' => 'required_if:partner_instructor,on',
                 'capacity' => 'nullable|numeric|min:0'
             ];
@@ -669,7 +686,7 @@ class WebinarController extends Controller
         }
 
         $webinarRulesRequired = false;
-        $directPublicationOfCourses = !empty(getGeneralOptionsSettings('direct_publication_of_courses'));
+        $directPublicationOfCourses = !empty(getGeneralOptionsSettings('direct_publication_of_courses'))||$user->isOrganization();
         if (!$directPublicationOfCourses and (($currentStep == 8 and !$getNextStep and !$isDraft) or (!$getNextStep and !$isDraft))) {
             $webinarRulesRequired = empty($data['rules']);
         }
@@ -855,7 +872,7 @@ class WebinarController extends Controller
 
         $webinar->update($data);
 
-        $stepCount = empty(getGeneralOptionsSettings('direct_publication_of_courses')) ? 8 : 7;
+        $stepCount = (empty(getGeneralOptionsSettings('direct_publication_of_courses'))&& !$user->isOrganization()) ? 8 : 7;
 
         $url = '/panel/webinars';
         if ($getNextStep) {
@@ -898,17 +915,17 @@ class WebinarController extends Controller
         //     dd($webinar);
         //     $webinar->save();
         //    }
-
         return redirect($url);
     }
 
     public function destroy(Request $request, $id)
-    {
+    {        
         $this->authorize("panel_webinars_delete");
 
+        /** @var App\User */
         $user = auth()->user();
-
-        if (!canDeleteContentDirectly()) {
+// dd(!canDeleteContentDirectly(),$user->isOrganization());
+        if (!canDeleteContentDirectly()&&!$user->isOrganization()) {
             if ($request->ajax()) {
                 return response()->json([], 422);
             } else {
@@ -1652,5 +1669,92 @@ class WebinarController extends Controller
         }
 
         abort(403);
+    }
+
+    public function approve(Request $request, $id)   
+    {
+        $this->authorize('panel_webinars_create');
+
+        /** @var App\User */
+        $user = auth()->user();
+
+        if ( !$user->isOrganization()) {
+            abort(404);
+        }
+         
+        $webinar = Webinar::query()->findOrFail($id);
+
+        $webinar->update([
+            'status' => Webinar::$active,
+            'enable_waitlist' => true
+        ]);
+
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('update.course_status_changes_to_approved'),
+            'status' => 'success'
+        ];
+
+        $notifyOptions = [
+            '[u.name]' => $webinar->teacher->full_name,
+            '[c.title]' => $webinar->slug,
+            '[content_type]' => trans('admin/main.course'),
+        ];
+
+        sendNotification("course_approve", $notifyOptions, $webinar->teacher->id);
+
+        return back()->with(['toast' => $toastData]);
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $this->authorize('panel_webinars_create');
+
+        /** @var App\User */
+        $user = auth()->user();
+
+        if ( !$user->isOrganization()) {
+            abort(404);
+        }
+
+        $webinar = Webinar::query()->findOrFail($id);
+
+        $webinar->update([
+            'status' => Webinar::$inactive
+        ]);
+
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('update.course_status_changes_to_rejected'),
+            'status' => 'success'
+        ];
+
+        return back()->with(['toast' => $toastData]);
+    }
+
+    public function unpublish(Request $request, $id)
+    {
+        $this->authorize('panel_webinars_create');
+
+        /** @var App\User */
+        $user = auth()->user();
+
+        if ( !$user->isOrganization()) {
+            abort(404);
+        }
+
+        $webinar = Webinar::query()->findOrFail($id);
+
+        $webinar->update([
+            'status' => Webinar::$pending
+        ]);
+
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('update.course_status_changes_to_unpublished'),
+            'status' => 'success'
+        ];
+
+        return back()->with(['toast' => $toastData]);
     }
 }

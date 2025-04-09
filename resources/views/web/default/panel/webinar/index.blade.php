@@ -124,14 +124,32 @@
                                         </h3>
                                     </a>
 
-                                    @if($webinar->isOwner($authUser->id) or $webinar->isPartnerTeacher($authUser->id))
+                                    @if($webinar->isOwner($authUser->id) or $webinar->isPartnerTeacher($authUser->id) or ($webinar->teacher->organ_id == $authUser->id) )
                                         <div class="btn-group dropdown table-actions">
                                             <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i data-feather="more-vertical" height="20"></i>
                                             </button>
                                             <div class="dropdown-menu ">
+                                                @if($authUser->isOrganization())
+                                                    @if(in_array($webinar->status, [\App\Models\Webinar::$pending, \App\Models\Webinar::$inactive]))
+                                                        @can('panel_webinars_create')
+                                                            <a href="/panel/webinars/{{ $webinar->id }}/approve" class="webinar-actions d-block mt-10 text-success-green">{{ trans('admin/main.approve') }}</a>
+                                                        @endcan
+                                                    @endif
+                                                    @if($webinar->status == \App\Models\Webinar::$pending) 
+                                                        @can('panel_webinars_create')
+                                                            <a href="/panel/webinars/{{ $webinar->id }}/reject" class="webinar-actions d-block mt-10 text-warning">{{ trans('public.reject') }}</a>
+                                                        @endcan
+                                                    @endif
+                                                    @if($webinar->status == \App\Models\Webinar::$active) 
+                                                        @can('panel_webinars_create')
+                                                            <a href="/panel/webinars/{{ $webinar->id }}/unpublish" class="webinar-actions d-block mt-10 text-warning">{{ trans('update.unpublish') }}</a>
+                                                        @endcan
+                                                    @endif  
+                                                @endif
+
                                                 @if(!empty($webinar->start_date))
-                                                    <button type="button" data-webinar-id="{{ $webinar->id }}" class="js-webinar-next-session webinar-actions btn-transparent d-block">{{ trans('public.create_join_link') }}</button>
+                                                    <button type="button" data-webinar-id="{{ $webinar->id }}" class="js-webinar-next-session mt-10 webinar-actions btn-transparent d-block">{{ trans('public.create_join_link') }}</button>
                                                 @endif
 
 
@@ -167,7 +185,7 @@
                                                     <a href="/panel/webinars/{{ $webinar->id }}/statistics" class="webinar-actions d-block mt-10">{{ trans('update.statistics') }}</a>
                                                 @endcan
 
-                                                @if($webinar->creator_id == $authUser->id)
+                                                @if($webinar->creator_id == $authUser->id or ($webinar->teacher->organ_id == $authUser->id) )
                                                     @can('panel_webinars_delete')
                                                         @include('web.default.panel.includes.content_delete_btn', [
                                                             'deleteContentUrl' => "/panel/webinars/{$webinar->id}/delete",

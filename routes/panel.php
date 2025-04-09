@@ -48,6 +48,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
             Route::get('/{id}/step/{step?}', 'WebinarController@edit');
             Route::get('/{id}/edit', 'WebinarController@edit')->name('panel_edit_webinar');
             Route::post('/{id}/update', 'WebinarController@update');
+            Route::get('/{id}/approve', 'WebinarController@approve');
+            Route::get('/{id}/reject', 'WebinarController@reject');
+            Route::get('/{id}/unpublish', 'WebinarController@unpublish');
             Route::get('/{id}/delete', 'WebinarController@destroy');
             Route::get('/{id}/duplicate', 'WebinarController@duplicate');
             Route::get('/{id}/export-students-list', 'WebinarController@exportStudentsList');
