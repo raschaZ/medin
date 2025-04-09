@@ -54,7 +54,9 @@ class CertificateRequestController extends Controller
                     '[u.name]' => $user->full_name,
                     '[c.title]' => $list->webinar->slug,
                 ];
-                sendNotification('certificate_request_send', $notifyOptions, 1);    
+                sendNotification('certificate_request_send', $notifyOptions, 1);  
+
+                if($user->organ_id)  
                 sendNotification('certificate_request_send', $notifyOptions, $user->organ_id);    
                 $toastData = [
                     'title' => trans('public.request_success'),
@@ -77,6 +79,8 @@ class CertificateRequestController extends Controller
                     '[c.title]' => $list->webinar->slug,
                 ];
                 sendNotification('certificate_request_send', $notifyOptions, 1);    
+
+                if($user->organ_id)
                 sendNotification('certificate_request_send', $notifyOptions, $user->organ_id);    
                 $toastData = [
                     'title' => trans('public.request_success'),

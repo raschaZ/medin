@@ -312,6 +312,7 @@ class WebinarController extends Controller
     {
         $this->authorize("panel_webinars_create");
 
+        /** @var App\User */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
@@ -420,6 +421,9 @@ class WebinarController extends Controller
             '[content_type]' => trans('admin/main.course'),
         ];
         sendNotification("new_item_created", $notifyOptions, 1);
+
+        if($user->isTeacher() and $user->organ_id)
+            sendNotification("new_item_created", $notifyOptions, $user->organ_id);
 
         $url = '/panel/webinars';
         if ($data['get_next'] == 1) {
@@ -896,6 +900,9 @@ class WebinarController extends Controller
                 '[content_type]' => trans('admin/main.course'),
             ];
             sendNotification("content_review_request", $notifyOptions, 1);
+
+            if($user->isTeacher() and $user->organ_id)
+                sendNotification("content_review_request", $notifyOptions, $user->organ_id);
         }
         
         // if($webinar and empty($webinar->qr_code)){
@@ -924,7 +931,9 @@ class WebinarController extends Controller
 
         /** @var App\User */
         $user = auth()->user();
-// dd(!canDeleteContentDirectly(),$user->isOrganization());
+
+            // dd(!canDeleteContentDirectly(),$user->isOrganization());
+
         if (!canDeleteContentDirectly()&&!$user->isOrganization()) {
             if ($request->ajax()) {
                 return response()->json([], 422);
@@ -938,14 +947,26 @@ class WebinarController extends Controller
             }
         }
 
-
         if (!$user->isTeacher() and !$user->isOrganization()) {
             abort(404);
         }
-
-        $webinar = Webinar::where('id', $id)
+        
+        if ($user->isOrganization()) {
+            // Get all teacher IDs associated with the organization
+            $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+        
+            // Find the webinar created by the organization or its teachers
+            $webinar = Webinar::where('id', $id)
+                ->where(function ($query) use ($user, $organTeachers) {
+                    $query->where('creator_id', $user->id)
+                          ->orWhereIn('creator_id', $organTeachers);
+                })
+                ->first();
+        }else{
+            $webinar = Webinar::where('id', $id)
             ->where('creator_id', $user->id)
-            ->first();
+                ->first();
+        }
 
         if (!$webinar) {
             abort(404);
@@ -1022,18 +1043,24 @@ class WebinarController extends Controller
     public function exportStudentsList($id)
     {
         $this->authorize("panel_webinars_export_students_list");
-
+        
+        /** @var App\User */
         $user = auth()->user();
 
         if (!$user->isTeacher() and !$user->isOrganization()) {
             abort(404);
         }
 
+        $organTeachers = [];
+        if ($user->isOrganization()) {
+            $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+        }
         $webinar = Webinar::where('id', $id)
-            ->where(function ($query) use ($user) {
-                $query->where(function ($query) use ($user) {
+            ->where(function ($query) use ($user,$organTeachers) {
+                $query->where(function ($query) use ($user,$organTeachers) {
                     $query->where('creator_id', $user->id)
-                        ->orWhere('teacher_id', $user->id);
+                        ->orWhere('teacher_id', $user->id)
+                        ->orWhereIn('creator_id', $organTeachers);
                 });
 
                 $query->orWhereHas('webinarPartnerTeacher', function ($query) use ($user) {

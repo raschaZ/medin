@@ -25,6 +25,7 @@ class WebinarStatisticController extends Controller
 {
     public function index(Request $request, $webinarId)
     {
+        /** @var App\User */
         $user = auth()->user();
 
         $webinar = Webinar::where('id', $webinarId)
@@ -33,6 +34,11 @@ class WebinarStatisticController extends Controller
                     $query->where('creator_id', $user->id)
                         ->orWhere('teacher_id', $user->id);
                 });
+
+                if($user->isOrganization()){
+                    $organTeachers = User::where('organ_id', $user->id)->pluck('id')->toArray();
+                    $query->orWhereIn('teacher_id', $organTeachers);
+                }
 
                 $query->orWhereHas('webinarPartnerTeacher', function ($query) use ($user) {
                     $query->where('teacher_id', $user->id);
