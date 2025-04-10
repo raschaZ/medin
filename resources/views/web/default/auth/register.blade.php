@@ -22,15 +22,9 @@
                     <form method="post" action="/register" class="mt-35">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-                        @if(!empty($selectRolesDuringRegistration) and count($selectRolesDuringRegistration)-1)
+                        @if(!empty($selectRolesDuringRegistration) and count($selectRolesDuringRegistration))
                             @php
                                 $oldAccountType = old("account_type");
-
-                                if (($key = array_search("organization", $selectRolesDuringRegistration)) !== false) {
-                                    unset($selectRolesDuringRegistration[$key]);
-                                }
-
-                                $selectRolesDuringRegistration = array_values($selectRolesDuringRegistration);
                             @endphp
 
                             <div class="form-group">
