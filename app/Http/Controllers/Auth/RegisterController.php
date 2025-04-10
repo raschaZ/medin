@@ -102,14 +102,20 @@ class RegisterController extends Controller
             'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users',
             'term' => 'required',
             'full_name' => 'required|string|min:3',
-            'grade' => 'required|string|max:255', // Add validation for grade
-            'hospital' => 'required|string|max:255', // Add validation for hospital
-            'service' => 'required|string|max:255', // Add validation for service
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
         ];
 
+        if(!empty($data['account_type']) && $data['account_type'] != Role::$organization) {
+            
+            $rules += [
+                'grade' => 'required|string|max:255', // Add validation for grade
+                'hospital' => 'required|string|max:255', // Add validation for hospital
+                'service' => 'required|string|max:255', // Add validation for service
+            ];
+        }
+        
         if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
             $rules['captcha'] = 'required|captcha';
         }

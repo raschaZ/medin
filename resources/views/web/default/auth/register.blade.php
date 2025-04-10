@@ -70,7 +70,7 @@
                             @enderror
                         </div>
                         
-                        <div class="form-group">
+                        <div class="form-group not-organisation">
                             <label class="input-label" for="grade">{{ trans('auth.grade') }}:</label>
                             <input name="grade" type="text" value="{{ old('grade') }}" class="form-control @error('grade') is-invalid @enderror">
                             @error('grade')
@@ -80,7 +80,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group not-organisation">
                             <label class="input-label" for="hospital">{{ trans('auth.hospital') }}:</label>
                             <input name="hospital" type="text" value="{{ old('hospital') }}" class="form-control @error('hospital') is-invalid @enderror">
                             @error('hospital')
@@ -90,7 +90,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group not-organisation">
                             <label class="input-label" for="service">{{ trans('auth.service') }}:</label>
                             <input name="service" type="text" value="{{ old('service') }}" class="form-control @error('service') is-invalid @enderror">
                             @error('service')
@@ -220,6 +220,30 @@
 @endsection
 
 @push('scripts_bottom')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleInputs = document.querySelectorAll('input[name="account_type"]');
+            const notOrganisationDivs = document.querySelectorAll('.not-organisation');
+
+            function toggleNotOrganisationDivs() {
+                const selectedRole = document.querySelector('input[name="account_type"]:checked').value;
+
+                if (selectedRole === 'organization') {
+                    notOrganisationDivs.forEach(div => div.style.display = 'none');
+                } else {
+                    notOrganisationDivs.forEach(div => div.style.display = 'block');
+                }
+            }
+
+            // Initial check on page load
+            toggleNotOrganisationDivs();
+
+            // Add event listeners to role inputs
+            roleInputs.forEach(input => {
+                input.addEventListener('change', toggleNotOrganisationDivs);
+            });
+        });
+    </script>
     <script src="/assets/default/vendors/select2/select2.min.js"></script>
     <script src="/assets/default/vendors/daterangepicker/daterangepicker.min.js"></script>
     <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
