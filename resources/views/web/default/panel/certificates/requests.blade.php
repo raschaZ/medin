@@ -176,6 +176,7 @@
 
 @push('scripts_bottom')
     <script src="/assets/admin/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="/assets/admin/vendor/bootstrap/bootstrap.min.js"></script>
     <script src="/assets/default/vendors/select2/select2.min.js"></script>
 
     <script>
