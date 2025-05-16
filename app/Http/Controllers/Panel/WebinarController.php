@@ -36,6 +36,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Validator;
 
+use function PHPSTORM_META\type;
+
 class WebinarController extends Controller
 {
     use VideoDemoTrait;
@@ -357,6 +359,7 @@ class WebinarController extends Controller
             'slug' => Webinar::makeSlug($data['title']),
             'type' => $data['type'],
             'private' => (!empty($data['private']) and $data['private'] == 'on') ? true : false,
+            'enable_waitlist' => true,
             'thumbnail' => $data['thumbnail'],
             'category_id' => $data['category_id'],
             'image_cover' => $data['image_cover'],
@@ -872,8 +875,8 @@ class WebinarController extends Controller
             // Update the webinar with the file path
             $data['qr_code'] = 'store/'.$fileName;
            }
-          
 
+        $data['enable_waitlist']= true;
         $webinar->update($data);
 
         $stepCount = (empty(getGeneralOptionsSettings('direct_publication_of_courses'))&& !$user->isOrganization()) ? 8 : 7;
