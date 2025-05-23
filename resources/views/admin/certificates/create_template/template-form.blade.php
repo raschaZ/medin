@@ -48,6 +48,7 @@
                 <option value="course" {{ (!empty($template) and $template->type == 'course') ? 'selected' : '' }}>{{ trans('update.course_completion') }}</option>
                 <option value="bundle" {{ (!empty($template) and $template->type == 'bundle') ? 'selected' : '' }}>{{ trans('update.bundle_completion') }}</option>
                 <option value="instructor" {{ (!empty($template) and $template->type == 'instructor') ? 'selected' : '' }}>{{ trans('update.instructor_completion') }}</option>
+                <option value="presenter" {{ (!empty($template) and $template->type == 'presenter') ? 'selected' : '' }}>{{ trans('update.instructor_presentation') }}</option>
             </select>
             <div class="invalid-feedback">@error('type') {{ $message }} @enderror</div>
         </div>

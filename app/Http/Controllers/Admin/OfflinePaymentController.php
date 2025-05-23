@@ -178,6 +178,7 @@ class OfflinePaymentController extends Controller
 
         $notifyOptions = [
             '[amount]' => handlePrice($offlinePayment->amount),
+            '[c.title]' => $offlinePayment->webinar->title ?? $offlinePayment->bundle->title ?? $offlinePayment->product->title,
         ];
         sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
 
@@ -417,6 +418,7 @@ class OfflinePaymentController extends Controller
         // Send notification about payment approval
         sendNotification('offline_payment_approved', [
             '[amount]' => handlePrice($offlinePayment->amount),
+            '[c.title]' => $offlinePayment->webinar->title ?? $offlinePayment->bundle->title ?? $offlinePayment->product->title,
         ], $offlinePayment->user_id);
     
         $user = User::find($offlinePayment->user_id);

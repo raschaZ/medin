@@ -296,7 +296,7 @@ class CertificateController extends Controller
         $this->validate($request, [
             'title' => 'required',
             'image' => 'required',
-            'type' => 'required|in:quiz,course,bundle,instructor',
+            'type' => 'required|in:quiz,course,bundle,instructor,presenter',
             'category_id' => 'required',
         ]);
 

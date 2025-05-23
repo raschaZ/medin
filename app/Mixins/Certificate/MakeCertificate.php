@@ -413,7 +413,60 @@ class MakeCertificate
                 'created_at' => time()
             ]
         );
+        // Generate and save the PDF
+        $pathSave =$this->generateAndSavePdf($userCertificate, $template, 'instructor',true,false,$teacher);
 
+
+        // Ensure the file name is safe
+        $safeTeacherName = $teacher->name ? str_replace(' ', '_', $teacher->name) : $userCertificate->id;
+        $certificateUrl = url("store/certificates/{$user->id}/certificate_{$safeTeacherName}.pdf");
+        try {
+            \Mail::to($teacher->email)->send(new CertificateGenerated($certificateUrl,$teacher,$course));
+        } catch (Exception $exception) {
+            //  dd($exception);
+             abort(404);
+        }
+        // Send the certificate link via email
+        // Mail::to($teacher->email)->send(new CertificateGenerated($certificateUrl));
+
+        // Return a success response
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => trans('update.certificate_generated_and_email_sent'),
+            'status' => 'success'
+        ];
+        return redirect()->back()->with(['toast' => $toastData]);
+    }
+
+    
+    public function makeCourseCertificatePresenter($teacher, $course)
+    {
+        
+        // Retrieve the certificate template
+        $template = CertificateTemplate::where('status', 'publish')
+            ->where('type', 'presenter')
+            ->where('category_id', $course->category_id)
+            ->first();
+    
+        // Validate course and template
+        if (empty($course) || empty($template)) {
+            $toastData = [
+                'title' => trans('public.request_failed'),
+                'msg' => trans('update.no_certificate_template_is_defined_for_courses'),
+                'status' => 'error'
+            ];
+            return redirect()->back()->with(['toast' => $toastData]);
+        }
+       
+        // Retrieve or create the certificate record
+        $user = $course->teacher;
+        $userCertificate = Certificate::firstOrCreate(
+            ['webinar_id' => $course->id, 'student_id' => $user->id],
+            [
+                'type' => 'course',
+                'created_at' => time()
+            ]
+        );
         // Generate and save the PDF
         $pathSave =$this->generateAndSavePdf($userCertificate, $template, 'instructor',true,false,$teacher);
 

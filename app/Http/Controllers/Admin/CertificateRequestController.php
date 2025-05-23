@@ -83,7 +83,7 @@ class CertificateRequestController extends Controller
             foreach($teachers as $teacher)
             {
                 $makeCertificate = new MakeCertificate();
-                $makeCertificate->makeCourseCertificateTeacher($teacher, $certificateRequest->webinar);
+                $makeCertificate->makeCourseCertificatePresenter($teacher, $certificateRequest->webinar);
             }
 
         }
