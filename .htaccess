@@ -4,21 +4,6 @@
     </IfModule>
 
     RewriteEngine On
-    
-    # Handle mobile user agents differently if needed
-    RewriteCond %{HTTP_USER_AGENT} "android|blackberry|iphone|ipod|iemobile|opera mobile|palmos|webos|googlebot-mobile" [NC]
-    RewriteRule .* - [E=MOBILE:true]
-    
-    # Standard rewrite rules
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ /public/$1 [L,QSA]
-    
-    # PHP settings
-    php_value upload_max_filesize 10M
-    php_value post_max_size 12M
-    php_value max_execution_time 300
-    php_value max_input_time 300
-    php_value memory_limit 256M
-    
-
 </IfModule>
