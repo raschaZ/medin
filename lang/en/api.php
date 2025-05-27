@@ -8,13 +8,15 @@ return [
         'status' => ':item :status successfully',
         'error'  =>  'OOPs! Something went wrong !!',
         'complete_your_profile_first' => 'Please complete your profile first',
+        'not_found' => 'the item not found',
     ],
     'auth' => [
         'not_verified' => 'the user is not verified',
         'invalid_register_method' => 'the register method is invalid',
         'already_registered' => 'the user has already registered',
         'login' => 'the user login successfully',
-        'registered' => 'the user registered successfully'
+        'registered' => 'the user registered successfully',
+        'unauthorized'=> 'unauthorized access',
     ]
 
 ];

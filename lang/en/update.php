@@ -2534,6 +2534,7 @@ return [
 'direct_publication_of_bundles_hint' => 'Bundles will be published without admin approval',
 'file_type_mkv' => 'MKV',
 'instructor_completion'=> 'Course monitoring',
+'instructor_presentation'=> 'Course Presentation',
 'reminder_mark_attendance' => 'Before downloading the certificate, please mark your attendance and review the course content.',
 'reminder_mark_attendance_quiz' => 'Before you can take the quiz, make sure to mark your attendance and review the course content.',
 'preparation_days' => 'Preparation Days',

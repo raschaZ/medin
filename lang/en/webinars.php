@@ -69,7 +69,7 @@ return [
     'next' => 'Next',
     'save_and_next' => 'Save and Next',
     'course' => 'Online Class',
-  	'video_course' => 'Online Course',
+  	'video_course' => 'Hybrid Course',
     'text_lesson' => 'On-site Course',
     'text_lessons' => 'On-site Courses',
     'progress_step' => 'Step :step/:count',

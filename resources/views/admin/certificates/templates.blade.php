@@ -41,6 +41,8 @@
                                                     <span class="">{{ trans('update.quiz_related') }}</span>
                                                 @elseif($template->type == 'instructor')
                                                     <span class="">{{ trans('update.instructor_completion') }}</span>
+                                                @elseif($template->type == 'presenter')   
+                                                    <span class="">{{ trans('update.instructor_presentation') }}</span>
                                                 @else
                                                     <span class="">{{ trans('update.course_completion') }}</span>
                                                 @endif
