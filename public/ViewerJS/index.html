@@ -30,60 +30,17 @@ along with ViewerJS.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
         <title>ViewerJS</title>
-        @LaravelPWA
         <!-- If you want to use custom CSS (@font-face rules, for example) you should uncomment
              the following reference and use a local.css file for that. See the example.local.css
              file for a sample.
         <link rel="stylesheet" type="text/css" href="local.css" media="screen"/>
         -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-                
-                <!-- Web Application Manifest -->
-            <link rel="manifest" href="/manifest.json">
-            <!-- Chrome for Android theme color -->
-            <meta name="theme-color" content="#000000">
-
-            <!-- Add to homescreen for Chrome on Android -->
-            <meta name="mobile-web-app-capable" content="yes">
-            <meta name="application-name" content="PWA">
-            <link rel="icon" sizes="512x512" href="/images/icons/icon-512x512.png">
-
-            <!-- Add to homescreen for Safari on iOS -->
-            <meta name="apple-mobile-web-app-capable" content="yes">
-            <meta name="apple-mobile-web-app-status-bar-style" content="black">
-            <meta name="apple-mobile-web-app-title" content="PWA">
-            <link rel="apple-touch-icon" href="/images/icons/icon-512x512.png">
-
-            <link href="/images/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1242x2208.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-            <link href="/images/icons/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-
-            <!-- Tile for Win8 -->
-            <meta name="msapplication-TileColor" content="#ffffff">
-            <meta name="msapplication-TileImage" content="/images/icons/icon-512x512.png">
-
+               <!-- PWA  -->
+                <meta name="theme-color" content="#6777ef"/>
+                <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+                <link rel="manifest" href="{{ asset('/manifest.json') }}">
             <script type="text/javascript">
-                // Initialize the service worker
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('/serviceworker.js', {
-                        scope: '.'
-                    }).then(function (registration) {
-                        // Registration was successful
-                        console.log('Laravel PWA: ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function (err) {
-                        // registration failed :(
-                        console.log('Laravel PWA: ServiceWorker registration failed: ', err);
-                    });
-                }
-            </script>
-                <script type="text/javascript">
             ////<![CDATA[
 var ODFViewerPlugin_css="@namespace cursor url(urn:webodf:names:cursor);.caret {opacity: 0 !important;}";function ODFViewerPlugin(){function b(b){var a=document.createElement("script");a.async=!1;a.src="./webodf.js";a.type="text/javascript";a.onload=function(){runtime.loadClass("gui.HyperlinkClickHandler");runtime.loadClass("odf.OdfCanvas");runtime.loadClass("ops.Session");runtime.loadClass("gui.CaretManager");runtime.loadClass("gui.HyperlinkTooltipView");runtime.loadClass("gui.SessionController");runtime.loadClass("gui.SvgSelectionView");runtime.loadClass("gui.SelectionViewManager");runtime.loadClass("gui.ShadowCursor");
 runtime.loadClass("gui.SessionView");b()};document.head.appendChild(a);a=document.createElementNS(document.head.namespaceURI,"style");a.setAttribute("media","screen, print, handheld, projection");a.setAttribute("type","text/css");a.appendChild(document.createTextNode(ODFViewerPlugin_css));document.head.appendChild(a)}var r=this,f=null,x=null,s=null,k=null;this.initialize=function(q,a){b(function(){var e,c,b,q,l,z,u,v;x=document.getElementById("canvas");f=new odf.OdfCanvas(x);f.load(a);f.addListener("statereadychange",
