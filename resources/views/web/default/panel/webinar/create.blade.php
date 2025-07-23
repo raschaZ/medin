@@ -19,6 +19,11 @@
             <input type="hidden" name="get_next" value="no" id="getNext"/>
             <input type="hidden" name="get_step" value="0" id="getStep"/>
 
+            {{-- Persist teacher_id for organizations after step 1 --}}
+            @if($authUser->isOrganization() && !empty($webinar) && !empty($webinar->teacher_id) && $currentStep > 1)
+                <input type="hidden" name="teacher_id" value="{{ $webinar->teacher_id }}">
+            @endif
+
 
             @if($currentStep == 1)
                 @include('web.default.panel.webinar.create_includes.step_1')
