@@ -66,6 +66,7 @@
         "razorpay/razorpay": "^2.8",
         "sebacarrasco93/laravel-payku": "^1.0",
         "shetabit/payment": "^5.4",
+        "silviolleite/laravelpwa": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/calendar-links": "^1.8",
         "spatie/laravel-google-calendar": "^3.6",
