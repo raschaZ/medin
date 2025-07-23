@@ -51,7 +51,7 @@
                         </div>
 
 
-                        <input type="text" name="duration" value="{{ (!empty($webinar) and !empty($webinar->duration)) ? $webinar->duration : old('duration') }}" class="form-control @error('duration')  is-invalid @enderror"/>
+                        <input type="text" name="duration" value="{{ (!empty($webinar) and !empty($webinar->duration)) ? $webinar->duration : old('duration') }}" class="form-control @error('duration')  is-invalid @enderror" placeholder="mins"/>
                         @error('duration')
                         <div class="invalid-feedback">
                             {{ $message }}
